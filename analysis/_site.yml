@@ -1,7 +1,7 @@
-name: "damsel_paper"
+name: damsel_paper
 output_dir: ../docs
 navbar:
-  title: "damsel_paper"
+  title: damsel_paper
   left:
   - text: Home
     href: index.html
@@ -9,6 +9,10 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  right:
+  - icon: fab fa-github
+    text: Source code
+    href: https://github.com/caitlinpage/damsel_paper
 output:
   workflowr::wflow_html:
     toc: yes
