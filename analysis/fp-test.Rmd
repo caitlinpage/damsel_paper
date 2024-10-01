@@ -78,7 +78,7 @@ The Samples are:
 * D2: Dam2
 * F2: Sd2
 ```{r}
-damsel_counts <- readRDS("../data/damsel_counts.rds")
+damsel_counts <- rbind(readRDS("../data/damsel_counts_a.rds"), readRDS("../data/damsel_counts_b.rds"))
 gatc_regions <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions
 ```
 ```{r}
