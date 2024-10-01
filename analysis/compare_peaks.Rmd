@@ -1,0 +1,179 @@
+---
+title: "compare_peaks"
+author: "caitlinpage"
+date: "2024-09-04"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+## Introduction
+
+```{r}
+library(Damsel)
+library(plyranges)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+library(BSgenome.Dmelanogaster.UCSC.dm6)
+library(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
+library(org.Dm.eg.db)
+library(ggVennDiagram)
+library(rtracklayer)
+```
+
+# Compare Damsel and Vissers
+```{r}
+damsel_peaks <- readRDS("../output/damsel_peaks.rds")
+vissers_peaks <- readRDS("../output/vissers_peaks.rds")
+vissers_peaks_mod <- readRDS("../output/vissers_peaks_mod.rds")
+```
+```{r}
+nrow(damsel_peaks)
+nrow(vissers_peaks)
+```
+
+* Visser's peaks had to be modified in order to be usable (missing chromosome name)
+* They also do not contain a p value - making it difficult to rank peaks and identify the most significant
+```{r}
+vissers_peaks_mod$peak_num <- 1:nrow(vissers_peaks_mod)
+vissers_peaks_mod$Position <- paste0(vissers_peaks_mod$seqnames, "-", vissers_peaks_mod$start)
+```
+
+
+```{r}
+peak_all <- union_ranges(as_granges(damsel_peaks), as_granges(vissers_peaks_mod)) %>% 
+  data.frame() %>% mutate(compare_num = 1:n())
+peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks)) %>% data.frame()
+peak_compare_vissers <- find_overlaps(as_granges(peak_all), as_granges(vissers_peaks_mod)) %>% data.frame()
+```
+
+```{r}
+venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compare_vissers$compare_num)
+ggVennDiagram(venn_data)
+```
+
+# Compare Damsel and Marshall
+```{r}
+marshall_peaks_1 <- rtracklayer::import("../data/sd_1_SRR794884-vs-Dam.kde-norm.gatc-FDR0.01.peaks.gff")
+marshall_peaks_2 <- rtracklayer::import("../data/sd_2_SRR7948877-vs-Dam.kde-norm.gatc-FDR0.01.peaks.gff")
+marshall_peaks <- readRDS("../output/marshall_peaks.rds")
+```
+```{r}
+head(marshall_peaks_1)
+```
+
+```{r}
+head(marshall_peaks_2)
+```
+
+* Marshall peaks had to be compiled in order to be analysed
+
+```{r}
+peak_all <- union_ranges(as_granges(damsel_peaks), as_granges(marshall_peaks)) %>% 
+  data.frame() %>% mutate(compare_num = 1:n())
+peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks)) %>% data.frame()
+peak_compare_marshall <- find_overlaps(as_granges(peak_all), as_granges(marshall_peaks)) %>% data.frame()
+```
+
+```{r}
+venn_data <- list(Damsel = peak_compare_damsel$compare_num, Marshall = peak_compare_marshall$compare_num)
+ggVennDiagram(venn_data)
+```
+
+# Compare all 3 approaches
+```{r}
+peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks), as_granges(vissers_peaks_mod)), as_granges(marshall_peaks)) %>% data.frame() %>% 
+  mutate(compare_num = 1:n()) %>% as_granges() 
+
+peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks), maxgap = 150) %>% data.frame()
+peak_compare_vissers <- find_overlaps(as_granges(peak_all), as_granges(vissers_peaks_mod), maxgap = 150) %>% data.frame()
+peak_compare_marshall <- find_overlaps(as_granges(peak_all), as_granges(marshall_peaks), maxgap = 150) %>% data.frame()
+
+
+venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compare_vissers$compare_num, 
+                  Marshall = peak_compare_marshall$compare_num)
+ggVennDiagram(venn_data)
+```
+
+- so overlap and fp is both worse than it used to be...
+- but actually numbers are pretty similar to what I had - they've just changed slightly
+-worst part is damsel has about 200 extra with no overlap
+- is it the lowest ranked?? - because I could accept that
+
+```{r}
+peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks[1:1000,]), as_granges(vissers_peaks_mod)), as_granges(marshall_peaks)) %>% data.frame() %>% 
+  mutate(compare_num = 1:n()) %>% as_granges() 
+
+peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks), maxgap = 150) %>% data.frame()
+peak_compare_vissers <- find_overlaps(as_granges(peak_all), as_granges(vissers_peaks_mod), maxgap = 150) %>% data.frame()
+peak_compare_marshall <- find_overlaps(as_granges(peak_all), as_granges(marshall_peaks), maxgap = 150) %>% data.frame()
+
+
+venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compare_vissers$compare_num, 
+                  Marshall = peak_compare_marshall$compare_num)
+ggVennDiagram(venn_data)
+```
+- ok if i did that right - that says that limiting to top 1000 doesn't change overlap - and actually makes things quite nice
+- oh but wait - didn't limit to top 1000 when going back
+```{r}
+peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks[1:1000,]), as_granges(vissers_peaks_mod)), as_granges(marshall_peaks)) %>% data.frame() %>% 
+  mutate(compare_num = 1:n()) %>% as_granges() 
+
+peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks[1:1000,]), maxgap = 150) %>% data.frame()
+peak_compare_vissers <- find_overlaps(as_granges(peak_all), as_granges(vissers_peaks_mod), maxgap = 150) %>% data.frame()
+peak_compare_marshall <- find_overlaps(as_granges(peak_all), as_granges(marshall_peaks), maxgap = 150) %>% data.frame()
+
+
+venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compare_vissers$compare_num, 
+                  Marshall = peak_compare_marshall$compare_num)
+ggVennDiagram(venn_data)
+```
+- ok that makes the overlap look less good - makes vissers look better - but also makes vissers look worse - because they have more by themselves
+- but this one is more correct way of doing if want it this way
+-omg of course vissers and marshall are more similar to each other - they're not doing any kind of sample pairing
+```{r}
+peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks[1:1000,]), as_granges(vissers_peaks_mod[1:1000,])), as_granges(marshall_peaks)) %>% data.frame() %>% 
+  mutate(compare_num = 1:n()) %>% as_granges() 
+
+peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks[1:1000,]), maxgap = 150) %>% data.frame()
+peak_compare_vissers <- find_overlaps(as_granges(peak_all), as_granges(vissers_peaks_mod[1:1000,]), maxgap = 150) %>% data.frame()
+peak_compare_marshall <- find_overlaps(as_granges(peak_all), as_granges(marshall_peaks), maxgap = 150) %>% data.frame()
+
+
+venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compare_vissers$compare_num, 
+                  Marshall = peak_compare_marshall$compare_num)
+ggVennDiagram(venn_data)
+```
+- ok can't really do this because vissers is not ranked - does make it look interesting though - seems as if marshall is in the lower ranked vissers anyway
+```{r}
+peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks[1:1000,]), as_granges(vissers_peaks_mod[1:1000,])), as_granges(marshall_peaks[1:1000,])) %>% data.frame() %>% 
+  mutate(compare_num = 1:n()) %>% as_granges() 
+
+peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks[1:1000,]), maxgap = 150) %>% data.frame()
+peak_compare_vissers <- find_overlaps(as_granges(peak_all), as_granges(vissers_peaks_mod[1:1000,]), maxgap = 150) %>% data.frame()
+peak_compare_marshall <- find_overlaps(as_granges(peak_all), as_granges(marshall_peaks[1:1000,]), maxgap = 150) %>% data.frame()
+
+
+venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compare_vissers$compare_num, 
+                  Marshall = peak_compare_marshall$compare_num)
+ggVennDiagram(venn_data)
+```
+
+```{r}
+peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks[1:1000,]), as_granges(vissers_peaks_mod)), as_granges(marshall_peaks[1:1000,])) %>% data.frame() %>% 
+  mutate(compare_num = 1:n()) %>% as_granges() 
+
+peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks[1:1000,]), maxgap = 150) %>% data.frame()
+peak_compare_vissers <- find_overlaps(as_granges(peak_all), as_granges(vissers_peaks_mod), maxgap = 150) %>% data.frame()
+peak_compare_marshall <- find_overlaps(as_granges(peak_all), as_granges(marshall_peaks[1:1000,]), maxgap = 150) %>% data.frame()
+
+
+venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compare_vissers$compare_num, 
+                  Marshall = peak_compare_marshall$compare_num)
+ggVennDiagram(venn_data)
+```
+
+
+

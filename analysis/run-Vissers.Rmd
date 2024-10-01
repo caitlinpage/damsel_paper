@@ -1,0 +1,108 @@
+---
+title: "run-Vissers"
+author: "caitlinpage"
+date: "2024-08-27"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+```{r}
+library(Damsel)
+library(plyranges)
+library(dplyr)
+library(tidyr)
+library(edgeR)
+library(ggplot2)
+
+library(BSgenome.Dmelanogaster.UCSC.dm6)
+```
+```{r}
+gatc_regions <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions
+damsel_counts <- readRDS("../data/damsel_counts.rds")
+```
+
+```{r}
+head(damsel_counts)
+```
+
+```{r}
+matrix <- as.matrix(damsel_counts[, grepl("bam", colnames(damsel_counts), ignore.case = TRUE)])
+rownames(matrix) <- damsel_counts$Position
+group = c("Dam", "Sd", "Dam", "Sd")
+design = model.matrix(~group)
+y = DGEList(matrix, group = group)
+keep <- rowSums(cpm(y)>=0.5) >= 2
+y = y[keep, ,keep.lib.sizes=FALSE]
+y = calcNormFactors(y)
+y = estimateDisp(y, robust = T, design = design)
+
+fit = glmFit(y, design = design)
+lrt = glmLRT(fit, coef=2)
+de.Sd <- decideTestsDGE(lrt, lfc = 1)
+lrt$table$significant <- de.Sd
+
+vissers_dm <- data.frame(lrt$table)
+```
+
+```{r}
+write.table(vissers_dm, file='../output/lrt_sd.txt', quote=F)
+write.table(keep, file='../output/keep', quote=F, col.names = FALSE)
+```
+
+```{r}
+vissers_peaks <- readRDS("../output/vissers_peaks.rds")
+names(vissers_peaks) <- c('chr', 's', 'e', "tags", 'pen', 'aveLogFC', 'sig')
+vissers_peaks <- vissers_peaks %>% mutate(big = ifelse(tags > 2 | pen == 1, TRUE, FALSE))
+```
+```{r}
+head(vissers_peaks)
+```
+
+# vissers peaks must be modified
+
+```{r}
+names(vissers_peaks) <- c('seqnames', 'start', 'end', "tags", 'pen', 'aveLogFC', 'sig')
+```
+* chromosome names are missing
+* add manually - assuming that chromosomes remain in order - 2L, 2R, 3L, 3R, 4, etc
+
+* first break apart the peaks - the peaks are organised by increasing start site
+* so if the start site is less than the previous peak - new chromosome
+* how many peaks per chromosome?
+```{r}
+peaks_per_chr <- vissers_peaks %>% 
+  mutate(end_che = ifelse(seqnames > lead(seqnames), TRUE, NA), 
+         row_num = 1:nrow(.), 
+         end_chr = ifelse(row_num == nrow(.), TRUE, end_chr),
+         end_pos = ifelse(end_chr == TRUE, row_num, NA)) %>% 
+  fill(end_pos, .direction = "up") %>% 
+  distinct(end_pos) %>% 
+  mutate(num_per_chr = end_pos - lag(end_pos), 
+         num_per_chrc = ifelse(is.na(num_per_chr), end_pos, num_per_chr)) %<%
+  .$num_per_chr
+peaks_per_chr
+```
+
+* match to the chromosome - taken from the dm results
+```{r}
+chromosomes <- sub("-.*", "", rownames(vissers_dm)) %>% unique()
+chromosomes
+```
+
+* check that length matches
+```{r}
+length(chromosomes) == length(peaks_per_chr)
+```
+
+* replace seqnames
+```{r}
+chr_vec <- character()
+for(i in 1:length(peaks_per_chr)) {
+  chr_vec <- c(chr_vec, rep(chromosomes[i], times = peaks_per_chr[i]))
+}
+
+vissers_peaks$seqnames <- chr_vec
+```
+

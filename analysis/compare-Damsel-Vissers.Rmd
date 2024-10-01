@@ -1,0 +1,88 @@
+---
+title: "compare-Damsel-Vissers"
+author: "caitlinpage"
+date: "2024-09-02"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r}
+library(Damsel)
+library(plyranges)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+library(BSgenome.Dmelanogaster.UCSC.dm6)
+library(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
+library(org.Dm.eg.db)
+library(ggVennDiagram)
+```
+
+```{r}
+gatc_regions <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions %>% data.frame()
+```
+
+# Compare DM results
+
+```{r}
+damsel_dm <- readRDS("../output/damsel_dm.rds")
+vissers_dm <- readRDS("../output/damsel_peaks.rds")
+```
+```{r}
+head(vissers_dm)
+```
+```{r}
+dm_compare <- damsel_dm %>%
+  mutate(vissers_logFC = vissers_dm[match(damsel_dm$Position, row.names(vissers_dm)), "logFC"]) %>%
+  mutate(vissers_PValue = vissers_dm[match(.$Position, row.names(vissers_dm)), "PValue"]) %>%
+  mutate(vissers_dm = vissers_dm[match(damsel_dm$Position, row.names(vissers_dm)), "significant"],
+         vissers_logFC = ifelse(is.na(vissers_logFC), 0, vissers_logFC),
+         vissers_PValue = ifelse(is.na(vissers_PValue), 1, vissers_PValue))
+```
+
+## compare P Values
+```{r}
+dm_compare %>%
+  ggplot(aes(x = vissers_PValue, y = PValue)) +
+  geom_point(alpha = 0.1) +
+  geom_vline(xintercept = 0.05, colour = "red", linetype = "dashed") +
+  geom_hline(yintercept = 0.05, colour = "red", linetype = "dashed") +
+  geom_smooth()
+```
+
+```{r}
+cor.test(dm_compare$vissers_PValue, dm_compare$PValue)
+```
+
+# Compare peaks
+
+```{r}
+damsel_peaks <- readRDS("../output/damsel_peaks.rds")
+vissers_peaks <- readRDS("../output/vissers_peaks.rds")
+vissers_peaks_mod <- readRDS("../output/vissers_peaks_mod.rds")
+```
+
+* Visser's peaks had to be modified in order to be usable (missing chromosome name)
+* They also do not contain a p value - making it difficult to rank peaks and identify the most significant
+```{r}
+vissers_peaks_mod$peak_num <- 1:nrow(vissers_peaks_mod)
+vissers_peaks_mod$Position <- paste0(vissers_peaks_mod$seqnames, "-", vissers_peaks_mod$start)
+```
+
+
+```{r}
+peak_all <- union_ranges(as_granges(damsel_peaks), as_granges(vissers_peaks_mod)) %>% 
+  data.frame() %>% mutate(peak_num = 1:n())
+peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks)) %>% data.frame()
+peak_compare_vissers <- find_overlaps(as_granges(peak_all), as_granges(vissers_peaks_mod)) %>% data.frame()
+```
+
+```{r}
+venn_data <- list(Damsel = peak_compare_damsel$peak_num, Vissers = peak_compare_vissers$peak_num)
+ggVennDiagram(venn_data)
+```
+

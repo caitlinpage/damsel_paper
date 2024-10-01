@@ -1,0 +1,162 @@
+---
+title: "fp-test"
+author: "caitlinpage"
+date: "2024-09-04"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+## Introduction
+
+```{r}
+library(Damsel)
+library(plyranges)
+library(dplyr)
+library(ggplot2)
+library(BSgenome.Dmelanogaster.UCSC.dm6)
+library(edgeR)
+```
+
+
+```{r}
+test_vissers_dm <- function(damsel_counts) {
+  matrix <- as.matrix(damsel_counts[, grepl("bam", colnames(damsel_counts), ignore.case = TRUE)])
+  rownames(matrix) <- damsel_counts$Position
+  group = c("Dam", "Sd", "Dam", "Sd")
+  design = model.matrix(~group)
+  y = DGEList(matrix, group = group)
+  keep <- rowSums(cpm(y)>=0.5) >= 2
+  y = y[keep, ,keep.lib.sizes=FALSE]
+  y = calcNormFactors(y)
+  y = estimateDisp(y, robust = T, design = design)
+
+  fit = glmFit(y, design = design)
+  lrt = glmLRT(fit, coef=2)
+  de.Sd <- decideTestsDGE(lrt, lfc = 1)
+  lrt$table$significant <- de.Sd
+
+  vissers_dm <- data.frame(lrt$table)
+  vissers_dm$significant <- data.frame(de.Sd)$groupSd
+  vissers_dm
+}
+test_vissers_peaks <- function(damsel_counts) {
+  matrix <- as.matrix(damsel_counts[, grepl("bam", colnames(damsel_counts), ignore.case = TRUE)])
+  rownames(matrix) <- damsel_counts$Position
+  group = c("Dam", "Sd", "Dam", "Sd")
+  design = model.matrix(~group)
+  y = DGEList(matrix, group = group)
+  keep <- rowSums(cpm(y)>=0.5) >= 2
+  y = y[keep, ,keep.lib.sizes=FALSE]
+  y = calcNormFactors(y)
+  y = estimateDisp(y, robust = T, design = design)
+
+  fit = glmFit(y, design = design)
+  lrt = glmLRT(fit, coef=2)
+  de.Sd <- decideTestsDGE(lrt, lfc = 1)
+  lrt$table$significant <- de.Sd
+
+  vissers_dm <- data.frame(lrt$table)
+  vissers_dm$significant <- data.frame(de.Sd)$groupSd
+
+  write.table(vissers_dm, file='../output/lrt_sd.txt', quote=F)
+  write.table(keep, file='../output/keep', quote=F, col.names = FALSE)
+
+  system2("python3", args=c("../code/call_peaks.py",
+          "../output/keep", "../output/lrt_sd.txt", ">",
+          "../output/fp_vissers_peaks.txt"))
+  vissers_peaks <- read.table("../output/fp_vissers_peaks.txt")
+
+  names(vissers_peaks) <- c('seqnames', 'start', 'end', "tags", 'pen', 'aveLogFC', 'sig')
+  vissers_peaks
+}
+```
+
+The Samples are:
+* D1: Dam1
+* F1: Sd1
+* D2: Dam2
+* F2: Sd2
+```{r}
+damsel_counts <- readRDS("../data/damsel_counts.rds")
+gatc_regions <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions
+```
+```{r}
+head(damsel_counts)
+```
+
+# We can rearrange them as:
+* D1: Dam1
+* F1: Dam2
+* D2: Sd1
+* F2: Sd2
+```{r}
+damsel_counts_a <- damsel_counts[,c(1:6,7,9,8,10)]
+head(damsel_counts_a)
+```
+
+## Damsel
+```{r}
+damsel_fp <- testDmRegions(makeDGE(damsel_counts_a, min.samples = 2), gatc_regions)
+damsel_fp %>% group_by(meth_status) %>% summarise(n=n())
+```
+```{r}
+21398/(21398+129274)
+```
+
+```{r}
+nrow(damsel_fp)
+damsel_dm <- readRDS("../output/damsel_dm.rds")
+damsel_dm %>% group_by(meth_status) %>% summarise(n=n())
+```
+
+## Vissers
+```{r}
+vissers_fp <- test_vissers_dm(damsel_counts_a)
+vissers_fp %>% group_by(significant) %>% summarise(n=n())
+```
+
+* both identify significant results
+* we suspect this is because the significant difference in library size between the replicates creates significance
+
+* check for peaks
+```{r}
+nrow(identifyPeaks(damsel_fp))
+```
+
+
+```{r}
+nrow(test_vissers_peaks(damsel_counts_a))
+```
+- 186 peaks
+
+# Or ...
+* D1: Dam1
+* F1: Sd2
+* D2: Dam2
+* F2: Sd1
+
+```{r}
+damsel_counts_a <- damsel_counts[,c(1:6,7,10,9,8)]
+head(damsel_counts_a)
+```
+
+## Damsel
+```{r}
+damsel_fp <- testDmRegions(makeDGE(damsel_counts_a, min.samples = 2), gatc_regions)
+damsel_fp %>% group_by(meth_status) %>% summarise(n=n())
+```
+* no significance identified
+
+## Vissers
+```{r}
+vissers_fp <- test_vissers_dm(damsel_counts_a)
+vissers_fp %>% group_by(significant) %>% summarise(n=n())
+```
+* significance identified
+
+```{r}
+nrow(test_vissers_peaks(damsel_counts_a))
+```
+* more peaks than Damsel identifies the other way around
+
