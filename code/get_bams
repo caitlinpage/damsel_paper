@@ -1,0 +1,20 @@
+
+
+#'BASH
+wget -nc
+ftp::ftp.sra.ebo.ac.uk/vol1/fastq/SRR794/009/SRR7948879/SRR7948870_2.fastq.gz
+
+
+load R
+load module Rsubread
+buildindex(basename = "dros_ref", reference = "../damid/data/Drosophila_melanogaster.BDGP6.32.dna.toplevel.fa")
+
+align(index = "dros_ref", readfile1 = "path_to_dam_2_or_sd_2/SRR7948877.fastq")
+
+align(index = "dros_ref", readfile1 = "path_to_dam1_or_sd1/SRR7948872_1.fastq.gz", readfile2 = "path_to_dam1_or_sd1/SRR7948872_2.fastq.gz")
+
+load module samtools
+
+samtools sort SRR7948879_1.BAM -o nf_2_SRR7948879_1.BAM
+
+samtools index nf_2_SRR7948879_1.BAM -o nf_2_SRR7948879_1.BAM.bai
