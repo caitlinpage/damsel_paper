@@ -3,6 +3,8 @@ title: "run-Damsel"
 author: "caitlinpage"
 date: "2024-08-16"
 output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
 ---
 
 ## Introduction
@@ -26,7 +28,7 @@ gatc_regions <- gatc_regions_and_sites$regions
 
 
 ```{r}
-damsel_counts <- readRDS("../data/damsel_counts.rds")
+damsel_counts <- rbind(readRDS("../data/damsel_counts_a.rds"), readRDS("../data/damsel_counts_b.rds"))
 head(damsel_counts)
 ```
 
@@ -42,10 +44,12 @@ head(damsel_dm)
 ```{r}
 damsel_peaks <- identifyPeaks(damsel_dm)
 head(damsel_peaks)
+nrow(damsel_peaks)
 ```
 ```{r}
-txdb <- TxDb.Dmelanogaster.UCSC.dm6.ensGene::TxDb.Dmelanogaster.UCSC.dm6.ensGene
+txdb <- TxDb.Dmelanogaster.UCSC.dm6.ensGene
 genes <- collateGenes(genes = txdb, regions = gatc_regions, org.Db = org.Dm.eg.db)
+genes
 ```
 
 ```{r}
@@ -55,13 +59,20 @@ damsel_genes <- annotatePeaksGenes(damsel_peaks, genes, gatc_regions)
 
 # Figure 1
 ```{r}
-plotWrap(
-    id = damsel_peaks[1, ]$peak_id,
-    counts.df = damsel_counts,
-    dm_results.df = damsel_dm,
-    peaks.df = damsel_peaks,
-    gatc_sites.df = gatc_regions_and_sites$sites,
-    genes.df = damsel_genes, txdb = txdb
-)
+damsel_peaks[1,]
 ```
+
+```{r}
+plotCounts(damsel_counts,
+     seqnames = "chr2R",
+     start_region = 23076454-500,
+     end_region = 23079441+500,
+     log2_scale = FALSE
+ ) +
+  geom_dm(damsel_dm) +
+  geom_peak(damsel_peaks) +
+  geom_gatc(gatc_regions_and_sites$sites) +
+  geom_genes_tx(genes, txdb)
+```
+
 

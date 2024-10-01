@@ -4,7 +4,7 @@ author: "caitlinpage"
 date: "2024-08-27"
 output: workflowr::wflow_html
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ## Introduction
@@ -20,7 +20,7 @@ library(BSgenome.Dmelanogaster.UCSC.dm6)
 ```
 ```{r}
 gatc_regions <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions
-damsel_counts <- readRDS("../data/damsel_counts.rds")
+damsel_counts <- rbind(readRDS("../data/damsel_counts_a.rds"), readRDS("../data/damsel_counts_b.rds"))
 ```
 
 ```{r}
@@ -52,7 +52,14 @@ write.table(keep, file='../output/keep', quote=F, col.names = FALSE)
 ```
 
 ```{r}
-vissers_peaks <- readRDS("../output/vissers_peaks.rds")
+vissers_peaks <- system2("python3", args=c("../code/call_peaks.py",
+        "../output/keep", "../output/lrt_sd.txt", ">",
+        "../output/vissers_peaks.txt"))
+vissers_peaks <- read.table("../output/vissers_peaks.txt")
+```
+
+```{r}
+#vissers_peaks <- readRDS("../output/vissers_peaks.rds")
 names(vissers_peaks) <- c('chr', 's', 'e', "tags", 'pen', 'aveLogFC', 'sig')
 vissers_peaks <- vissers_peaks %>% mutate(big = ifelse(tags > 2 | pen == 1, TRUE, FALSE))
 ```
@@ -63,7 +70,8 @@ head(vissers_peaks)
 # vissers peaks must be modified
 
 ```{r}
-names(vissers_peaks) <- c('seqnames', 'start', 'end', "tags", 'pen', 'aveLogFC', 'sig')
+names(vissers_peaks) <- c('seqnames', 'start', 'end', "tags", 'pen', 'aveLogFC', 'sig', "big")
+vissers_peaks
 ```
 * chromosome names are missing
 * add manually - assuming that chromosomes remain in order - 2L, 2R, 3L, 3R, 4, etc
@@ -73,14 +81,14 @@ names(vissers_peaks) <- c('seqnames', 'start', 'end', "tags", 'pen', 'aveLogFC',
 * how many peaks per chromosome?
 ```{r}
 peaks_per_chr <- vissers_peaks %>% 
-  mutate(end_che = ifelse(seqnames > lead(seqnames), TRUE, NA), 
+  mutate(end_chr = ifelse(start > lead(start), TRUE, NA), 
          row_num = 1:nrow(.), 
          end_chr = ifelse(row_num == nrow(.), TRUE, end_chr),
          end_pos = ifelse(end_chr == TRUE, row_num, NA)) %>% 
   fill(end_pos, .direction = "up") %>% 
   distinct(end_pos) %>% 
   mutate(num_per_chr = end_pos - lag(end_pos), 
-         num_per_chrc = ifelse(is.na(num_per_chr), end_pos, num_per_chr)) %<%
+         num_per_chr = ifelse(is.na(num_per_chr), end_pos, num_per_chr)) %>%
   .$num_per_chr
 peaks_per_chr
 ```
