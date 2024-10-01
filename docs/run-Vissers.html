@@ -1,0 +1,3348 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="caitlinpage" />
+
+<meta name="date" content="2024-08-27" />
+
+<title>run-Vissers</title>
+
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">damsel_paper</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/caitlinpage/damsel_paper">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">run-Vissers</h1>
+<h4 class="author">caitlinpage</h4>
+<h4 class="date">2024-08-27</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2024-10-01
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>damsel_paper/analysis/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240816code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240816)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240816code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240816)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree026678f25cee6036b68584ee0df58cb99f7e0f0btargetblank026678fa">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/caitlinpage/damsel_paper/tree/026678f25cee6036b68584ee0df58cb99f7e0f0b" target="_blank">026678f</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree026678f25cee6036b68584ee0df58cb99f7e0f0btargetblank026678fa"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/caitlinpage/damsel_paper/tree/026678f25cee6036b68584ee0df58cb99f7e0f0b" target="_blank">026678f</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/.DS_Store
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  data/damsel_counts.rds
+    Untracked:  data/damsel_counts_a.rds
+    Untracked:  data/damsel_counts_b.rds
+    Untracked:  data/sd_1_SRR794884-vs-Dam.kde-norm.gatc-FDR0.01.peaks.gff
+    Untracked:  data/sd_2_SRR7948877-vs-Dam.kde-norm.gatc-FDR0.01.peaks.gff
+    Untracked:  data/txdb_genes.rds
+    Untracked:  output/damsel_dm.rds
+    Untracked:  output/damsel_genes.rds
+    Untracked:  output/damsel_peaks.rds
+    Untracked:  output/fp_vissers_peaks.txt
+    Untracked:  output/keep
+    Untracked:  output/lrt_sd.txt
+    Untracked:  output/marshall_peaks.rds
+    Untracked:  output/peaks.txt
+    Untracked:  output/vissers_dm.rds
+    Untracked:  output/vissers_peaks.rds
+    Untracked:  output/vissers_peaks.txt
+    Untracked:  output/vissers_peaks_mod.rds
+    Untracked:  renv/.gitignore
+
+Unstaged changes:
+    Modified:   analysis/compare-Damsel-Vissers.Rmd
+    Modified:   analysis/fp-test.Rmd
+    Modified:   code/run-Damsel.R
+    Modified:   code/run-Vissers.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/run-Vissers.Rmd</code>) and HTML
+(<code>docs/run-Vissers.html</code>) files. If you’ve configured a
+remote Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/026678f25cee6036b68584ee0df58cb99f7e0f0b/analysis/run-Vissers.Rmd" target="_blank">026678f</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+wflow_publish(c("analysis/run-Damsel.Rmd", "analysis/run-Vissers.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/08944f855b1bf74575277f2ac768ae846ded73b7/analysis/run-Vissers.Rmd" target="_blank">08944f8</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+initial commit analysis
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<pre class="r"><code>library(Damsel)
+library(plyranges)</code></pre>
+<pre><code>Loading required package: BiocGenerics</code></pre>
+<pre><code>
+Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:stats&#39;:
+
+    IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    anyDuplicated, aperm, append, as.data.frame, basename, cbind,
+    colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,
+    get, grep, grepl, intersect, is.unsorted, lapply, Map, mapply,
+    match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+    Position, rank, rbind, Reduce, rownames, sapply, setdiff, table,
+    tapply, union, unique, unsplit, which.max, which.min</code></pre>
+<pre><code>Loading required package: IRanges</code></pre>
+<pre><code>Warning: package &#39;IRanges&#39; was built under R version 4.4.1</code></pre>
+<pre><code>Loading required package: S4Vectors</code></pre>
+<pre><code>Warning: package &#39;S4Vectors&#39; was built under R version 4.4.1</code></pre>
+<pre><code>Loading required package: stats4</code></pre>
+<pre><code>
+Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:utils&#39;:
+
+    findMatches</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    expand.grid, I, unname</code></pre>
+<pre><code>Loading required package: GenomicRanges</code></pre>
+<pre><code>Loading required package: GenomeInfoDb</code></pre>
+<pre><code>
+Attaching package: &#39;plyranges&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:IRanges&#39;:
+
+    slice</code></pre>
+<pre><code>The following object is masked from &#39;package:stats&#39;:
+
+    filter</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>
+Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:plyranges&#39;:
+
+    between, n, n_distinct</code></pre>
+<pre><code>The following objects are masked from &#39;package:GenomicRanges&#39;:
+
+    intersect, setdiff, union</code></pre>
+<pre><code>The following object is masked from &#39;package:GenomeInfoDb&#39;:
+
+    intersect</code></pre>
+<pre><code>The following objects are masked from &#39;package:IRanges&#39;:
+
+    collapse, desc, intersect, setdiff, slice, union</code></pre>
+<pre><code>The following objects are masked from &#39;package:S4Vectors&#39;:
+
+    first, intersect, rename, setdiff, setequal, union</code></pre>
+<pre><code>The following objects are masked from &#39;package:BiocGenerics&#39;:
+
+    combine, intersect, setdiff, union</code></pre>
+<pre><code>The following objects are masked from &#39;package:stats&#39;:
+
+    filter, lag</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyr)</code></pre>
+<pre><code>
+Attaching package: &#39;tidyr&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:S4Vectors&#39;:
+
+    expand</code></pre>
+<pre class="r"><code>library(edgeR)</code></pre>
+<pre><code>Warning: package &#39;edgeR&#39; was built under R version 4.4.1</code></pre>
+<pre><code>Loading required package: limma</code></pre>
+<pre><code>Warning: package &#39;limma&#39; was built under R version 4.4.1</code></pre>
+<pre><code>
+Attaching package: &#39;limma&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:BiocGenerics&#39;:
+
+    plotMA</code></pre>
+<pre class="r"><code>library(ggplot2)
+
+library(BSgenome.Dmelanogaster.UCSC.dm6)</code></pre>
+<pre><code>Loading required package: BSgenome</code></pre>
+<pre><code>Loading required package: Biostrings</code></pre>
+<pre><code>Loading required package: XVector</code></pre>
+<pre><code>
+Attaching package: &#39;Biostrings&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:base&#39;:
+
+    strsplit</code></pre>
+<pre><code>Loading required package: BiocIO</code></pre>
+<pre><code>Loading required package: rtracklayer</code></pre>
+<pre><code>
+Attaching package: &#39;rtracklayer&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:BiocIO&#39;:
+
+    FileForFormat</code></pre>
+<pre class="r"><code>gatc_regions &lt;- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions</code></pre>
+<pre><code>Warning in .local(x, row.names, optional, ...): &#39;optional&#39; argument was ignored
+Warning in .local(x, row.names, optional, ...): &#39;optional&#39; argument was ignored
+Warning in .local(x, row.names, optional, ...): &#39;optional&#39; argument was ignored
+Warning in .local(x, row.names, optional, ...): &#39;optional&#39; argument was ignored
+Warning in .local(x, row.names, optional, ...): &#39;optional&#39; argument was ignored
+Warning in .local(x, row.names, optional, ...): &#39;optional&#39; argument was ignored
+Warning in .local(x, row.names, optional, ...): &#39;optional&#39; argument was ignored</code></pre>
+<pre><code>Warning in GenomeInfoDb::renameSeqlevels(x = df_, value = newStyle): invalid
+seqlevels &#39;chrM&#39; ignored</code></pre>
+<pre class="r"><code>damsel_counts &lt;- rbind(readRDS(&quot;../data/damsel_counts_a.rds&quot;), readRDS(&quot;../data/damsel_counts_b.rds&quot;))</code></pre>
+<pre class="r"><code>head(damsel_counts)</code></pre>
+<pre><code>           Position seqnames start end width strand dam_1_SRR7948872.BAM
+chr2L-82   chr2L-82    chr2L    82 230   149      *                  1.0
+chr2L-231 chr2L-231    chr2L   231 371   141      *                  1.5
+chr2L-372 chr2L-372    chr2L   372 539   168      *                  2.5
+chr2L-540 chr2L-540    chr2L   540 688   149      *                  2.0
+chr2L-689 chr2L-689    chr2L   689 829   141      *                  0.0
+chr2L-830 chr2L-830    chr2L   830 997   168      *                  0.0
+          sd_1_SRR7948874.BAM dam_2_SRR7948876.BAM sd_2_SRR7948877.BAM
+chr2L-82                 0.33                  0.0                 0.0
+chr2L-231                5.67                 87.0                57.5
+chr2L-372                6.17                 88.0                58.5
+chr2L-540                4.83                  0.0                 0.0
+chr2L-689                0.00                  0.5                 0.5
+chr2L-830                1.33                  4.5                 3.5</code></pre>
+<pre class="r"><code>matrix &lt;- as.matrix(damsel_counts[, grepl(&quot;bam&quot;, colnames(damsel_counts), ignore.case = TRUE)])
+rownames(matrix) &lt;- damsel_counts$Position
+group = c(&quot;Dam&quot;, &quot;Sd&quot;, &quot;Dam&quot;, &quot;Sd&quot;)
+design = model.matrix(~group)
+y = DGEList(matrix, group = group)
+keep &lt;- rowSums(cpm(y)&gt;=0.5) &gt;= 2
+y = y[keep, ,keep.lib.sizes=FALSE]
+y = calcNormFactors(y)
+y = estimateDisp(y, robust = T, design = design)
+
+fit = glmFit(y, design = design)
+lrt = glmLRT(fit, coef=2)
+de.Sd &lt;- decideTestsDGE(lrt, lfc = 1)</code></pre>
+<pre><code>Warning: &#39;decideTestsDGE&#39; is deprecated.
+Use &#39;decideTests&#39; instead.
+See help(&quot;Deprecated&quot;)</code></pre>
+<pre class="r"><code>lrt$table$significant &lt;- de.Sd
+
+vissers_dm &lt;- data.frame(lrt$table)</code></pre>
+<pre class="r"><code>write.table(vissers_dm, file=&#39;../output/lrt_sd.txt&#39;, quote=F)
+write.table(keep, file=&#39;../output/keep&#39;, quote=F, col.names = FALSE)</code></pre>
+<pre class="r"><code>vissers_peaks &lt;- system2(&quot;python3&quot;, args=c(&quot;../code/call_peaks.py&quot;,
+        &quot;../output/keep&quot;, &quot;../output/lrt_sd.txt&quot;, &quot;&gt;&quot;,
+        &quot;../output/vissers_peaks.txt&quot;))
+vissers_peaks &lt;- read.table(&quot;../output/vissers_peaks.txt&quot;)</code></pre>
+<pre class="r"><code>#vissers_peaks &lt;- readRDS(&quot;../output/vissers_peaks.rds&quot;)
+names(vissers_peaks) &lt;- c(&#39;chr&#39;, &#39;s&#39;, &#39;e&#39;, &quot;tags&quot;, &#39;pen&#39;, &#39;aveLogFC&#39;, &#39;sig&#39;)
+vissers_peaks &lt;- vissers_peaks %&gt;% mutate(big = ifelse(tags &gt; 2 | pen == 1, TRUE, FALSE))</code></pre>
+<pre class="r"><code>head(vissers_peaks)</code></pre>
+<pre><code>    chr     s     e tags      pen aveLogFC sig   big
+1 17450 17450 21359    6 1.000000 3.888205   5  TRUE
+2 66423 66423 67818    2 1.000000 2.546664   2  TRUE
+3 71991 71991 76558    4 1.000000 2.635863   4  TRUE
+4 93378 93378 95515    4 1.000000 2.727970   4  TRUE
+5 95762 95762 96492    2 0.666667 2.039309   2 FALSE
+6 98317 98317 99667    4 1.000000 1.765455   2  TRUE</code></pre>
+</div>
+<div id="vissers-peaks-must-be-modified" class="section level1">
+<h1>vissers peaks must be modified</h1>
+<pre class="r"><code>names(vissers_peaks) &lt;- c(&#39;seqnames&#39;, &#39;start&#39;, &#39;end&#39;, &quot;tags&quot;, &#39;pen&#39;, &#39;aveLogFC&#39;, &#39;sig&#39;, &quot;big&quot;)
+vissers_peaks</code></pre>
+<pre><code>     seqnames    start      end tags      pen aveLogFC sig   big
+1       17450    17450    21359    6 1.000000 3.888205   5  TRUE
+2       66423    66423    67818    2 1.000000 2.546664   2  TRUE
+3       71991    71991    76558    4 1.000000 2.635863   4  TRUE
+4       93378    93378    95515    4 1.000000 2.727970   4  TRUE
+5       95762    95762    96492    2 0.666667 2.039309   2 FALSE
+6       98317    98317    99667    4 1.000000 1.765455   2  TRUE
+7      128082   128082   129234    2 1.000000 2.764402   2  TRUE
+8      153859   153859   159412   14 1.000000 3.293462  14  TRUE
+9      162541   162541   165173    2 1.000000 2.203177   2  TRUE
+10     174384   174384   180712   10 1.000000 2.707416   7  TRUE
+11     184870   184870   185704    2 1.000000 2.170039   2  TRUE
+12     218515   218515   223187    4 1.000000 2.657696   3  TRUE
+13     244817   244817   246651    2 1.000000 2.581034   2  TRUE
+14     284481   284481   287194    4 1.000000 1.780104   3  TRUE
+15     341610   341610   342612    2 1.000000 1.495494   0  TRUE
+16     412876   412876   413635    2 1.000000 2.454228   1  TRUE
+17     415203   415203   416303    2 1.000000 1.423234   0  TRUE
+18     429799   429799   431968    8 1.000000 4.186476   8  TRUE
+19     454248   454248   456138    2 1.000000 1.853537   1  TRUE
+20     548926   548926   550158    2 1.000000 2.193769   1  TRUE
+21     827215   827215   827854    2 1.000000 1.561627   0  TRUE
+22     839897   839897   840684    2 1.000000 2.414131   1  TRUE
+23     849931   849931   850538    2 1.000000 2.590091   2  TRUE
+24     865263   865263   866255    2 1.000000 2.304831   2  TRUE
+25     961779   961779   963822    2 1.000000 2.361434   2  TRUE
+26     971691   971691   975671    2 1.000000 2.587682   2  TRUE
+27    1005638  1005638  1007530    4 1.000000 1.616377   2  TRUE
+28    1054278  1054278  1056004    6 1.000000 2.889476   5  TRUE
+29    1058318  1058318  1059963    2 1.000000 1.656522   0  TRUE
+30    1062042  1062042  1063912    4 1.000000 2.606955   4  TRUE
+31    1066997  1066997  1069346    4 1.000000 1.465648   0  TRUE
+32    1235573  1235573  1236711    2 1.000000 1.689239   1  TRUE
+33    1243874  1243874  1248457    4 1.000000 2.091626   3  TRUE
+34    1250770  1250770  1257250   10 1.000000 2.805777  10  TRUE
+35    1272898  1272898  1274225    2 1.000000 1.447579   1  TRUE
+36    1389584  1389584  1391298    2 1.000000 2.185734   2  TRUE
+37    1394397  1394397  1397198    4 1.000000 2.159060   2  TRUE
+38    1403987  1403987  1405382    4 1.000000 2.046401   2  TRUE
+39    1419401  1419401  1420669    4 1.000000 2.534797   4  TRUE
+40    1427775  1427775  1431909    6 1.000000 1.771697   3  TRUE
+41    1434265  1434265  1441334   14 1.000000 1.884728  11  TRUE
+42    1460766  1460766  1462063    4 1.000000 2.214585   2  TRUE
+43    1465660  1465660  1470035    8 1.000000 2.062357   8  TRUE
+44    1471893  1471893  1476640    6 1.000000 2.122235   5  TRUE
+45    1644525  1644525  1651734    8 1.000000 2.345860   6  TRUE
+46    1667630  1667630  1671071   10 1.000000 2.829469  10  TRUE
+47    1687120  1687120  1688249    2 1.000000 1.677102   2  TRUE
+48    1727558  1727558  1728462    2 1.000000 2.137160   2  TRUE
+49    1885491  1885491  1886435    2 1.000000 1.927100   1  TRUE
+50    1947546  1947546  1950512    6 1.000000 2.619867   6  TRUE
+51    1953178  1953178  1954375    2 1.000000 2.329794   1  TRUE
+52    1961005  1961005  1974362   24 1.000000 2.618727  23  TRUE
+53    2161261  2161261  2162272    4 1.000000 1.949671   3  TRUE
+54    2195521  2195521  2197046    2 1.000000 2.674178   2  TRUE
+55    2219916  2219916  2222294    2 1.000000 1.531863   1  TRUE
+56    2362836  2362836  2365681    4 1.000000 2.105246   4  TRUE
+57    2381318  2381318  2383495    6 1.000000 2.685224   5  TRUE
+58    2386215  2386215  2394503   10 1.000000 2.139270   8  TRUE
+59    2576191  2576191  2578197    6 1.000000 3.632408   6  TRUE
+60    2636132  2636132  2639439    4 1.000000 1.958060   4  TRUE
+61    2692975  2692975  2695855    4 1.000000 2.401805   3  TRUE
+62    2750205  2750205  2752616    4 1.000000 2.392874   4  TRUE
+63    2752701  2752701  2756864    6 1.000000 2.479492   5  TRUE
+64    2765376  2765376  2766752    4 1.000000 2.804281   4  TRUE
+65    2769487  2769487  2770564    4 1.000000 3.327058   4  TRUE
+66    2884472  2884472  2888751    6 1.000000 2.575758   6  TRUE
+67    2891230  2891230  2898982    8 1.000000 2.522635   7  TRUE
+68    2999302  2999302  3000289    2 1.000000 2.102168   2  TRUE
+69    3038696  3038696  3039501    2 1.000000 2.205700   1  TRUE
+70    3151946  3151946  3153338    2 1.000000 1.710466   2  TRUE
+71    3423607  3423607  3424972    2 1.000000 1.984895   2  TRUE
+72    3449917  3449917  3450445    2 1.000000 2.853132   2  TRUE
+73    3602046  3602046  3603396    2 1.000000 2.288242   2  TRUE
+74    3655415  3655415  3659779    8 1.000000 2.944126   8  TRUE
+75    3672454  3672454  3674997    4 1.000000 1.870747   3  TRUE
+76    3681376  3681376  3685945    4 1.000000 1.839272   3  TRUE
+77    3712345  3712345  3712889    2 1.000000 2.474752   2  TRUE
+78    3804748  3804748  3807065    4 1.000000 3.359631   4  TRUE
+79    3815895  3815895  3819393    4 1.000000 2.517560   3  TRUE
+80    3825187  3825187  3826062    2 1.000000 1.581810   0  TRUE
+81    3839670  3839670  3842232    4 1.000000 2.079557   3  TRUE
+82    3843881  3843881  3845318    2 1.000000 1.960554   2  TRUE
+83    3871296  3871296  3872026    2 0.500000 2.433507   1 FALSE
+84    3973642  3973642  3982252    6 1.000000 1.897895   5  TRUE
+85    4119094  4119094  4120962    4 1.000000 2.074174   4  TRUE
+86    4130598  4130598  4133253    8 1.000000 2.632599   7  TRUE
+87    4255166  4255166  4255678    2 1.000000 1.548697   1  TRUE
+88    4325015  4325015  4326580    2 1.000000 2.269388   1  TRUE
+89    4334021  4334021  4336317    2 1.000000 2.248263   2  TRUE
+90    4348071  4348071  4352902   10 1.000000 2.091327   8  TRUE
+91    4355539  4355539  4357806    4 1.000000 2.005192   4  TRUE
+92    4370298  4370298  4374513    6 1.000000 2.059106   4  TRUE
+93    4381847  4381847  4382276    2 1.000000 1.857429   1  TRUE
+94    4810290  4810290  4811557    2 1.000000 2.185987   2  TRUE
+95    4885440  4885440  4886016    2 0.666667 2.084708   2 FALSE
+96    5010524  5010524  5011505    2 1.000000 2.174446   1  TRUE
+97    5018394  5018394  5020382    2 1.000000 1.542248   0  TRUE
+98    5037416  5037416  5038658    2 1.000000 1.774152   2  TRUE
+99    5052215  5052215  5053454    2 1.000000 2.064249   1  TRUE
+100   5095885  5095885  5097126    2 1.000000 1.982954   2  TRUE
+101   5239343  5239343  5240643    2 1.000000 2.002171   1  TRUE
+102   5287657  5287657  5288610    2 1.000000 2.661487   1  TRUE
+103   5290015  5290015  5294292    6 1.000000 3.763164   5  TRUE
+104   5305796  5305796  5307437    2 1.000000 3.011279   2  TRUE
+105   5429900  5429900  5434209    6 1.000000 1.852624   5  TRUE
+106   5752480  5752480  5754369    2 1.000000 1.617146   0  TRUE
+107   5975611  5975611  5981057   10 1.000000 2.325676   9  TRUE
+108   5997097  5997097  5999119    4 1.000000 2.283502   4  TRUE
+109   6000890  6000890  6001967    2 1.000000 2.002348   0  TRUE
+110   6036807  6036807  6038385    4 1.000000 3.582710   4  TRUE
+111   6076605  6076605  6082732   12 1.000000 2.634917  12  TRUE
+112   6084494  6084494  6090291    8 1.000000 3.231120   8  TRUE
+113   6103500  6103500  6108864    8 1.000000 2.036111   6  TRUE
+114   6178217  6178217  6178480    2 1.000000 1.617583   0  TRUE
+115   6182658  6182658  6185866    8 1.000000 2.127340   6  TRUE
+116   6203604  6203604  6206487    8 1.000000 2.403160   8  TRUE
+117   6208427  6208427  6211591    2 1.000000 1.443512   0  TRUE
+118   6213415  6213415  6215417    4 1.000000 2.207298   3  TRUE
+119   6233326  6233326  6243603   12 1.000000 2.173921   8  TRUE
+120   6314409  6314409  6319003    2 1.000000 1.707554   2  TRUE
+121   6337116  6337116  6338938    2 1.000000 3.236450   2  TRUE
+122   6539534  6539534  6541146    4 1.000000 2.291928   4  TRUE
+123   6543981  6543981  6545186    2 1.000000 2.077318   2  TRUE
+124   6546436  6546436  6550700   10 1.000000 2.455224   9  TRUE
+125   6611520  6611520  6612549    2 1.000000 3.444271   2  TRUE
+126   6786848  6786848  6788926    2 1.000000 1.562559   0  TRUE
+127   6791754  6791754  6793242    4 1.000000 2.699613   3  TRUE
+128   6794965  6794965  6796037    2 1.000000 2.044484   2  TRUE
+129   6813625  6813625  6815312    2 1.000000 1.383645   0  TRUE
+130   6841747  6841747  6843314    2 1.000000 1.892039   2  TRUE
+131   6852190  6852190  6853612    2 1.000000 3.317773   2  TRUE
+132   6912799  6912799  6914662    2 1.000000 3.096580   2  TRUE
+133   6918137  6918137  6922498    2 1.000000 2.842440   2  TRUE
+134   6955810  6955810  6956360    2 1.000000 2.647441   1  TRUE
+135   6966742  6966742  6968742    2 1.000000 2.580333   2  TRUE
+136   7022782  7022782  7023861    4 1.000000 2.295130   3  TRUE
+137   7026017  7026017  7028278    4 1.000000 2.556502   3  TRUE
+138   7042276  7042276  7043499    2 1.000000 3.502899   1  TRUE
+139   7265635  7265635  7266502    2 1.000000 1.826932   1  TRUE
+140   7268935  7268935  7273324   10 1.000000 2.881090  10  TRUE
+141   7387415  7387415  7389879    8 1.000000 3.476423   7  TRUE
+142   7421899  7421899  7427291   10 1.000000 2.521017   8  TRUE
+143   7480235  7480235  7480871    2 0.666667 1.772295   0 FALSE
+144   7494525  7494525  7495639    2 1.000000 3.235146   2  TRUE
+145   7542976  7542976  7544250    4 1.000000 2.667079   3  TRUE
+146   7591033  7591033  7593785    8 1.000000 3.146072   7  TRUE
+147   7636122  7636122  7639068    8 1.000000 2.081855   5  TRUE
+148   7809097  7809097  7810606    2 1.000000 3.136458   2  TRUE
+149   7922744  7922744  7924246    2 1.000000 1.930114   1  TRUE
+150   7946682  7946682  7950189    4 1.000000 2.426696   4  TRUE
+151   7991781  7991781  7994123    4 1.000000 2.189142   3  TRUE
+152   8030157  8030157  8030447    2 1.000000 3.620322   2  TRUE
+153   8081135  8081135  8086848    4 1.000000 3.108266   4  TRUE
+154   8211272  8211272  8212523    2 1.000000 2.346605   2  TRUE
+155   8212948  8212948  8214626    6 1.000000 1.994204   4  TRUE
+156   8300916  8300916  8304980   12 1.000000 3.473635  11  TRUE
+157   8363913  8363913  8367727    6 1.000000 3.329240   6  TRUE
+158   8382543  8382543  8383531    4 1.000000 2.145963   3  TRUE
+159   8403289  8403289  8404030    2 0.666667 4.278901   2 FALSE
+160   8414615  8414615  8417868    8 1.000000 2.680360   7  TRUE
+161   8422765  8422765  8426730    6 1.000000 2.990551   6  TRUE
+162   8436914  8436914  8438221    6 1.000000 2.927576   6  TRUE
+163   8515380  8515380  8516045    2 1.000000 2.040472   2  TRUE
+164   8516985  8516985  8517822    2 1.000000 3.228556   2  TRUE
+165   8554227  8554227  8557794    6 1.000000 2.256082   5  TRUE
+166   8582155  8582155  8585362    4 1.000000 2.051612   3  TRUE
+167   8603568  8603568  8606117    4 1.000000 1.947372   3  TRUE
+168   8611431  8611431  8614493    6 1.000000 1.636655   4  TRUE
+169   8619576  8619576  8623414    2 1.000000 1.624442   1  TRUE
+170   8727568  8727568  8728988    2 1.000000 2.646529   1  TRUE
+171   8749433  8749433  8753077    6 1.000000 2.259715   4  TRUE
+172   8757282  8757282  8762343    4 1.000000 1.863833   2  TRUE
+173   8785971  8785971  8790924    4 1.000000 2.050757   3  TRUE
+174   8800406  8800406  8802571    2 1.000000 1.549873   0  TRUE
+175   8806379  8806379  8809708   10 1.000000 2.275693   7  TRUE
+176   8810103  8810103  8811823    6 1.000000 3.110615   6  TRUE
+177   8816868  8816868  8817448    2 0.500000 1.808528   1 FALSE
+178   8817897  8817897  8831174   20 1.000000 2.086996  18  TRUE
+179   8831635  8831635  8832711    2 1.000000 1.933078   2  TRUE
+180   8836513  8836513  8840466    4 1.000000 1.966396   3  TRUE
+181   8843473  8843473  8846583    6 1.000000 2.277294   5  TRUE
+182   8867537  8867537  8872039   12 1.000000 2.200847   8  TRUE
+183   8963885  8963885  8964374    2 0.666667 2.361660   2 FALSE
+184   9120866  9120866  9126692    4 1.000000 2.152223   2  TRUE
+185   9152054  9152054  9154822    2 1.000000 1.761876   1  TRUE
+186   9166094  9166094  9169664    4 1.000000 1.900728   4  TRUE
+187   9174242  9174242  9177160    4 1.000000 2.502346   3  TRUE
+188   9222784  9222784  9224218    2 1.000000 2.597313   1  TRUE
+189   9331287  9331287  9338303   20 1.000000 2.534560  16  TRUE
+190   9339527  9339527  9340213    2 1.000000 1.487125   1  TRUE
+191   9438330  9438330  9445088    8 1.000000 2.170974   7  TRUE
+192   9448461  9448461  9460435   26 1.000000 2.796999  23  TRUE
+193   9494345  9494345  9494622    2 1.000000 1.899382   2  TRUE
+194   9495232  9495232  9497058    2 1.000000 1.885779   1  TRUE
+195   9582648  9582648  9583063    2 1.000000 2.716357   2  TRUE
+196   9585007  9585007  9588575   12 1.000000 2.691247  12  TRUE
+197   9596127  9596127  9596352    2 1.000000 2.865425   2  TRUE
+198   9597964  9597964  9598059    2 1.000000 1.700979   1  TRUE
+199   9607502  9607502  9609201    2 1.000000 2.504041   2  TRUE
+200   9789109  9789109  9791499    4 1.000000 1.607304   2  TRUE
+201   9952660  9952660  9953306    2 1.000000 2.157247   1  TRUE
+202   9961777  9961777  9963009    2 1.000000 1.945691   2  TRUE
+203   9971361  9971361  9973737    4 1.000000 1.507271   2  TRUE
+204  10002577 10002577 10004852    6 1.000000 2.565959   5  TRUE
+205  10209613 10209613 10210679    2 1.000000 2.304217   2  TRUE
+206  10230356 10230356 10232830    4 1.000000 2.535622   4  TRUE
+207  10250491 10250491 10256236   12 1.000000 2.320704  10  TRUE
+208  10259148 10259148 10262703    4 1.000000 1.777922   3  TRUE
+209  10266292 10266292 10270501    8 1.000000 2.658192   8  TRUE
+210  10352796 10352796 10353490    2 1.000000 1.760219   2  TRUE
+211  10356913 10356913 10357346    2 1.000000 1.710695   1  TRUE
+212  10412844 10412844 10414234    2 1.000000 1.513639   1  TRUE
+213  10429110 10429110 10430265    6 1.000000 1.979824   5  TRUE
+214  10437643 10437643 10439016    2 1.000000 3.692282   2  TRUE
+215  10487129 10487129 10488019    2 1.000000 3.003791   2  TRUE
+216  10488526 10488526 10489450    2 1.000000 5.781193   2  TRUE
+217  10521645 10521645 10525430    4 1.000000 2.050034   2  TRUE
+218  10548298 10548298 10551303    4 1.000000 2.162470   2  TRUE
+219  10569427 10569427 10571081    2 1.000000 1.585527   1  TRUE
+220  10608988 10608988 10614591    6 1.000000 2.803543   6  TRUE
+221  10965731 10965731 10967608    2 1.000000 1.967084   2  TRUE
+222  10986108 10986108 10987355    2 1.000000 1.833698   1  TRUE
+223  11165870 11165870 11166869    2 1.000000 1.967270   2  TRUE
+224  11293085 11293085 11301905   14 1.000000 2.581286  13  TRUE
+225  11305499 11305499 11306292    4 1.000000 3.548224   3  TRUE
+226  11338882 11338882 11341103    2 1.000000 1.602362   1  TRUE
+227  11356816 11356816 11357567    2 1.000000 1.956973   1  TRUE
+228  11376243 11376243 11378238    2 1.000000 1.904164   1  TRUE
+229  11412240 11412240 11414694    4 1.000000 2.240525   4  TRUE
+230  11433011 11433011 11433882    2 1.000000 2.940149   2  TRUE
+231  11469070 11469070 11472433    2 1.000000 1.655735   1  TRUE
+232  11802731 11802731 11808301   12 1.000000 2.003123   9  TRUE
+233  12009540 12009540 12013960    4 1.000000 2.438627   3  TRUE
+234  12038978 12038978 12039954    2 1.000000 1.584068   1  TRUE
+235  12043319 12043319 12045160    4 1.000000 2.844900   3  TRUE
+236  12053119 12053119 12054242    2 1.000000 3.036555   2  TRUE
+237  12054627 12054627 12056705    2 1.000000 2.729192   2  TRUE
+238  12207793 12207793 12208881    2 1.000000 3.207386   1  TRUE
+239  12433858 12433858 12435022    2 1.000000 3.730454   2  TRUE
+240  12482172 12482172 12484712    2 1.000000 2.394695   2  TRUE
+241  12681620 12681620 12683054    2 1.000000 1.620793   0  TRUE
+242  13166041 13166041 13166770    2 1.000000 3.414977   2  TRUE
+243  13204950 13204950 13207423    4 1.000000 3.929998   4  TRUE
+244  13365437 13365437 13368002    4 1.000000 2.227133   4  TRUE
+245  13509575 13509575 13516245   14 1.000000 2.839136  13  TRUE
+246  13575047 13575047 13577572    2 1.000000 2.050875   1  TRUE
+247  13598626 13598626 13599972    2 1.000000 2.130399   0  TRUE
+248  13614916 13614916 13618125    2 1.000000 1.844912   1  TRUE
+249  13634035 13634035 13634468    2 1.000000 1.791852   1  TRUE
+250  13828221 13828221 13829247    2 1.000000 1.868067   1  TRUE
+251  13834511 13834511 13837416    6 1.000000 2.841971   5  TRUE
+252  13850381 13850381 13851628    2 1.000000 2.852977   2  TRUE
+253  13865472 13865472 13865789    2 0.500000 1.958159   2 FALSE
+254  13867794 13867794 13871337    8 1.000000 3.352724   8  TRUE
+255  13872657 13872657 13879010    8 1.000000 2.260617   7  TRUE
+256  13890599 13890599 13893805    4 1.000000 2.711982   4  TRUE
+257  14231514 14231514 14232687    2 1.000000 2.065183   2  TRUE
+258  14358682 14358682 14359513    2 1.000000 1.960149   2  TRUE
+259  14433180 14433180 14435339    2 1.000000 1.674053   1  TRUE
+260  14441648 14441648 14443363    2 1.000000 2.278283   1  TRUE
+261  14570792 14570792 14577862    8 1.000000 2.248052   7  TRUE
+262  14603405 14603405 14603654    2 1.000000 2.851635   2  TRUE
+263  14815152 14815152 14817690    2 1.000000 1.636499   1  TRUE
+264  14873294 14873294 14875005    2 1.000000 1.621850   1  TRUE
+265  15038401 15038401 15040855    4 1.000000 2.835838   3  TRUE
+266  15231349 15231349 15232342    2 1.000000 1.398106   0  TRUE
+267  15313919 15313919 15316977    6 1.000000 3.119627   6  TRUE
+268  15318455 15318455 15319903    2 1.000000 2.739601   2  TRUE
+269  15330778 15330778 15331428    2 1.000000 1.711634   1  TRUE
+270  15332499 15332499 15333504    2 1.000000 1.926850   1  TRUE
+271  15338193 15338193 15339101    2 1.000000 1.871102   1  TRUE
+272  15370392 15370392 15371614    4 1.000000 1.612353   0  TRUE
+273  15426344 15426344 15426608    2 1.000000 3.504074   2  TRUE
+274  15428949 15428949 15442911   40 1.000000 3.085382  37  TRUE
+275  15469745 15469745 15469999    2 1.000000 2.085114   2  TRUE
+276  15478205 15478205 15479069    4 0.666667 2.225206   4  TRUE
+277  15479914 15479914 15483991    8 1.000000 2.897361   8  TRUE
+278  15490061 15490061 15493446    4 1.000000 3.320224   4  TRUE
+279  15499170 15499170 15499907    2 1.000000 3.226351   2  TRUE
+280  15544421 15544421 15548369    2 1.000000 1.693651   0  TRUE
+281  15731086 15731086 15735930   22 1.000000 3.031988  22  TRUE
+282  15737357 15737357 15738460    2 1.000000 1.747893   1  TRUE
+283  15738896 15738896 15740426    6 1.000000 4.267005   6  TRUE
+284  15741877 15741877 15746711   10 1.000000 2.491074  10  TRUE
+285  15781172 15781172 15783037    2 1.000000 2.845115   2  TRUE
+286  16109762 16109762 16112303    2 1.000000 1.911652   1  TRUE
+287  16254213 16254213 16255988    2 1.000000 2.271652   1  TRUE
+288  16268983 16268983 16286288   26 1.000000 2.563066  21  TRUE
+289  16310102 16310102 16310463    2 1.000000 2.540774   2  TRUE
+290  16372275 16372275 16378600    4 1.000000 1.605089   1  TRUE
+291  16398358 16398358 16399951    2 1.000000 2.283674   1  TRUE
+292  16519571 16519571 16521902    6 1.000000 2.351657   6  TRUE
+293  16588006 16588006 16588959    2 1.000000 3.328868   2  TRUE
+294  16673126 16673126 16677939    6 1.000000 2.506423   5  TRUE
+295  16689534 16689534 16692117    2 1.000000 2.029043   1  TRUE
+296  16824331 16824331 16826511    8 1.000000 3.873789   8  TRUE
+297  16885389 16885389 16886416    2 1.000000 1.717192   0  TRUE
+298  17341719 17341719 17342929    2 1.000000 1.668385   0  TRUE
+299  17380670 17380670 17383545    2 1.000000 2.219430   1  TRUE
+300  17410115 17410115 17411979    4 1.000000 2.830370   4  TRUE
+301  17450336 17450336 17452063    2 1.000000 1.872036   1  TRUE
+302  17537168 17537168 17537806    2 1.000000 1.935463   2  TRUE
+303  17560029 17560029 17561758    2 1.000000 3.206599   2  TRUE
+304  17564440 17564440 17565997    4 1.000000 2.291370   4  TRUE
+305  17580735 17580735 17589459   16 1.000000 2.089001  12  TRUE
+306  17719564 17719564 17720682    2 1.000000 2.520849   1  TRUE
+307  17720936 17720936 17723302    2 1.000000 1.709542   1  TRUE
+308  17737898 17737898 17740958    8 1.000000 2.161889   7  TRUE
+309  17742537 17742537 17749854   12 1.000000 2.270260  10  TRUE
+310  17757377 17757377 17760955    2 1.000000 1.882168   1  TRUE
+311  18143122 18143122 18143807    2 0.500000 1.497896   0 FALSE
+312  18145124 18145124 18145883    2 1.000000 2.072010   1  TRUE
+313  18345796 18345796 18350693    2 1.000000 2.591455   1  TRUE
+314  18362003 18362003 18370780   12 1.000000 2.137000   9  TRUE
+315  18483312 18483312 18485267    2 1.000000 2.358111   2  TRUE
+316  18505426 18505426 18507238    2 1.000000 1.644953   1  TRUE
+317  18700159 18700159 18701805    2 1.000000 3.180804   2  TRUE
+318  18704691 18704691 18705279    2 1.000000 1.979643   1  TRUE
+319  18708572 18708572 18709146    2 1.000000 2.279326   1  TRUE
+320  18774775 18774775 18775440    2 0.666667 1.669043   0 FALSE
+321  18782294 18782294 18786929   10 1.000000 3.170652  10  TRUE
+322  18787134 18787134 18787704    2 0.500000 1.609957   1 FALSE
+323  18790373 18790373 18792287    4 1.000000 1.947092   3  TRUE
+324  18801716 18801716 18807222   10 1.000000 2.726611   7  TRUE
+325  18810381 18810381 18811060    4 0.444444 1.821158   3  TRUE
+326  18863002 18863002 18865618    4 1.000000 1.897671   2  TRUE
+327  18882077 18882077 18883932    2 1.000000 1.261530   0  TRUE
+328  18891483 18891483 18894711   10 1.000000 2.355583   8  TRUE
+329  18919695 18919695 18920408    2 1.000000 1.655262   1  TRUE
+330  18922773 18922773 18933588   14 1.000000 2.067403  13  TRUE
+331  18974272 18974272 18975270    2 1.000000 2.521732   2  TRUE
+332  18986264 18986264 18986793    2 1.000000 2.697285   2  TRUE
+333  19013555 19013555 19016495    4 1.000000 2.048974   2  TRUE
+334  19025225 19025225 19026788    2 1.000000 1.759116   2  TRUE
+335  19034624 19034624 19035851    2 1.000000 2.239391   2  TRUE
+336  19050577 19050577 19052104    2 1.000000 1.944241   1  TRUE
+337  19089061 19089061 19090462    6 1.000000 2.008836   4  TRUE
+338  19102824 19102824 19104392    4 1.000000 1.733009   1  TRUE
+339  19133116 19133116 19140322   14 1.000000 3.548027  14  TRUE
+340  19154580 19154580 19164561   14 1.000000 2.839728  13  TRUE
+341  19193721 19193721 19196022    2 1.000000 1.855316   2  TRUE
+342  19223733 19223733 19224698    2 1.000000 1.437626   1  TRUE
+343  19235543 19235543 19236837    2 1.000000 1.983374   2  TRUE
+344  19324997 19324997 19326818    2 1.000000 1.227508   0  TRUE
+345  19361058 19361058 19365349    6 1.000000 3.041040   6  TRUE
+346  19413296 19413296 19414485    2 1.000000 3.864175   2  TRUE
+347  19444385 19444385 19445586    2 1.000000 2.332433   2  TRUE
+348  19458134 19458134 19463717    8 1.000000 2.607735   7  TRUE
+349  19475093 19475093 19483304    6 1.000000 2.837370   6  TRUE
+350  19532140 19532140 19534589    4 1.000000 2.078476   3  TRUE
+351  19568877 19568877 19577938   14 1.000000 3.453417  14  TRUE
+352  19586213 19586213 19587105    2 1.000000 3.255240   2  TRUE
+353  19757934 19757934 19759922    2 1.000000 2.588081   2  TRUE
+354  19771017 19771017 19774002    6 1.000000 2.117462   5  TRUE
+355  19787577 19787577 19791779    4 1.000000 2.540088   4  TRUE
+356  19796282 19796282 19800413    4 1.000000 2.147215   3  TRUE
+357  19807243 19807243 19812672   10 1.000000 2.312267   8  TRUE
+358  19901457 19901457 19902663    2 1.000000 2.161533   2  TRUE
+359  19934345 19934345 19936976    6 1.000000 2.421060   4  TRUE
+360  20091063 20091063 20091979    2 0.666667 1.885208   1 FALSE
+361  20205055 20205055 20205496    2 1.000000 1.801967   1  TRUE
+362  20220201 20220201 20220725    2 1.000000 1.900067   0  TRUE
+363  20416744 20416744 20418241    2 1.000000 2.052490   2  TRUE
+364  20615583 20615583 20616903    4 1.000000 2.330524   4  TRUE
+365  20656740 20656740 20657234    2 1.000000 2.918249   2  TRUE
+366  20734176 20734176 20736322    2 1.000000 1.721808   0  TRUE
+367  20758161 20758161 20761348    6 1.000000 3.394032   6  TRUE
+368  20796093 20796093 20801871    4 1.000000 2.614232   3  TRUE
+369  20822662 20822662 20824228    2 1.000000 2.334370   2  TRUE
+370  20935784 20935784 20937241    2 1.000000 1.717450   1  TRUE
+371  20952297 20952297 20954413    2 1.000000 2.114844   2  TRUE
+372  20996066 20996066 20998723    2 1.000000 1.976994   1  TRUE
+373  21051800 21051800 21053595    4 1.000000 2.328447   4  TRUE
+374  21114995 21114995 21115897    2 1.000000 2.200574   2  TRUE
+375  21167519 21167519 21169758    2 1.000000 2.270328   2  TRUE
+376  21177358 21177358 21180233    4 1.000000 2.813846   4  TRUE
+377  21246903 21246903 21249391    2 1.000000 2.939238   1  TRUE
+378  21309462 21309462 21310845    2 1.000000 2.683915   2  TRUE
+379  21321583 21321583 21325028    4 1.000000 2.199511   4  TRUE
+380  21628543 21628543 21633896    6 1.000000 2.889091   6  TRUE
+381  21648752 21648752 21652017    2 1.000000 1.260021   0  TRUE
+382  21656762 21656762 21657853    2 1.000000 1.804665   1  TRUE
+383  21681249 21681249 21681798    2 0.666667 2.718905   2 FALSE
+384  21746417 21746417 21753814   14 1.000000 2.590956  11  TRUE
+385  21755516 21755516 21757210    4 1.000000 2.172329   3  TRUE
+386  21885743 21885743 21886989    2 1.000000 2.765451   2  TRUE
+387  21931208 21931208 21931950    2 1.000000 1.687374   2  TRUE
+388  22081448 22081448 22082264    2 1.000000 2.112621   2  TRUE
+389  23253009 23253009 23253599    2 1.000000 2.782948   2  TRUE
+390  23268645 23268645 23269745    4 1.000000 2.245550   4  TRUE
+391   1813508  1813508  1816223    2 1.000000 2.151326   1  TRUE
+392   2956480  2956480  2957633    2 1.000000 2.123959   1  TRUE
+393   4787559  4787559  4788423    2 1.000000 1.574803   1  TRUE
+394   5415533  5415533  5416410    2 1.000000 1.479708   1  TRUE
+395   5652197  5652197  5653087    2 1.000000 1.866135   1  TRUE
+396   5667854  5667854  5669111    2 1.000000 2.460882   2  TRUE
+397   5710602  5710602  5716627   14 1.000000 1.632943   4  TRUE
+398   5717080  5717080  5718211    2 1.000000 1.899186   1  TRUE
+399   5735058  5735058  5736493    2 1.000000 1.784644   1  TRUE
+400   5740206  5740206  5744017    4 1.000000 2.337012   4  TRUE
+401   5782221  5782221  5783092    2 1.000000 2.814261   2  TRUE
+402   5801609  5801609  5803636    4 1.000000 1.675234   2  TRUE
+403   5818003  5818003  5822299    4 1.000000 1.534775   2  TRUE
+404   5836464  5836464  5837950    2 1.000000 1.662261   1  TRUE
+405   5954285  5954285  5955793    6 1.000000 2.331583   5  TRUE
+406   5997432  5997432  5998220    2 1.000000 1.819746   2  TRUE
+407   6015864  6015864  6018570    6 1.000000 2.012525   4  TRUE
+408   6119735  6119735  6122685    4 1.000000 3.416142   4  TRUE
+409   6124685  6124685  6127280    4 1.000000 3.078209   4  TRUE
+410   6130599  6130599  6135513   10 1.000000 2.757955   9  TRUE
+411   6143940  6143940  6148561   10 1.000000 2.975333  10  TRUE
+412   6413571  6413571  6414457    2 0.500000 2.333742   1 FALSE
+413   6512020  6512020  6512969    2 1.000000 1.827313   1  TRUE
+414   6532093  6532093  6535568    2 1.000000 1.648691   1  TRUE
+415   6536835  6536835  6539300    6 1.000000 2.329698   6  TRUE
+416   6548251  6548251  6549107    2 1.000000 1.718989   0  TRUE
+417   6559824  6559824  6560713    2 1.000000 1.851849   2  TRUE
+418   6585366  6585366  6590027   10 1.000000 1.852219   8  TRUE
+419   6591466  6591466  6601142   18 1.000000 2.390527  12  TRUE
+420   6610850  6610850  6612544    2 1.000000 2.074540   0  TRUE
+421   6621740  6621740  6622510    2 1.000000 2.829968   2  TRUE
+422   6628493  6628493  6631122    4 1.000000 2.449751   3  TRUE
+423   6689592  6689592  6690726    2 1.000000 1.880280   1  TRUE
+424   6696522  6696522  6697512    2 1.000000 2.735030   2  TRUE
+425   6749407  6749407  6751697    2 1.000000 3.587693   2  TRUE
+426   6755421  6755421  6756893    4 1.000000 3.858082   3  TRUE
+427   6764695  6764695  6766150    2 1.000000 2.679814   2  TRUE
+428   6810415  6810415  6811576    2 1.000000 1.966681   2  TRUE
+429   6847169  6847169  6849212    2 1.000000 1.993511   1  TRUE
+430   6869999  6869999  6871426    2 1.000000 1.871073   1  TRUE
+431   6873953  6873953  6874910    2 1.000000 3.387339   2  TRUE
+432   6952845  6952845  6955091    2 1.000000 1.806085   2  TRUE
+433   6989389  6989389  6990980    2 1.000000 1.961077   1  TRUE
+434   7074757  7074757  7076819    2 1.000000 2.198434   2  TRUE
+435   7166824  7166824  7171246    8 1.000000 2.269658   7  TRUE
+436   7174292  7174292  7176217    2 1.000000 1.541880   1  TRUE
+437   7277911  7277911  7279025    2 1.000000 1.956989   2  TRUE
+438   7368526  7368526  7373777   10 1.000000 2.676233   6  TRUE
+439   7375213  7375213  7381873    8 1.000000 2.350011   8  TRUE
+440   7404257  7404257  7407304    2 1.000000 1.884844   2  TRUE
+441   7464682  7464682  7465991    4 1.000000 1.852653   3  TRUE
+442   7486119  7486119  7490846    6 1.000000 3.119774   5  TRUE
+443   7617177  7617177  7621537    4 1.000000 3.458121   3  TRUE
+444   7673947  7673947  7674539    2 1.000000 2.037947   2  TRUE
+445   7697231  7697231  7699815    2 1.000000 1.667198   1  TRUE
+446   7778957  7778957  7781670    6 1.000000 3.096045   5  TRUE
+447   7989382  7989382  7989699    2 1.000000 2.218378   1  TRUE
+448   7991032  7991032  7994483   12 1.000000 2.226193   9  TRUE
+449   7997863  7997863  8000559    4 1.000000 1.542407   1  TRUE
+450   8019362  8019362  8022394    4 1.000000 1.633428   2  TRUE
+451   8023088  8023088  8023581    2 1.000000 1.424814   0  TRUE
+452   8025147  8025147  8026636    2 1.000000 1.834022   1  TRUE
+453   8032808  8032808  8033636    2 1.000000 2.019042   2  TRUE
+454   8047956  8047956  8049565    2 1.000000 2.021339   1  TRUE
+455   8067962  8067962  8069539    2 1.000000 3.344505   2  TRUE
+456   8173764  8173764  8176019    4 1.000000 2.124946   3  TRUE
+457   8181476  8181476  8183567    6 1.000000 2.953004   6  TRUE
+458   8231852  8231852  8233553    6 1.000000 2.379946   6  TRUE
+459   8234810  8234810  8237538    6 1.000000 3.356950   6  TRUE
+460   8240939  8240939  8250216   30 1.000000 2.741207  29  TRUE
+461   8339577  8339577  8346104   12 1.000000 1.907940   6  TRUE
+462   8600446  8600446  8602483    6 1.000000 1.850332   5  TRUE
+463   8606905  8606905  8608541    2 1.000000 2.252219   1  TRUE
+464   8646965  8646965  8650493    6 1.000000 2.897990   5  TRUE
+465   8657887  8657887  8659016    2 1.000000 2.814333   2  TRUE
+466   8665683  8665683  8670534    6 1.000000 2.258939   6  TRUE
+467   8802178  8802178  8806499    6 1.000000 1.926788   6  TRUE
+468   8813395  8813395  8814786    2 1.000000 3.166836   2  TRUE
+469   8891033  8891033  8891521    2 0.500000 1.962831   1 FALSE
+470   8893080  8893080  8893685    2 1.000000 2.534164   2  TRUE
+471   8914012  8914012  8915222    2 1.000000 2.004854   2  TRUE
+472   8951122  8951122  8952082    2 1.000000 2.207539   2  TRUE
+473   9086991  9086991  9087605    2 1.000000 2.476654   2  TRUE
+474   9092294  9092294  9092765    2 1.000000 1.651325   1  TRUE
+475   9247353  9247353  9249835    2 1.000000 1.339414   0  TRUE
+476   9413332  9413332  9414381    2 1.000000 1.791054   1  TRUE
+477   9439969  9439969  9442103    6 1.000000 2.826142   6  TRUE
+478   9546264  9546264  9552055   14 1.000000 3.246153  14  TRUE
+479   9577247  9577247  9578812    2 1.000000 1.643188   2  TRUE
+480   9584461  9584461  9585996    4 1.000000 2.277380   3  TRUE
+481   9593982  9593982  9594715    2 1.000000 3.690456   2  TRUE
+482   9691469  9691469  9694630    6 1.000000 2.567624   5  TRUE
+483   9695171  9695171  9697756    6 1.000000 1.870762   6  TRUE
+484   9709868  9709868  9715861   16 1.000000 2.629049  14  TRUE
+485   9750092  9750092  9750907    2 1.000000 1.497638   1  TRUE
+486   9858258  9858258  9859304    2 1.000000 2.143398   2  TRUE
+487   9859660  9859660  9861917    8 1.000000 2.166988   7  TRUE
+488   9959349  9959349  9959662    2 0.666667 1.741938   0 FALSE
+489   9968174  9968174  9969711    4 1.000000 2.979021   4  TRUE
+490  10123828 10123828 10125765    2 1.000000 2.088695   2  TRUE
+491  10250924 10250924 10251942    2 1.000000 2.750966   1  TRUE
+492  10261272 10261272 10267064   14 1.000000 4.259820  13  TRUE
+493  10268974 10268974 10272405    6 1.000000 2.792861   5  TRUE
+494  10278082 10278082 10278930    2 1.000000 1.604093   1  TRUE
+495  10418127 10418127 10418917    2 1.000000 2.733398   2  TRUE
+496  10423305 10423305 10424101    4 1.000000 2.582989   4  TRUE
+497  10427708 10427708 10428536    2 1.000000 2.487586   2  TRUE
+498  10475114 10475114 10475763    2 1.000000 3.086645   2  TRUE
+499  10480810 10480810 10481457    2 0.666667 1.776453   1 FALSE
+500  10485267 10485267 10486498    4 1.000000 1.774028   3  TRUE
+501  10533695 10533695 10538201   18 1.000000 2.041224  12  TRUE
+502  10539619 10539619 10548019   18 1.000000 2.720170  16  TRUE
+503  10548300 10548300 10548674    2 0.200000 2.500794   2 FALSE
+504  10550871 10550871 10555555   16 1.000000 2.521791  16  TRUE
+505  10568334 10568334 10570491    4 1.000000 2.873511   4  TRUE
+506  10570708 10570708 10572012    2 1.000000 3.091978   2  TRUE
+507  10601708 10601708 10604576    2 1.000000 2.126385   1  TRUE
+508  10614807 10614807 10617718    2 1.000000 2.603717   1  TRUE
+509  10668594 10668594 10672479    6 1.000000 2.007195   4  TRUE
+510  10675653 10675653 10686438    8 1.000000 2.120371   5  TRUE
+511  10692173 10692173 10693876    2 1.000000 1.496264   1  TRUE
+512  10831250 10831250 10831580    2 1.000000 1.730982   0  TRUE
+513  10856517 10856517 10861257    8 1.000000 1.931512   4  TRUE
+514  10893473 10893473 10895227    4 1.000000 1.867049   2  TRUE
+515  10897338 10897338 10897986    2 1.000000 2.951737   1  TRUE
+516  10899615 10899615 10901800    2 1.000000 2.263815   2  TRUE
+517  11080041 11080041 11086530    6 1.000000 2.654031   4  TRUE
+518  11170823 11170823 11172165    2 1.000000 2.092595   2  TRUE
+519  11198285 11198285 11205919   10 1.000000 2.420135   8  TRUE
+520  11220338 11220338 11220961    2 1.000000 2.587187   2  TRUE
+521  11283209 11283209 11284649    4 1.000000 1.832573   3  TRUE
+522  11365488 11365488 11368134    2 1.000000 2.382947   1  TRUE
+523  11396365 11396365 11398620    6 1.000000 2.169191   6  TRUE
+524  11595412 11595412 11604234    4 1.000000 2.159112   2  TRUE
+525  11607624 11607624 11613505    4 1.000000 1.616069   2  TRUE
+526  11630822 11630822 11642084   14 1.000000 2.226216  10  TRUE
+527  11650875 11650875 11651502    2 0.666667 2.965373   2 FALSE
+528  11664084 11664084 11666858    2 1.000000 2.711406   1  TRUE
+529  11697731 11697731 11699516    4 1.000000 2.224115   2  TRUE
+530  11709157 11709157 11710738    2 1.000000 2.382938   2  TRUE
+531  11711659 11711659 11714437    4 1.000000 2.345398   2  TRUE
+532  11716222 11716222 11719852    6 1.000000 2.630955   6  TRUE
+533  11735773 11735773 11737693    2 1.000000 2.455590   2  TRUE
+534  11753664 11753664 11754987    2 1.000000 2.247795   0  TRUE
+535  11984136 11984136 11985388    2 1.000000 3.218065   2  TRUE
+536  11990698 11990698 11993171    4 1.000000 2.087601   3  TRUE
+537  12015541 12015541 12020158   10 1.000000 2.533169  10  TRUE
+538  12021006 12021006 12022236    2 1.000000 1.450325   1  TRUE
+539  12023946 12023946 12025176    2 1.000000 1.528453   0  TRUE
+540  12140868 12140868 12140898    2 1.000000 2.715172   2  TRUE
+541  12170134 12170134 12173411    6 1.000000 2.669446   4  TRUE
+542  12178257 12178257 12180230    2 1.000000 2.708436   2  TRUE
+543  12258533 12258533 12261154    4 1.000000 3.787174   4  TRUE
+544  12455147 12455147 12463480   14 1.000000 2.505862  11  TRUE
+545  12551080 12551080 12555137    4 1.000000 1.917163   2  TRUE
+546  12585893 12585893 12595172   14 1.000000 2.561834  13  TRUE
+547  12612230 12612230 12615029    2 1.000000 3.129799   2  TRUE
+548  12685763 12685763 12686341    2 1.000000 4.281318   2  TRUE
+549  12692452 12692452 12693720    2 1.000000 1.687491   1  TRUE
+550  12702397 12702397 12704609    6 1.000000 1.854643   3  TRUE
+551  12722441 12722441 12725973    2 1.000000 1.578410   0  TRUE
+552  12739217 12739217 12746714    6 1.000000 2.106529   4  TRUE
+553  12879153 12879153 12880460    2 1.000000 3.021063   2  TRUE
+554  12952492 12952492 12953289    2 1.000000 2.308626   1  TRUE
+555  12954990 12954990 12959257    6 1.000000 2.188801   6  TRUE
+556  12962857 12962857 12964281    2 1.000000 2.013185   1  TRUE
+557  12969712 12969712 12970525    2 0.666667 1.690394   1 FALSE
+558  12979010 12979010 12981771    4 1.000000 2.321125   4  TRUE
+559  12988453 12988453 12990291    2 1.000000 1.743237   1  TRUE
+560  13005937 13005937 13010591    8 1.000000 2.478167   7  TRUE
+561  13011234 13011234 13012256    4 1.000000 1.621557   1  TRUE
+562  13019803 13019803 13022952    4 1.000000 2.068526   3  TRUE
+563  13042312 13042312 13043350    2 1.000000 1.569836   1  TRUE
+564  13049648 13049648 13052736    2 1.000000 1.520103   0  TRUE
+565  13067455 13067455 13070243    6 1.000000 2.137722   4  TRUE
+566  13090575 13090575 13092706    2 1.000000 1.910498   0  TRUE
+567  13112301 13112301 13115505    4 1.000000 1.826396   3  TRUE
+568  13132276 13132276 13133104    2 1.000000 3.574191   2  TRUE
+569  13150577 13150577 13152428    8 1.000000 3.554258   8  TRUE
+570  13157666 13157666 13158779    4 1.000000 4.602478   4  TRUE
+571  13188037 13188037 13190611    4 1.000000 3.025320   3  TRUE
+572  13190927 13190927 13199404   18 1.000000 2.683607  15  TRUE
+573  13302949 13302949 13311540    4 1.000000 2.159340   3  TRUE
+574  13326096 13326096 13343552   22 1.000000 2.693660  21  TRUE
+575  13424006 13424006 13425312    2 1.000000 2.089041   1  TRUE
+576  13437925 13437925 13438568    2 1.000000 1.273684   0  TRUE
+577  13446995 13446995 13448499    2 1.000000 1.902770   0  TRUE
+578  13464432 13464432 13465865    4 1.000000 1.781198   1  TRUE
+579  13481830 13481830 13482463    2 1.000000 3.128184   2  TRUE
+580  13498206 13498206 13499765    4 1.000000 3.176556   4  TRUE
+581  13505745 13505745 13506894    2 1.000000 1.429455   0  TRUE
+582  13531092 13531092 13534351    2 1.000000 2.630823   2  TRUE
+583  13550469 13550469 13551570    2 1.000000 2.746947   1  TRUE
+584  13563995 13563995 13564560    2 0.666667 1.759358   0 FALSE
+585  13565856 13565856 13567646    6 1.000000 3.532108   6  TRUE
+586  13702248 13702248 13704565    4 1.000000 2.142882   3  TRUE
+587  13720073 13720073 13725580    4 1.000000 2.721409   4  TRUE
+588  13737268 13737268 13738043    2 1.000000 3.057483   2  TRUE
+589  13808515 13808515 13808932    2 0.500000 2.004054   2 FALSE
+590  13823662 13823662 13823759    2 1.000000 2.310529   2  TRUE
+591  13920743 13920743 13921747    2 1.000000 2.353110   1  TRUE
+592  13933907 13933907 13936485    6 1.000000 1.765107   3  TRUE
+593  13938607 13938607 13940569    2 1.000000 2.321452   2  TRUE
+594  13955451 13955451 13958014    6 1.000000 2.502047   4  TRUE
+595  13990321 13990321 13991797    2 1.000000 1.672900   1  TRUE
+596  13995336 13995336 13997515    2 1.000000 1.987598   1  TRUE
+597  13999898 13999898 14003011    2 1.000000 2.660835   2  TRUE
+598  14429626 14429626 14433010   12 1.000000 2.717528  12  TRUE
+599  14434060 14434060 14435247    2 1.000000 2.311041   2  TRUE
+600  14481097 14481097 14488667   12 1.000000 2.558810  11  TRUE
+601  14502842 14502842 14503890    2 1.000000 1.416363   0  TRUE
+602  14652899 14652899 14654794    4 1.000000 2.223788   3  TRUE
+603  14801488 14801488 14802686    2 1.000000 1.951841   1  TRUE
+604  14813215 14813215 14817048    2 1.000000 1.634628   0  TRUE
+605  14841108 14841108 14843477    2 1.000000 1.434976   0  TRUE
+606  14847234 14847234 14847487    2 0.666667 3.494595   2 FALSE
+607  14852484 14852484 14854052    2 1.000000 1.787057   1  TRUE
+608  14854707 14854707 14855993    6 1.000000 3.622139   6  TRUE
+609  14927574 14927574 14928297    2 1.000000 2.509177   2  TRUE
+610  14933745 14933745 14938336    6 1.000000 2.681529   4  TRUE
+611  14953481 14953481 14955263    2 1.000000 1.642041   1  TRUE
+612  14960620 14960620 14961572    2 1.000000 2.203627   1  TRUE
+613  15098499 15098499 15099322    2 1.000000 2.479935   1  TRUE
+614  15117220 15117220 15118326    4 1.000000 3.806989   4  TRUE
+615  15125133 15125133 15133595   22 1.000000 3.792043  21  TRUE
+616  15231878 15231878 15234096    4 1.000000 3.010216   3  TRUE
+617  15309074 15309074 15310965    2 1.000000 1.910591   2  TRUE
+618  15321834 15321834 15324016    2 1.000000 1.955008   1  TRUE
+619  15331388 15331388 15336312    4 1.000000 2.343107   3  TRUE
+620  15348562 15348562 15350500    4 1.000000 1.687283   2  TRUE
+621  15351643 15351643 15353540    6 1.000000 1.992674   4  TRUE
+622  15357343 15357343 15358165    2 0.666667 1.447456   0 FALSE
+623  15361014 15361014 15363363    4 1.000000 1.944722   2  TRUE
+624  15372340 15372340 15376040    6 1.000000 2.566497   6  TRUE
+625  15378057 15378057 15382200    8 1.000000 3.128133   8  TRUE
+626  15568268 15568268 15569290    2 1.000000 3.999113   2  TRUE
+627  15694528 15694528 15695593    2 1.000000 1.459987   1  TRUE
+628  15752801 15752801 15755949    4 1.000000 2.027695   3  TRUE
+629  15837696 15837696 15838906    2 1.000000 1.741885   1  TRUE
+630  15841953 15841953 15843196    2 1.000000 1.886022   2  TRUE
+631  15860475 15860475 15861592    4 1.000000 2.651414   4  TRUE
+632  15879874 15879874 15882861    4 1.000000 1.894805   1  TRUE
+633  15891817 15891817 15895091    4 1.000000 2.028992   3  TRUE
+634  15897977 15897977 15900466    2 1.000000 1.960104   2  TRUE
+635  15909813 15909813 15914791   10 1.000000 2.371777   7  TRUE
+636  15928904 15928904 15930810    8 1.000000 2.397629   7  TRUE
+637  15999584 15999584 16001915    4 1.000000 1.701168   2  TRUE
+638  16017389 16017389 16018222    2 1.000000 2.358300   1  TRUE
+639  16027553 16027553 16032167    6 1.000000 2.739228   6  TRUE
+640  16101733 16101733 16105862    6 1.000000 1.929575   4  TRUE
+641  16110445 16110445 16111219    4 1.000000 2.808997   4  TRUE
+642  16125710 16125710 16126212    2 1.000000 1.956236   1  TRUE
+643  16149155 16149155 16151488    4 1.000000 2.394528   4  TRUE
+644  16164605 16164605 16165153    2 1.000000 2.662137   2  TRUE
+645  16177933 16177933 16182233    4 1.000000 2.891523   3  TRUE
+646  16185917 16185917 16187914    2 1.000000 1.795638   2  TRUE
+647  16270085 16270085 16271507    2 1.000000 3.486716   2  TRUE
+648  16328726 16328726 16330475    4 1.000000 2.594955   4  TRUE
+649  16335861 16335861 16337099    2 1.000000 2.587305   2  TRUE
+650  16367843 16367843 16371703    6 1.000000 2.024093   5  TRUE
+651  16451297 16451297 16453972    4 1.000000 2.327754   2  TRUE
+652  16768767 16768767 16772968    6 1.000000 2.018904   6  TRUE
+653  16783258 16783258 16785284    4 1.000000 3.099161   4  TRUE
+654  16785601 16785601 16787316    2 1.000000 2.489839   2  TRUE
+655  16829566 16829566 16830036    2 0.400000 3.204802   2 FALSE
+656  16855101 16855101 16855860    2 1.000000 2.043716   1  TRUE
+657  16869739 16869739 16871154    2 1.000000 2.707234   1  TRUE
+658  17014069 17014069 17015842    4 1.000000 2.607776   4  TRUE
+659  17020692 17020692 17021648    2 1.000000 4.168815   2  TRUE
+660  17025851 17025851 17029448    8 1.000000 3.845423   8  TRUE
+661  17030115 17030115 17031503    4 1.000000 2.452642   2  TRUE
+662  17076528 17076528 17077742    2 1.000000 1.379059   0  TRUE
+663  17142930 17142930 17145966    8 1.000000 2.164555   7  TRUE
+664  17220523 17220523 17226867    8 1.000000 2.504820   7  TRUE
+665  17261670 17261670 17263349    8 1.000000 2.191352   7  TRUE
+666  17267638 17267638 17269106    2 1.000000 1.685918   2  TRUE
+667  17276277 17276277 17277596    2 1.000000 1.604388   0  TRUE
+668  17313198 17313198 17314115    2 1.000000 1.466434   0  TRUE
+669  17334049 17334049 17335329    2 1.000000 1.763508   1  TRUE
+670  17350236 17350236 17351914    2 1.000000 1.568909   1  TRUE
+671  17392497 17392497 17394640    4 1.000000 3.157572   4  TRUE
+672  17419119 17419119 17422317    8 1.000000 2.445630   8  TRUE
+673  17451012 17451012 17453939    4 1.000000 2.012458   3  TRUE
+674  17456151 17456151 17460628   12 1.000000 3.253850  11  TRUE
+675  17474523 17474523 17477033    8 1.000000 2.064757   6  TRUE
+676  17568142 17568142 17568435    2 1.000000 2.270914   2  TRUE
+677  17580798 17580798 17581274    2 1.000000 1.930513   2  TRUE
+678  17590995 17590995 17592071    2 1.000000 1.606408   1  TRUE
+679  17681223 17681223 17682187    2 1.000000 2.207848   2  TRUE
+680  17716337 17716337 17720080    4 1.000000 2.320748   3  TRUE
+681  17732997 17732997 17735411    4 1.000000 2.078316   4  TRUE
+682  17821137 17821137 17822557    4 1.000000 2.342492   3  TRUE
+683  17823701 17823701 17824671    2 1.000000 1.726014   1  TRUE
+684  17868808 17868808 17870165    4 1.000000 3.489343   4  TRUE
+685  18141182 18141182 18142904    2 1.000000 1.431850   0  TRUE
+686  18194729 18194729 18195874    2 1.000000 2.579129   2  TRUE
+687  18305589 18305589 18318452    8 1.000000 1.760513   4  TRUE
+688  18335871 18335871 18343209   10 1.000000 2.404189   8  TRUE
+689  18411229 18411229 18413231    4 1.000000 3.864904   4  TRUE
+690  18437704 18437704 18442096    8 1.000000 2.838438   8  TRUE
+691  18442661 18442661 18445092    6 1.000000 2.222284   4  TRUE
+692  18624551 18624551 18625746    2 1.000000 1.850183   0  TRUE
+693  18671043 18671043 18673658    4 1.000000 2.012351   3  TRUE
+694  18694181 18694181 18696164    4 1.000000 2.205812   3  TRUE
+695  18715543 18715543 18718109    2 1.000000 2.503519   1  TRUE
+696  19141832 19141832 19145210    2 1.000000 2.412523   2  TRUE
+697  19147320 19147320 19149486    6 1.000000 2.597108   4  TRUE
+698  19155889 19155889 19156274    2 1.000000 1.735753   1  TRUE
+699  19289947 19289947 19291421    2 1.000000 1.875635   2  TRUE
+700  19394548 19394548 19396528    4 1.000000 2.270128   4  TRUE
+701  19415329 19415329 19417843    4 1.000000 1.815446   3  TRUE
+702  19449512 19449512 19452589    4 1.000000 3.837392   4  TRUE
+703  19483464 19483464 19484227    2 1.000000 2.746996   2  TRUE
+704  19493512 19493512 19493647    2 1.000000 2.671159   2  TRUE
+705  19534916 19534916 19537951    2 1.000000 2.624962   2  TRUE
+706  19622429 19622429 19629440    6 1.000000 2.349480   5  TRUE
+707  19792044 19792044 19807721   28 1.000000 2.520609  28  TRUE
+708  19807830 19807830 19808729    2 1.000000 1.766445   1  TRUE
+709  19818770 19818770 19820718    2 1.000000 2.223921   2  TRUE
+710  19932162 19932162 19934058    2 1.000000 2.137552   2  TRUE
+711  20598997 20598997 20601115    4 1.000000 2.332707   4  TRUE
+712  20618164 20618164 20618353    2 1.000000 2.481175   2  TRUE
+713  20665061 20665061 20666619    4 1.000000 2.903516   4  TRUE
+714  20667240 20667240 20668583    4 1.000000 1.843501   3  TRUE
+715  20832779 20832779 20838097   14 1.000000 2.910108  14  TRUE
+716  20844623 20844623 20847279    4 1.000000 2.004622   3  TRUE
+717  20857542 20857542 20858955    2 1.000000 1.863994   1  TRUE
+718  20860788 20860788 20861917    2 1.000000 1.298427   0  TRUE
+719  20906707 20906707 20909933   10 1.000000 2.316144  10  TRUE
+720  20912925 20912925 20917002    2 1.000000 2.032398   2  TRUE
+721  20917723 20917723 20918649    2 1.000000 1.838597   2  TRUE
+722  20924201 20924201 20931718   10 1.000000 2.021858   8  TRUE
+723  20946769 20946769 20954223    8 1.000000 2.289706   7  TRUE
+724  21025937 21025937 21027696    4 1.000000 1.993295   3  TRUE
+725  21031123 21031123 21046672   40 1.000000 2.872782  38  TRUE
+726  21074371 21074371 21077542    8 1.000000 2.592430   8  TRUE
+727  21101001 21101001 21102171    6 1.000000 3.992040   6  TRUE
+728  21157416 21157416 21159722    4 1.000000 2.423824   2  TRUE
+729  21201571 21201571 21202611    4 1.000000 4.236176   4  TRUE
+730  21312985 21312985 21313737    2 1.000000 1.885407   1  TRUE
+731  21322578 21322578 21324789    2 1.000000 2.937035   2  TRUE
+732  21473009 21473009 21477395    4 1.000000 1.942155   3  TRUE
+733  21488299 21488299 21490399    2 1.000000 1.367577   0  TRUE
+734  21500980 21500980 21502181    4 1.000000 2.356036   4  TRUE
+735  21571974 21571974 21573654    2 1.000000 2.230729   2  TRUE
+736  21643802 21643802 21645854    2 1.000000 1.830905   1  TRUE
+737  21686938 21686938 21689850    2 1.000000 2.718916   2  TRUE
+738  21705699 21705699 21708256    6 1.000000 2.348969   5  TRUE
+739  21711303 21711303 21715535    6 1.000000 3.023182   5  TRUE
+740  21719666 21719666 21720931    2 1.000000 2.918220   2  TRUE
+741  21868538 21868538 21874513    8 1.000000 2.003899   5  TRUE
+742  21952296 21952296 21954709    2 1.000000 1.820066   2  TRUE
+743  21957931 21957931 21960049    2 1.000000 1.757903   1  TRUE
+744  21971348 21971348 21973535    2 1.000000 1.990428   1  TRUE
+745  22078647 22078647 22081199    2 1.000000 2.686071   2  TRUE
+746  22109944 22109944 22111270    2 1.000000 2.079051   1  TRUE
+747  22272013 22272013 22274887    8 1.000000 2.036059   5  TRUE
+748  22285869 22285869 22286523    2 1.000000 2.199971   2  TRUE
+749  22302422 22302422 22303294    6 1.000000 2.304394   5  TRUE
+750  22317976 22317976 22318642    2 0.666667 1.972194   1 FALSE
+751  22351362 22351362 22356810    2 1.000000 2.098582   2  TRUE
+752  22362717 22362717 22372621    4 1.000000 2.190692   4  TRUE
+753  22395115 22395115 22399272    8 1.000000 1.967743   6  TRUE
+754  22401739 22401739 22408814   12 1.000000 2.484039  11  TRUE
+755  22500922 22500922 22508016    6 1.000000 2.544489   6  TRUE
+756  22512295 22512295 22513006    2 1.000000 2.226398   2  TRUE
+757  22515573 22515573 22524302   14 1.000000 2.861786  10  TRUE
+758  22671809 22671809 22677955    6 1.000000 2.139017   3  TRUE
+759  22679862 22679862 22684120    6 1.000000 2.847041   5  TRUE
+760  22687593 22687593 22688067    2 0.285714 1.617190   1 FALSE
+761  22689818 22689818 22691012    2 1.000000 1.990884   2  TRUE
+762  22795436 22795436 22799393    2 1.000000 2.716621   2  TRUE
+763  22853451 22853451 22855600    2 1.000000 2.408261   2  TRUE
+764  22861894 22861894 22864927   12 1.000000 2.603152  12  TRUE
+765  22896184 22896184 22897430    4 1.000000 2.557760   4  TRUE
+766  22924136 22924136 22926107    2 1.000000 1.992047   2  TRUE
+767  22934953 22934953 22935147    2 1.000000 2.325235   1  TRUE
+768  22953836 22953836 22956449    4 1.000000 1.667107   2  TRUE
+769  23077382 23077382 23079191    6 1.000000 6.133109   6  TRUE
+770  23189330 23189330 23190331    4 1.000000 1.944426   2  TRUE
+771  23336588 23336588 23338009    2 1.000000 2.420455   2  TRUE
+772  23550760 23550760 23552978    4 1.000000 2.753411   3  TRUE
+773  23565971 23565971 23568028    2 1.000000 2.581235   1  TRUE
+774  23570781 23570781 23582748   18 1.000000 2.465752  16  TRUE
+775  23582942 23582942 23587865   12 1.000000 2.480023   8  TRUE
+776  23743803 23743803 23745614    2 1.000000 3.043901   2  TRUE
+777  23847762 23847762 23849421    4 1.000000 2.678182   3  TRUE
+778  23850576 23850576 23850678    2 1.000000 4.613745   2  TRUE
+779  23861339 23861339 23862344    4 1.000000 1.911133   3  TRUE
+780  23870269 23870269 23874459   18 1.000000 3.076359  18  TRUE
+781  23882861 23882861 23885966   10 1.000000 2.188620   7  TRUE
+782  23905896 23905896 23906718    2 0.666667 1.915086   1 FALSE
+783  23909584 23909584 23913211    6 1.000000 2.963248   6  TRUE
+784  23932116 23932116 23932700    2 0.333333 1.392919   1 FALSE
+785  23942921 23942921 23944168    2 1.000000 2.061475   2  TRUE
+786  23977693 23977693 23980781    8 1.000000 2.511557   8  TRUE
+787  24044665 24044665 24049136    8 1.000000 2.579957   7  TRUE
+788  24062358 24062358 24064408    4 1.000000 2.488412   4  TRUE
+789  24186531 24186531 24188591    4 1.000000 2.123416   3  TRUE
+790  24223893 24223893 24226891    2 1.000000 1.703067   1  TRUE
+791  24264595 24264595 24266709    2 1.000000 2.019483   1  TRUE
+792  24271557 24271557 24276516    4 1.000000 2.499735   4  TRUE
+793  24298718 24298718 24299942    2 1.000000 1.799936   1  TRUE
+794  24560050 24560050 24561750    4 1.000000 2.259052   4  TRUE
+795  24668347 24668347 24669393    2 1.000000 2.920088   2  TRUE
+796  24738723 24738723 24740234    2 1.000000 1.756655   1  TRUE
+797  24822969 24822969 24824078    2 1.000000 1.759945   0  TRUE
+798  24837103 24837103 24838260    4 1.000000 1.609324   1  TRUE
+799  24842702 24842702 24843148    2 1.000000 1.345468   0  TRUE
+800  24851454 24851454 24853138    2 1.000000 2.006555   2  TRUE
+801  24932752 24932752 24933720    2 1.000000 1.781210   2  TRUE
+802  24948140 24948140 24950158    4 1.000000 1.900209   2  TRUE
+803  24962552 24962552 24965888    6 1.000000 2.554771   6  TRUE
+804  24966324 24966324 24966837    2 1.000000 1.934195   2  TRUE
+805  25006807 25006807 25008491    4 1.000000 2.419672   3  TRUE
+806  25010486 25010486 25011107    2 1.000000 2.420061   2  TRUE
+807  25014912 25014912 25017832    4 1.000000 2.030856   3  TRUE
+808  25028881 25028881 25031279    2 1.000000 1.572901   1  TRUE
+809  25120625 25120625 25121819    2 1.000000 1.847719   1  TRUE
+810  25133191 25133191 25135036    4 1.000000 1.839617   2  TRUE
+811  25256752 25256752 25261128   14 1.000000 4.597342  14  TRUE
+812     56263    56263    57523    4 1.000000 2.721944   3  TRUE
+813     70541    70541    72600    2 1.000000 2.203421   2  TRUE
+814     85961    85961    88129    2 1.000000 1.848345   1  TRUE
+815    128662   128662   132866    4 1.000000 2.858927   3  TRUE
+816    134455   134455   141217    6 1.000000 2.235083   5  TRUE
+817    149134   149134   149696    2 1.000000 1.510665   0  TRUE
+818    153948   153948   155869    2 1.000000 2.435155   2  TRUE
+819    182425   182425   182907    2 0.400000 2.553330   2 FALSE
+820    183776   183776   185045    2 1.000000 2.625243   2  TRUE
+821    223984   223984   226006    2 1.000000 2.097998   2  TRUE
+822    230685   230685   231085    2 1.000000 1.997041   1  TRUE
+823    262903   262903   264529    2 1.000000 1.384105   0  TRUE
+824    266017   266017   273955   14 1.000000 2.309551  12  TRUE
+825    292327   292327   298401   10 1.000000 2.443015   9  TRUE
+826    316952   316952   320570    6 1.000000 1.926643   3  TRUE
+827    410705   410705   413707    2 1.000000 1.494799   1  TRUE
+828    414739   414739   415666    2 1.000000 1.822967   1  TRUE
+829    486803   486803   490668    8 1.000000 2.636432   5  TRUE
+830    536917   536917   541137    6 1.000000 2.119144   5  TRUE
+831    542568   542568   543813    2 1.000000 2.806055   2  TRUE
+832    612934   612934   618190   18 1.000000 3.055002  18  TRUE
+833    619651   619651   620267    2 0.666667 3.525941   2 FALSE
+834    622907   622907   627866    8 1.000000 2.158626   5  TRUE
+835    632635   632635   634140    4 1.000000 1.850322   3  TRUE
+836    635618   635618   636644    2 1.000000 1.788651   1  TRUE
+837    638774   638774   642158    8 1.000000 4.323630   8  TRUE
+838    642403   642403   644935    6 1.000000 2.567915   5  TRUE
+839    648180   648180   652000    6 1.000000 2.903731   6  TRUE
+840    652500   652500   653112    2 1.000000 1.556997   0  TRUE
+841    675599   675599   677011    2 1.000000 1.782659   2  TRUE
+842    681500   681500   682454    2 1.000000 2.377615   2  TRUE
+843    709901   709901   710952    4 1.000000 2.095958   2  TRUE
+844    715434   715434   717928   10 1.000000 2.288439   7  TRUE
+845    725698   725698   729101    8 1.000000 3.252787   8  TRUE
+846    738183   738183   739102    2 1.000000 2.610499   2  TRUE
+847    740362   740362   746386   12 1.000000 2.768919  11  TRUE
+848    746948   746948   750104    8 1.000000 1.739510   2  TRUE
+849    754481   754481   755624    2 1.000000 1.968143   1  TRUE
+850    772888   772888   774060    2 1.000000 2.051378   1  TRUE
+851    775792   775792   778515    6 1.000000 2.262481   3  TRUE
+852    781931   781931   782877    6 1.000000 2.260666   4  TRUE
+853    791476   791476   798142   16 1.000000 2.514482  14  TRUE
+854    803524   803524   807838   14 1.000000 2.384674  10  TRUE
+855    896653   896653   902980   16 1.000000 3.780654  15  TRUE
+856    903370   903370   914087   26 1.000000 2.939248  22  TRUE
+857   1073134  1073134  1082486   10 1.000000 2.083688   7  TRUE
+858   1095806  1095806  1097602    2 1.000000 1.872671   1  TRUE
+859   1100701  1100701  1104341    4 1.000000 2.284399   3  TRUE
+860   1195558  1195558  1197243    4 1.000000 2.814461   4  TRUE
+861   1245313  1245313  1246517    4 1.000000 3.548727   4  TRUE
+862   1334380  1334380  1336575    6 1.000000 3.326791   6  TRUE
+863   1358916  1358916  1360669    6 1.000000 3.421287   6  TRUE
+864   1446492  1446492  1447866    2 1.000000 1.578421   0  TRUE
+865   1514736  1514736  1517233    4 1.000000 2.390613   3  TRUE
+866   1537979  1537979  1538686    2 0.500000 2.174772   1 FALSE
+867   1567874  1567874  1568858    2 1.000000 3.708733   2  TRUE
+868   1601482  1601482  1602313    2 1.000000 3.917989   2  TRUE
+869   1646227  1646227  1647720    2 1.000000 1.715695   0  TRUE
+870   1648342  1648342  1650992    8 1.000000 2.750034   7  TRUE
+871   1662389  1662389  1666112   10 1.000000 2.780340   7  TRUE
+872   1682946  1682946  1683337    2 1.000000 1.455414   0  TRUE
+873   1689756  1689756  1692142    8 1.000000 2.317550   6  TRUE
+874   1748140  1748140  1749915    2 1.000000 2.061140   1  TRUE
+875   1885520  1885520  1886876    2 1.000000 1.986748   2  TRUE
+876   1919182  1919182  1920918    2 1.000000 1.339183   0  TRUE
+877   1927786  1927786  1929619    2 1.000000 1.819138   2  TRUE
+878   2261969  2261969  2262981    2 1.000000 2.358884   2  TRUE
+879   2386705  2386705  2388362    4 1.000000 3.094108   3  TRUE
+880   2538140  2538140  2538622    2 1.000000 2.305472   2  TRUE
+881   2551979  2551979  2553369    2 1.000000 3.373744   2  TRUE
+882   2584328  2584328  2587645    2 1.000000 3.304422   2  TRUE
+883   2588682  2588682  2592275    8 1.000000 2.529208   8  TRUE
+884   2629118  2629118  2633480    4 1.000000 2.313707   2  TRUE
+885   2817956  2817956  2826135   14 1.000000 2.415447  12  TRUE
+886   2848990  2848990  2850294    2 1.000000 2.156381   1  TRUE
+887   2859384  2859384  2870363   24 1.000000 2.433636  22  TRUE
+888   2932292  2932292  2933712    2 1.000000 2.565311   1  TRUE
+889   2974738  2974738  2975929    2 1.000000 1.872602   2  TRUE
+890   3045317  3045317  3045854    2 1.000000 2.513709   2  TRUE
+891   3057499  3057499  3061742    8 1.000000 2.405947   8  TRUE
+892   3067201  3067201  3074191    8 1.000000 2.349974   8  TRUE
+893   3161226  3161226  3162872    4 1.000000 2.671046   2  TRUE
+894   3218190  3218190  3219455    4 1.000000 1.946292   2  TRUE
+895   3224382  3224382  3226913    2 1.000000 1.609137   1  TRUE
+896   3240964  3240964  3242212    4 1.000000 3.723885   3  TRUE
+897   3325667  3325667  3326689    2 1.000000 2.043954   2  TRUE
+898   3336843  3336843  3337621    2 1.000000 2.759923   2  TRUE
+899   3344582  3344582  3345276    2 0.666667 4.096532   2 FALSE
+900   3376422  3376422  3378289    2 1.000000 2.579074   1  TRUE
+901   3416056  3416056  3416752    2 1.000000 2.193191   1  TRUE
+902   3435007  3435007  3439234    2 1.000000 1.674738   1  TRUE
+903   3447408  3447408  3453100    4 1.000000 2.236674   4  TRUE
+904   3541933  3541933  3546197    4 1.000000 2.840871   4  TRUE
+905   3778051  3778051  3778659    2 1.000000 2.463425   1  TRUE
+906   3784530  3784530  3789454    4 1.000000 2.905584   3  TRUE
+907   3844848  3844848  3846269    2 1.000000 2.529334   2  TRUE
+908   3870164  3870164  3871261    2 1.000000 2.720710   2  TRUE
+909   3881705  3881705  3882721    2 1.000000 1.561796   1  TRUE
+910   3888078  3888078  3889662    2 1.000000 1.795846   1  TRUE
+911   3901672  3901672  3903774    4 1.000000 2.250041   3  TRUE
+912   3972490  3972490  3981437   18 1.000000 2.014500  14  TRUE
+913   4080709  4080709  4081939    2 1.000000 1.850129   2  TRUE
+914   4158966  4158966  4160712    6 1.000000 3.214820   5  TRUE
+915   4186555  4186555  4187629    2 1.000000 1.410780   0  TRUE
+916   4251145  4251145  4256533   14 1.000000 3.639688  13  TRUE
+917   4259219  4259219  4260222    4 1.000000 3.244669   4  TRUE
+918   4340468  4340468  4341834    2 1.000000 1.677581   2  TRUE
+919   4352438  4352438  4357361    4 1.000000 2.557214   3  TRUE
+920   4404870  4404870  4407364    4 1.000000 3.151463   3  TRUE
+921   4543935  4543935  4546877    6 1.000000 1.701737   4  TRUE
+922   4945336  4945336  4950775    4 1.000000 1.773493   3  TRUE
+923   5013383  5013383  5016953    4 1.000000 2.545969   4  TRUE
+924   5080501  5080501  5083734    2 1.000000 1.420104   0  TRUE
+925   5178393  5178393  5186283    6 1.000000 1.841808   3  TRUE
+926   5352644  5352644  5354724    6 1.000000 2.292754   5  TRUE
+927   5364176  5364176  5365049    2 1.000000 2.033596   1  TRUE
+928   5426127  5426127  5427610    2 1.000000 1.886922   1  TRUE
+929   5635397  5635397  5641980    6 1.000000 2.292887   6  TRUE
+930   5652838  5652838  5657356   12 1.000000 2.319506   9  TRUE
+931   5751452  5751452  5752528    2 1.000000 2.010607   1  TRUE
+932   5808451  5808451  5809985    2 1.000000 1.857210   2  TRUE
+933   5876948  5876948  5880596    8 1.000000 2.044530   7  TRUE
+934   5884014  5884014  5885990    2 1.000000 2.100332   1  TRUE
+935   5967984  5967984  5977218   12 1.000000 2.569503  10  TRUE
+936   5979086  5979086  5981143    4 1.000000 2.274453   3  TRUE
+937   5986470  5986470  5989134    2 1.000000 2.215555   2  TRUE
+938   5994921  5994921  5997766    2 1.000000 2.464749   2  TRUE
+939   6075924  6075924  6079347    4 1.000000 1.897402   3  TRUE
+940   6103340  6103340  6104877    4 1.000000 1.869705   2  TRUE
+941   6111491  6111491  6114625    6 1.000000 2.097218   5  TRUE
+942   6159400  6159400  6163212    8 1.000000 2.372900   7  TRUE
+943   6173363  6173363  6174354    2 1.000000 2.170863   1  TRUE
+944   6487351  6487351  6488984    2 1.000000 3.514075   2  TRUE
+945   6700601  6700601  6701386    2 1.000000 3.913754   2  TRUE
+946   6740769  6740769  6744270    6 1.000000 3.996679   5  TRUE
+947   6746576  6746576  6747883    4 1.000000 3.040201   4  TRUE
+948   6751542  6751542  6753048    2 1.000000 1.876583   0  TRUE
+949   6839663  6839663  6840438    2 1.000000 2.570662   2  TRUE
+950   6841051  6841051  6845139    2 1.000000 1.665001   2  TRUE
+951   6854328  6854328  6855681    2 1.000000 1.251995   0  TRUE
+952   6860964  6860964  6865205    4 1.000000 1.787431   3  TRUE
+953   6879690  6879690  6887017    8 1.000000 2.050231   4  TRUE
+954   6920026  6920026  6924896    8 1.000000 2.157806   5  TRUE
+955   6928069  6928069  6928911    2 1.000000 1.913585   1  TRUE
+956   6940308  6940308  6942652    2 1.000000 2.021202   2  TRUE
+957   7149717  7149717  7150700    2 1.000000 2.530433   2  TRUE
+958   7183689  7183689  7186721    8 1.000000 2.661861   8  TRUE
+959   7328084  7328084  7329596    4 1.000000 2.429225   4  TRUE
+960   7347189  7347189  7348978    2 1.000000 1.918563   2  TRUE
+961   7355401  7355401  7356965    6 1.000000 2.528388   6  TRUE
+962   7359705  7359705  7360174    2 1.000000 2.061049   2  TRUE
+963   7367839  7367839  7370362    4 1.000000 2.772168   3  TRUE
+964   7434317  7434317  7437381    2 1.000000 1.771365   2  TRUE
+965   7605360  7605360  7606830    2 1.000000 4.118404   2  TRUE
+966   7709790  7709790  7717328    4 1.000000 2.880969   4  TRUE
+967   7874775  7874775  7877472    2 1.000000 1.944260   2  TRUE
+968   7909351  7909351  7912597    6 1.000000 2.634659   6  TRUE
+969   7952802  7952802  7954137    4 1.000000 2.227443   3  TRUE
+970   7978565  7978565  7990537    6 1.000000 1.804386   3  TRUE
+971   8055013  8055013  8056440    4 1.000000 2.363257   4  TRUE
+972   8081780  8081780  8085967    2 1.000000 1.779865   1  TRUE
+973   8128141  8128141  8129197    2 1.000000 2.491691   1  TRUE
+974   8192902  8192902  8194329    4 1.000000 2.728740   4  TRUE
+975   8218130  8218130  8219154    2 1.000000 1.845117   1  TRUE
+976   8404388  8404388  8405110    2 1.000000 2.614721   1  TRUE
+977   8411271  8411271  8412091    2 1.000000 2.534435   1  TRUE
+978   8421131  8421131  8422586    2 1.000000 2.680073   1  TRUE
+979   8457393  8457393  8460747    4 1.000000 2.319934   4  TRUE
+980   8493520  8493520  8494531    2 1.000000 1.628669   1  TRUE
+981   8513550  8513550  8514482    2 1.000000 3.070646   2  TRUE
+982   8525189  8525189  8526234    2 1.000000 1.475186   0  TRUE
+983   8548476  8548476  8549748    2 1.000000 1.358861   0  TRUE
+984   8557219  8557219  8557845    2 1.000000 1.583216   1  TRUE
+985   8644277  8644277  8646972   10 1.000000 2.229064   8  TRUE
+986   8824165  8824165  8825798    2 1.000000 1.993102   2  TRUE
+987   8996902  8996902  8997697    2 1.000000 2.546511   2  TRUE
+988   9051417  9051417  9057933    6 1.000000 1.904032   3  TRUE
+989   9357791  9357791  9359744    2 1.000000 1.716804   1  TRUE
+990   9377368  9377368  9378944    2 1.000000 1.649329   1  TRUE
+991   9382476  9382476  9384571    4 1.000000 2.174359   4  TRUE
+992   9414561  9414561  9416016    2 1.000000 2.002958   2  TRUE
+993   9455349  9455349  9457249    4 1.000000 2.685709   4  TRUE
+994   9461023  9461023  9463969    4 1.000000 2.642982   4  TRUE
+995   9500484  9500484  9509176   12 1.000000 1.859966   6  TRUE
+996   9691675  9691675  9697175    6 1.000000 2.299544   3  TRUE
+997   9712059  9712059  9716966   12 1.000000 2.357574  10  TRUE
+998   9764057  9764057  9764862    2 1.000000 2.074368   1  TRUE
+999   9851517  9851517  9852727    2 1.000000 2.261658   1  TRUE
+1000  9862617  9862617  9864817    4 1.000000 3.024834   4  TRUE
+1001  9897488  9897488  9898048    2 1.000000 1.614517   1  TRUE
+1002  9968821  9968821  9969159    2 0.500000 1.928175   2 FALSE
+1003 10229901 10229901 10230313    2 1.000000 2.466099   2  TRUE
+1004 10231535 10231535 10236782   12 1.000000 2.192895  11  TRUE
+1005 10244605 10244605 10247393    2 1.000000 1.525882   1  TRUE
+1006 10253302 10253302 10255582    2 1.000000 1.672374   0  TRUE
+1007 10264045 10264045 10264610    2 1.000000 1.904475   1  TRUE
+1008 10274434 10274434 10277395    2 1.000000 1.986157   2  TRUE
+1009 10284488 10284488 10294345   10 1.000000 2.475155   9  TRUE
+1010 10296587 10296587 10297926    2 1.000000 2.042864   2  TRUE
+1011 10299908 10299908 10311313   16 1.000000 3.514357  15  TRUE
+1012 10362321 10362321 10365458    2 1.000000 1.536640   1  TRUE
+1013 10378704 10378704 10380068    2 1.000000 1.819973   1  TRUE
+1014 10403251 10403251 10405093    2 1.000000 1.634843   1  TRUE
+1015 10410095 10410095 10414427   10 1.000000 2.606092   9  TRUE
+1016 10423881 10423881 10425304    2 1.000000 2.292504   2  TRUE
+1017 10647092 10647092 10649965    2 1.000000 1.328653   0  TRUE
+1018 10659251 10659251 10661597    2 1.000000 2.733187   2  TRUE
+1019 10679109 10679109 10684259    4 1.000000 1.632647   1  TRUE
+1020 10769012 10769012 10772333   10 1.000000 2.253041   8  TRUE
+1021 10808167 10808167 10811049    4 1.000000 1.865759   4  TRUE
+1022 10826592 10826592 10832421    4 1.000000 2.557880   3  TRUE
+1023 10839455 10839455 10867333   42 1.000000 2.633817  42  TRUE
+1024 11008727 11008727 11012786   14 1.000000 4.457694  14  TRUE
+1025 11116407 11116407 11120779    6 1.000000 2.680164   5  TRUE
+1026 11122165 11122165 11127943    8 1.000000 3.058043   7  TRUE
+1027 11210178 11210178 11211451    2 1.000000 3.913442   2  TRUE
+1028 11211985 11211985 11212607    2 1.000000 2.593997   2  TRUE
+1029 11385231 11385231 11388725    2 1.000000 2.390357   1  TRUE
+1030 11397577 11397577 11404474   10 1.000000 1.977307   7  TRUE
+1031 11412407 11412407 11415068    6 1.000000 1.982944   4  TRUE
+1032 11418377 11418377 11423935    8 1.000000 2.350543   6  TRUE
+1033 11426499 11426499 11427213    2 0.666667 3.295751   1 FALSE
+1034 11479816 11479816 11488413    4 1.000000 1.618633   1  TRUE
+1035 11559412 11559412 11562098    2 1.000000 2.261039   2  TRUE
+1036 11831950 11831950 11832793    2 1.000000 3.717539   2  TRUE
+1037 11871244 11871244 11874115    2 1.000000 1.813182   1  TRUE
+1038 12145127 12145127 12151365   18 1.000000 3.545083  18  TRUE
+1039 12267539 12267539 12268293    4 1.000000 3.292715   3  TRUE
+1040 12289452 12289452 12296388   12 1.000000 2.132162   8  TRUE
+1041 12298343 12298343 12300054    2 1.000000 1.723213   1  TRUE
+1042 12312891 12312891 12314078    2 1.000000 1.782516   1  TRUE
+1043 12320914 12320914 12321909    2 1.000000 1.659526   1  TRUE
+1044 12388788 12388788 12392915    6 1.000000 2.987360   6  TRUE
+1045 12505383 12505383 12506196    2 0.500000 2.447364   1 FALSE
+1046 12514560 12514560 12516427    2 1.000000 1.566951   0  TRUE
+1047 12575415 12575415 12578997    8 1.000000 2.408690   8  TRUE
+1048 12580051 12580051 12581655    2 1.000000 1.927152   1  TRUE
+1049 12622399 12622399 12624916    2 1.000000 2.313707   2  TRUE
+1050 12637189 12637189 12642708    4 1.000000 2.189980   3  TRUE
+1051 12650467 12650467 12652375    6 1.000000 1.668518   3  TRUE
+1052 12725749 12725749 12728423    4 1.000000 2.393370   3  TRUE
+1053 12753117 12753117 12754711    4 1.000000 2.890730   4  TRUE
+1054 12772725 12772725 12773486    2 1.000000 3.404753   2  TRUE
+1055 12801749 12801749 12804698    4 1.000000 2.280323   4  TRUE
+1056 13043589 13043589 13045270    2 1.000000 2.521230   2  TRUE
+1057 13081745 13081745 13085640    8 1.000000 2.308360   6  TRUE
+1058 13090893 13090893 13093735    4 1.000000 2.336528   3  TRUE
+1059 13142610 13142610 13143197    2 1.000000 1.910966   1  TRUE
+1060 13154195 13154195 13155881    2 1.000000 2.049058   2  TRUE
+1061 13188319 13188319 13190807    6 1.000000 2.125845   6  TRUE
+1062 13192965 13192965 13202714    8 1.000000 1.892464   6  TRUE
+1063 13209288 13209288 13220003   12 1.000000 2.030651   8  TRUE
+1064 13281087 13281087 13287259    2 1.000000 2.179646   2  TRUE
+1065 13310380 13310380 13313159    2 1.000000 2.412586   2  TRUE
+1066 13401826 13401826 13402898    2 1.000000 2.053090   1  TRUE
+1067 13487283 13487283 13487748    2 1.000000 1.853162   1  TRUE
+1068 13645964 13645964 13652739   14 1.000000 2.299132  13  TRUE
+1069 13841053 13841053 13843380    8 1.000000 2.289559   5  TRUE
+1070 13850324 13850324 13851551    2 1.000000 2.132921   1  TRUE
+1071 13918862 13918862 13921413    4 1.000000 2.046497   3  TRUE
+1072 13964597 13964597 13966838    6 1.000000 2.862330   6  TRUE
+1073 14001568 14001568 14004841    4 1.000000 2.761017   4  TRUE
+1074 14022052 14022052 14022978    2 1.000000 1.592843   1  TRUE
+1075 14028390 14028390 14032426   10 1.000000 2.250752   8  TRUE
+1076 14037511 14037511 14039171    4 1.000000 4.047589   4  TRUE
+1077 14060685 14060685 14062157    2 1.000000 2.028003   2  TRUE
+1078 14098861 14098861 14102758    6 1.000000 3.351914   6  TRUE
+1079 14113032 14113032 14113985    2 1.000000 1.804513   1  TRUE
+1080 14123382 14123382 14123930    2 1.000000 2.605905   2  TRUE
+1081 14152218 14152218 14153870    4 1.000000 1.909245   2  TRUE
+1082 14162982 14162982 14163191    2 0.500000 1.526748   1 FALSE
+1083 14164278 14164278 14165944    4 1.000000 2.224761   3  TRUE
+1084 14168997 14168997 14173044    6 1.000000 1.718442   2  TRUE
+1085 14181398 14181398 14181940    2 1.000000 2.032305   0  TRUE
+1086 14184046 14184046 14184565    2 0.500000 2.042332   1 FALSE
+1087 14303361 14303361 14305773    4 1.000000 2.355049   3  TRUE
+1088 14323574 14323574 14327574    6 1.000000 2.015060   5  TRUE
+1089 14410354 14410354 14411193    2 1.000000 1.842356   2  TRUE
+1090 14547204 14547204 14548654    2 1.000000 1.635301   1  TRUE
+1091 14550769 14550769 14552670    4 1.000000 1.848628   3  TRUE
+1092 14565639 14565639 14566782    2 1.000000 1.683142   1  TRUE
+1093 14575690 14575690 14576771    4 1.000000 1.732598   1  TRUE
+1094 14587513 14587513 14595384    6 1.000000 2.303084   6  TRUE
+1095 14633501 14633501 14636443    4 1.000000 1.990034   2  TRUE
+1096 14646128 14646128 14650627    4 1.000000 1.991852   3  TRUE
+1097 14754450 14754450 14758833    6 1.000000 2.320957   4  TRUE
+1098 14779906 14779906 14782223    2 1.000000 2.997320   2  TRUE
+1099 14784876 14784876 14785979    2 1.000000 2.617783   2  TRUE
+1100 14971642 14971642 14972514    2 1.000000 3.715569   2  TRUE
+1101 14988079 14988079 14989430    4 1.000000 1.906122   2  TRUE
+1102 15019250 15019250 15021991    2 1.000000 1.856762   1  TRUE
+1103 15098322 15098322 15106925   12 1.000000 2.441935  11  TRUE
+1104 15142066 15142066 15144468    6 1.000000 2.067197   5  TRUE
+1105 15284466 15284466 15290339   10 1.000000 2.338614   7  TRUE
+1106 15351848 15351848 15354949    2 1.000000 2.088405   2  TRUE
+1107 15470683 15470683 15472034    2 1.000000 1.619526   2  TRUE
+1108 15533573 15533573 15535882    6 1.000000 2.631508   6  TRUE
+1109 15565830 15565830 15567113    4 1.000000 2.583371   3  TRUE
+1110 15589732 15589732 15591090    4 1.000000 2.343392   4  TRUE
+1111 15592179 15592179 15593337    2 1.000000 2.274656   1  TRUE
+1112 15622327 15622327 15624528    4 1.000000 1.768203   2  TRUE
+1113 15663707 15663707 15665179    2 1.000000 2.562312   2  TRUE
+1114 15671679 15671679 15672869    2 1.000000 1.872962   0  TRUE
+1115 15675991 15675991 15679812    6 1.000000 4.165028   6  TRUE
+1116 15731536 15731536 15734104    2 1.000000 1.867400   2  TRUE
+1117 15739572 15739572 15744946    4 1.000000 1.666478   2  TRUE
+1118 15788118 15788118 15789362    2 1.000000 1.731416   1  TRUE
+1119 15814821 15814821 15816061    2 1.000000 2.218190   1  TRUE
+1120 15822305 15822305 15826761   10 1.000000 2.770523   9  TRUE
+1121 16010050 16010050 16012475    6 1.000000 3.530621   5  TRUE
+1122 16039969 16039969 16049222   18 1.000000 3.250367  17  TRUE
+1123 16049360 16049360 16051415    4 1.000000 3.051108   3  TRUE
+1124 16105318 16105318 16106354    2 1.000000 2.050262   1  TRUE
+1125 16113002 16113002 16114381    2 1.000000 2.791290   2  TRUE
+1126 16130470 16130470 16132014    2 1.000000 1.824166   0  TRUE
+1127 16169901 16169901 16173894    6 1.000000 2.570982   5  TRUE
+1128 16227263 16227263 16228278    2 1.000000 1.739130   1  TRUE
+1129 16231245 16231245 16232350    2 1.000000 3.058837   1  TRUE
+1130 16383765 16383765 16385614    4 1.000000 3.711590   4  TRUE
+1131 16406979 16406979 16410306    4 1.000000 2.743222   4  TRUE
+1132 16416432 16416432 16417172    6 1.000000 5.003121   6  TRUE
+1133 16578853 16578853 16581851   10 1.000000 3.048234   9  TRUE
+1134 16595568 16595568 16596148    2 1.000000 1.983196   1  TRUE
+1135 16602786 16602786 16603527    2 1.000000 3.421856   2  TRUE
+1136 16609159 16609159 16609810    2 1.000000 2.129682   1  TRUE
+1137 16632395 16632395 16635922    6 1.000000 2.986384   6  TRUE
+1138 16645967 16645967 16646603    2 1.000000 2.706945   2  TRUE
+1139 16651946 16651946 16654000    2 1.000000 2.020764   2  TRUE
+1140 16711358 16711358 16713915    6 1.000000 2.576563   4  TRUE
+1141 16742435 16742435 16748382   14 1.000000 2.564474  14  TRUE
+1142 16754078 16754078 16755207    2 1.000000 2.268474   2  TRUE
+1143 16756208 16756208 16757369    2 1.000000 3.187690   2  TRUE
+1144 16764319 16764319 16771126   16 1.000000 2.219397  15  TRUE
+1145 16778517 16778517 16779730    6 1.000000 2.865382   4  TRUE
+1146 16955753 16955753 16956690    2 1.000000 2.304925   2  TRUE
+1147 17010294 17010294 17013022    6 1.000000 3.082212   6  TRUE
+1148 17105461 17105461 17110639    2 1.000000 2.195273   2  TRUE
+1149 17173518 17173518 17174974    2 1.000000 1.775685   2  TRUE
+1150 17357432 17357432 17360370    8 1.000000 1.836657   5  TRUE
+1151 17361015 17361015 17367957   20 1.000000 2.448561  19  TRUE
+1152 17375548 17375548 17377231    4 1.000000 2.228224   3  TRUE
+1153 17557112 17557112 17558335    2 1.000000 2.249536   1  TRUE
+1154 17757960 17757960 17760118    6 1.000000 2.808076   6  TRUE
+1155 17764165 17764165 17765585    2 1.000000 2.533326   2  TRUE
+1156 17831746 17831746 17833549    2 1.000000 1.619243   2  TRUE
+1157 17988322 17988322 17995511   20 1.000000 3.236844  18  TRUE
+1158 17999086 17999086 18000098    4 1.000000 2.549390   4  TRUE
+1159 18011615 18011615 18012489    2 1.000000 1.942475   1  TRUE
+1160 18015663 18015663 18016952    2 1.000000 2.222263   2  TRUE
+1161 18063858 18063858 18069697    6 1.000000 2.334272   3  TRUE
+1162 18073005 18073005 18079037   10 1.000000 2.055118   6  TRUE
+1163 18099810 18099810 18106277    4 1.000000 2.325339   4  TRUE
+1164 18108823 18108823 18109993    2 1.000000 2.339980   2  TRUE
+1165 18112167 18112167 18113992    4 1.000000 2.234728   4  TRUE
+1166 18271169 18271169 18274202    2 1.000000 2.747299   2  TRUE
+1167 18288894 18288894 18291773    4 1.000000 2.871501   4  TRUE
+1168 18295237 18295237 18297113    4 1.000000 2.248799   4  TRUE
+1169 18345934 18345934 18347462    2 1.000000 3.121033   2  TRUE
+1170 18354832 18354832 18356350    2 1.000000 1.898938   1  TRUE
+1171 18407555 18407555 18412384    6 1.000000 1.951507   5  TRUE
+1172 18449285 18449285 18456002    4 1.000000 1.663752   3  TRUE
+1173 18626066 18626066 18628718    6 1.000000 3.120119   5  TRUE
+1174 18800194 18800194 18801395    2 1.000000 2.300300   2  TRUE
+1175 18841958 18841958 18842706    2 1.000000 1.791822   2  TRUE
+1176 18848621 18848621 18849544    2 1.000000 1.896651   1  TRUE
+1177 18850229 18850229 18852555   12 1.000000 3.102284  12  TRUE
+1178 18871449 18871449 18871977    2 1.000000 3.474827   2  TRUE
+1179 19044615 19044615 19046342    4 1.000000 2.567118   3  TRUE
+1180 19062127 19062127 19063490    2 1.000000 1.967404   2  TRUE
+1181 19151921 19151921 19159091    8 1.000000 2.473111   7  TRUE
+1182 19288649 19288649 19289649    2 1.000000 2.715375   2  TRUE
+1183 19584392 19584392 19585840    4 1.000000 2.661683   4  TRUE
+1184 19618379 19618379 19619306    4 1.000000 2.948251   4  TRUE
+1185 19642534 19642534 19644318    2 1.000000 1.756777   1  TRUE
+1186 19653115 19653115 19654314    2 1.000000 1.947832   2  TRUE
+1187 19657085 19657085 19657904    2 1.000000 1.953529   2  TRUE
+1188 19667844 19667844 19671918    4 1.000000 1.788254   0  TRUE
+1189 19833017 19833017 19834053    2 1.000000 2.546605   2  TRUE
+1190 19871241 19871241 19874209    4 1.000000 2.074097   3  TRUE
+1191 19894924 19894924 19899719   10 1.000000 2.151675   9  TRUE
+1192 19902001 19902001 19907769    6 1.000000 2.711763   5  TRUE
+1193 19978126 19978126 19978899    4 1.000000 2.120873   2  TRUE
+1194 20000915 20000915 20003241    6 1.000000 2.433302   5  TRUE
+1195 20103387 20103387 20105158    2 1.000000 2.644142   1  TRUE
+1196 20185128 20185128 20189367    6 1.000000 3.230815   5  TRUE
+1197 20284037 20284037 20286471    2 1.000000 2.590639   2  TRUE
+1198 20294151 20294151 20296239    6 1.000000 3.110191   6  TRUE
+1199 20310205 20310205 20310448    2 0.500000 3.893724   2 FALSE
+1200 20347261 20347261 20349161    4 1.000000 2.762336   3  TRUE
+1201 20375272 20375272 20377686    4 1.000000 4.077344   4  TRUE
+1202 20383490 20383490 20384683    4 1.000000 2.459088   3  TRUE
+1203 20393011 20393011 20393720    2 0.666667 2.260479   1 FALSE
+1204 20398628 20398628 20399962    4 1.000000 2.787753   4  TRUE
+1205 20400855 20400855 20405625   12 1.000000 4.997288  12  TRUE
+1206 20442924 20442924 20445181    4 1.000000 2.481057   4  TRUE
+1207 20471587 20471587 20472937    2 1.000000 1.614817   1  TRUE
+1208 20478421 20478421 20479648    2 1.000000 1.594695   1  TRUE
+1209 20516145 20516145 20517253    2 1.000000 2.231376   2  TRUE
+1210 20520340 20520340 20521452    6 1.000000 4.611356   6  TRUE
+1211 20784081 20784081 20786500    4 1.000000 2.498690   4  TRUE
+1212 20788896 20788896 20790157    2 1.000000 1.908736   2  TRUE
+1213 20792199 20792199 20794183    2 1.000000 2.277864   1  TRUE
+1214 20809977 20809977 20810797    2 1.000000 2.052035   2  TRUE
+1215 20936752 20936752 20940712    2 1.000000 1.735991   1  TRUE
+1216 20948782 20948782 20949079    2 0.500000 2.782214   2 FALSE
+1217 20949526 20949526 20950055    2 0.500000 1.232087   0 FALSE
+1218 21006222 21006222 21011475   10 1.000000 2.949457  10  TRUE
+1219 21024776 21024776 21028591    4 1.000000 3.040045   4  TRUE
+1220 21034894 21034894 21035998    4 1.000000 1.816548   1  TRUE
+1221 21044098 21044098 21045466    6 1.000000 3.792222   5  TRUE
+1222 21131535 21131535 21132276    2 1.000000 1.997911   2  TRUE
+1223 21175361 21175361 21178419    2 1.000000 3.566676   2  TRUE
+1224 21190110 21190110 21192136    2 1.000000 1.705261   1  TRUE
+1225 21198799 21198799 21200165    4 1.000000 2.091152   3  TRUE
+1226 21209683 21209683 21212092    2 1.000000 2.468124   2  TRUE
+1227 21279080 21279080 21280696    6 1.000000 2.415732   6  TRUE
+1228 21342327 21342327 21343393    2 1.000000 2.840311   2  TRUE
+1229 21345453 21345453 21346450    2 1.000000 1.749188   1  TRUE
+1230 21359758 21359758 21360432    2 0.666667 2.464508   2 FALSE
+1231 21431183 21431183 21432422    4 1.000000 3.858368   4  TRUE
+1232 21433323 21433323 21435092    4 1.000000 2.911906   3  TRUE
+1233 21440454 21440454 21441195    4 1.000000 3.627196   4  TRUE
+1234 21514292 21514292 21515507    2 1.000000 3.492263   2  TRUE
+1235 21532497 21532497 21533514    2 1.000000 1.943636   1  TRUE
+1236 21569390 21569390 21569650    2 1.000000 2.364056   2  TRUE
+1237 21587705 21587705 21589898    6 1.000000 1.852139   4  TRUE
+1238 21607929 21607929 21609242    4 1.000000 1.554845   2  TRUE
+1239 21609846 21609846 21612295    4 1.000000 1.738171   2  TRUE
+1240 21634083 21634083 21635677    4 1.000000 2.103847   4  TRUE
+1241 21727512 21727512 21728942    2 1.000000 2.640092   1  TRUE
+1242 21787481 21787481 21788603    4 1.000000 3.329508   4  TRUE
+1243 21859756 21859756 21865578    6 1.000000 2.124537   5  TRUE
+1244 21878827 21878827 21887175   12 1.000000 2.876283  12  TRUE
+1245 22071211 22071211 22071740    2 1.000000 2.788738   2  TRUE
+1246 22080248 22080248 22081370    2 1.000000 2.135677   1  TRUE
+1247 22087549 22087549 22088299    2 1.000000 2.813441   2  TRUE
+1248 22094074 22094074 22095910    2 1.000000 2.942493   2  TRUE
+1249 22128077 22128077 22131656    8 1.000000 2.599674   7  TRUE
+1250 22133299 22133299 22137364    4 1.000000 2.682313   2  TRUE
+1251 22147859 22147859 22150879    6 1.000000 2.752908   6  TRUE
+1252 22206874 22206874 22210458    6 1.000000 2.341950   5  TRUE
+1253 22236203 22236203 22240726    6 1.000000 1.884402   1  TRUE
+1254 22261571 22261571 22263368    6 1.000000 4.176094   5  TRUE
+1255 22267704 22267704 22269379    2 1.000000 2.973813   2  TRUE
+1256 22309388 22309388 22311783    2 1.000000 2.284841   1  TRUE
+1257 22331789 22331789 22340443    8 1.000000 1.940483   5  TRUE
+1258 22355597 22355597 22357965    4 1.000000 2.374792   3  TRUE
+1259 22383827 22383827 22384953    2 1.000000 2.411248   2  TRUE
+1260 22391752 22391752 22396630    6 1.000000 3.006526   6  TRUE
+1261 22402648 22402648 22404188    4 1.000000 2.294736   3  TRUE
+1262 22409658 22409658 22410414    2 1.000000 1.576422   1  TRUE
+1263 22430376 22430376 22431464    4 1.000000 2.239794   4  TRUE
+1264 22486137 22486137 22488670    4 1.000000 1.824851   2  TRUE
+1265 22495985 22495985 22497378    4 1.000000 2.108104   2  TRUE
+1266 22533838 22533838 22538220    8 1.000000 2.035591   7  TRUE
+1267 22567178 22567178 22567895    2 1.000000 2.321550   1  TRUE
+1268 22585215 22585215 22591401   10 1.000000 2.101998  10  TRUE
+1269 22689911 22689911 22692064    4 1.000000 2.231137   3  TRUE
+1270 22723141 22723141 22724710    2 1.000000 1.886022   1  TRUE
+1271 22749662 22749662 22751858    2 1.000000 1.683393   1  TRUE
+1272 22772872 22772872 22773558    4 1.000000 2.839447   3  TRUE
+1273 22823848 22823848 22825385    2 1.000000 2.560491   2  TRUE
+1274 22833660 22833660 22842049   14 1.000000 2.234118  11  TRUE
+1275 22845536 22845536 22848603    2 1.000000 1.372276   1  TRUE
+1276 22849885 22849885 22853089    4 1.000000 2.226090   4  TRUE
+1277 22857937 22857937 22858645    2 1.000000 1.844909   0  TRUE
+1278 22943680 22943680 22948676   12 1.000000 2.278211  11  TRUE
+1279 22974731 22974731 22976485    2 1.000000 1.946980   2  TRUE
+1280 23142893 23142893 23144095    2 1.000000 2.103164   1  TRUE
+1281 23336931 23336931 23337289    2 1.000000 1.543572   1  TRUE
+1282 24168651 24168651 24170669    2 1.000000 3.334517   2  TRUE
+1283 24611901 24611901 24613089    2 1.000000 1.717419   0  TRUE
+1284 24625735 24625735 24627133    2 1.000000 2.268481   1  TRUE
+1285 24636154 24636154 24636812    2 0.666667 2.139771   1 FALSE
+1286 24741896 24741896 24743565    6 1.000000 3.045266   5  TRUE
+1287 27006529 27006529 27009425    6 1.000000 1.714305   1  TRUE
+1288 27076584 27076584 27077724    2 1.000000 1.687996   0  TRUE
+1289 27224914 27224914 27227320    2 1.000000 1.745451   0  TRUE
+1290      277      277     2385    2 0.000030 2.264704   1 FALSE
+1291     6054     6054     6965    2 1.000000 2.144397   0  TRUE
+1292    10411    10411    12335    2 1.000000 2.443993   2  TRUE
+1293    14218    14218    15551    2 1.000000 2.204402   1  TRUE
+1294    22377    22377    25511    2 1.000000 2.944845   2  TRUE
+1295    33016    33016    87756    6 1.000000 2.414328   4  TRUE
+1296   102772   102772   106439    4 1.000000 1.835057   3  TRUE
+1297   109109   109109   110760    2 1.000000 2.034020   1  TRUE
+1298   121492   121492   122624    2 1.000000 2.032321   2  TRUE
+1299   140405   140405   140743    2 1.000000 2.016922   0  TRUE
+1300   167280   167280   168979    2 1.000000 2.604958   1  TRUE
+1301   213457   213457   214451    2 1.000000 2.529042   1  TRUE
+1302   260793   260793   263395    6 1.000000 2.308362   4  TRUE
+1303   290560   290560   292009    2 1.000000 2.274230   0  TRUE
+1304   298601   298601   299845    2 1.000000 2.493469   0  TRUE
+1305   320303   320303   321199    2 1.000000 2.154700   1  TRUE
+1306  3684581  3684581  3685752    2 1.000000 2.350749   2  TRUE
+1307  3735388  3735388  3736339    2 1.000000 2.794938   2  TRUE
+1308  4077235  4077235  4079510    4 1.000000 2.326877   2  TRUE
+1309  4306407  4306407  4307884    2 1.000000 1.714686   2  TRUE
+1310  4318645  4318645  4321484    4 1.000000 2.478984   4  TRUE
+1311  4353068  4353068  4353939    2 0.666667 1.850082   0 FALSE
+1312  4402822  4402822  4404523    2 1.000000 3.044261   2  TRUE
+1313  4410949  4410949  4411835    2 0.500000 2.782527   1 FALSE
+1314  4419961  4419961  4420949    2 1.000000 1.718350   1  TRUE
+1315  4427747  4427747  4429190    2 1.000000 2.646918   2  TRUE
+1316  4450459  4450459  4456099    8 1.000000 2.958528   8  TRUE
+1317  4477249  4477249  4479398    4 1.000000 1.993584   2  TRUE
+1318  4649698  4649698  4650460    2 1.000000 2.681438   2  TRUE
+1319  4659756  4659756  4660888    4 1.000000 1.910346   3  TRUE
+1320  4680366  4680366  4681284    2 1.000000 3.326583   2  TRUE
+1321  4748040  4748040  4749151    4 1.000000 2.355381   3  TRUE
+1322  4801793  4801793  4805556    4 1.000000 1.618948   2  TRUE
+1323  4823362  4823362  4823954    2 1.000000 2.298680   2  TRUE
+1324  4828601  4828601  4829808    4 1.000000 2.879881   3  TRUE
+1325  4834438  4834438  4836875    4 1.000000 2.272054   3  TRUE
+1326  4849952  4849952  4852734    2 1.000000 2.132808   2  TRUE
+1327  4853406  4853406  4854185    2 1.000000 1.434367   1  TRUE
+1328  4855869  4855869  4856454    2 0.500000 1.827173   1 FALSE
+1329  4858162  4858162  4859619    4 1.000000 1.958623   4  TRUE
+1330  4864101  4864101  4864584    2 1.000000 1.804034   1  TRUE
+1331  4910238  4910238  4913037    4 1.000000 1.989898   3  TRUE
+1332  4969513  4969513  4971301    2 1.000000 1.559567   1  TRUE
+1333  4975185  4975185  4977003    2 1.000000 2.171496   2  TRUE
+1334  4980145  4980145  4983500    6 1.000000 2.164667   5  TRUE
+1335  4985422  4985422  4990105   10 1.000000 1.983116   7  TRUE
+1336  4993941  4993941  4997068    2 1.000000 2.354165   1  TRUE
+1337  5023845  5023845  5024738    2 1.000000 2.382547   2  TRUE
+1338  5031835  5031835  5036410    2 1.000000 1.195646   0  TRUE
+1339  5041345  5041345  5042461    2 1.000000 1.729048   1  TRUE
+1340  5085500  5085500  5089468    4 1.000000 1.983245   4  TRUE
+1341  5091397  5091397  5092340    2 1.000000 2.766384   2  TRUE
+1342  5098162  5098162  5104538   14 1.000000 1.942649   7  TRUE
+1343  5111832  5111832  5114446    4 1.000000 2.389025   4  TRUE
+1344  5116155  5116155  5122903   14 1.000000 2.498701  14  TRUE
+1345  5194004  5194004  5195280    2 1.000000 1.850608   1  TRUE
+1346  5202706  5202706  5205501    6 1.000000 3.344692   6  TRUE
+1347  5210419  5210419  5213101    6 1.000000 4.228544   6  TRUE
+1348  5213803  5213803  5217587    8 1.000000 3.234956   8  TRUE
+1349  5223121  5223121  5224328    2 1.000000 1.434023   1  TRUE
+1350  5262096  5262096  5263309    2 1.000000 2.982204   2  TRUE
+1351  5462603  5462603  5463918    2 1.000000 2.018159   1  TRUE
+1352  5570730  5570730  5574734    6 1.000000 2.004086   5  TRUE
+1353  5577752  5577752  5578292    2 0.666667 2.414876   2 FALSE
+1354  5606105  5606105  5606352    2 0.666667 3.438088   2 FALSE
+1355  5611142  5611142  5612264    4 1.000000 2.417872   3  TRUE
+1356  5645405  5645405  5647095    4 1.000000 2.910868   4  TRUE
+1357  5659739  5659739  5661342    2 1.000000 1.917473   1  TRUE
+1358  5684581  5684581  5685257    2 1.000000 1.912843   2  TRUE
+1359  5716404  5716404  5717990    6 1.000000 2.966325   5  TRUE
+1360  5718180  5718180  5723190   14 1.000000 2.250786  13  TRUE
+1361  5725448  5725448  5728013    4 1.000000 3.094149   4  TRUE
+1362  5729468  5729468  5732373    6 1.000000 1.921384   4  TRUE
+1363  5735637  5735637  5736313    2 1.000000 1.666333   1  TRUE
+1364  5783270  5783270  5783548    2 1.000000 2.169926   2  TRUE
+1365  5993331  5993331  5994717    2 1.000000 1.655509   2  TRUE
+1366  6352291  6352291  6353616    2 1.000000 1.940166   0  TRUE
+1367  6368331  6368331  6369403    2 1.000000 2.917207   2  TRUE
+1368  6413102  6413102  6415850    2 1.000000 1.538751   1  TRUE
+1369  6421123  6421123  6425787    4 1.000000 2.242332   4  TRUE
+1370  6862144  6862144  6863156    2 1.000000 1.594178   1  TRUE
+1371  7085366  7085366  7087437    2 1.000000 1.880538   2  TRUE
+1372  7088148  7088148  7091053    4 1.000000 1.880984   3  TRUE
+1373  7099696  7099696  7106442   14 1.000000 2.557679  13  TRUE
+1374  7109020  7109020  7112493    6 1.000000 2.825334   6  TRUE
+1375  7122183  7122183  7124355    2 1.000000 2.093323   1  TRUE
+1376  7132113  7132113  7133968    2 1.000000 1.681898   2  TRUE
+1377  7144073  7144073  7145432    4 1.000000 3.238003   4  TRUE
+1378  7149625  7149625  7151189    4 1.000000 2.063285   3  TRUE
+1379  7185478  7185478  7187434    4 1.000000 3.009130   4  TRUE
+1380  7248316  7248316  7248640    2 0.500000 2.246087   2 FALSE
+1381  7249158  7249158  7249922    2 1.000000 3.771331   2  TRUE
+1382  7472749  7472749  7473961    2 1.000000 2.224205   2  TRUE
+1383  7529839  7529839  7531465    2 1.000000 1.935739   0  TRUE
+1384  7970117  7970117  7971741    2 1.000000 1.788303   1  TRUE
+1385  8007240  8007240  8009336    2 1.000000 2.154403   1  TRUE
+1386  8013488  8013488  8014550    2 1.000000 2.138067   2  TRUE
+1387  8125715  8125715  8126964    4 1.000000 2.505561   4  TRUE
+1388  8164650  8164650  8166698    2 1.000000 1.909004   2  TRUE
+1389  8188250  8188250  8194689    4 1.000000 1.817267   2  TRUE
+1390  8223816  8223816  8227356   10 1.000000 2.467871  10  TRUE
+1391  8307763  8307763  8308136    2 1.000000 2.319567   2  TRUE
+1392  8361083  8361083  8362024    2 1.000000 3.038413   2  TRUE
+1393  8477516  8477516  8480594    2 1.000000 1.460692   0  TRUE
+1394  8658578  8658578  8660132    2 1.000000 2.204513   1  TRUE
+1395  8669863  8669863  8671072    4 1.000000 3.831183   4  TRUE
+1396  8731348  8731348  8732737    4 1.000000 2.060481   4  TRUE
+1397  8739936  8739936  8741093    4 1.000000 2.048712   4  TRUE
+1398  8747864  8747864  8750224    4 1.000000 2.687731   4  TRUE
+1399  8807123  8807123  8808997    2 1.000000 2.329336   2  TRUE
+1400  8809835  8809835  8812460    2 1.000000 2.345477   2  TRUE
+1401  8813064  8813064  8814283    6 1.000000 2.501537   5  TRUE
+1402  8818178  8818178  8818771    4 1.000000 2.315404   3  TRUE
+1403  8846352  8846352  8848833    8 1.000000 3.868667   8  TRUE
+1404  8886616  8886616  8888219    4 1.000000 2.230803   3  TRUE
+1405  8930827  8930827  8931746    2 1.000000 2.254185   2  TRUE
+1406  9023672  9023672  9026316    6 1.000000 3.129450   6  TRUE
+1407  9030032  9030032  9035859   16 1.000000 3.881501  16  TRUE
+1408  9037667  9037667  9038155    2 0.666667 2.046957   2 FALSE
+1409  9047662  9047662  9052091   12 1.000000 3.267736  12  TRUE
+1410  9055209  9055209  9058079    2 1.000000 1.643649   1  TRUE
+1411  9073830  9073830  9076045    2 1.000000 1.529439   1  TRUE
+1412  9226343  9226343  9227348    2 1.000000 2.030474   2  TRUE
+1413  9258162  9258162  9259693    4 1.000000 2.087010   4  TRUE
+1414  9340273  9340273  9341724    2 1.000000 1.521117   0  TRUE
+1415  9347073  9347073  9350155    4 1.000000 2.089436   3  TRUE
+1416  9396269  9396269  9397700    2 1.000000 2.368290   1  TRUE
+1417  9416739  9416739  9420488    4 1.000000 2.706981   3  TRUE
+1418  9456685  9456685  9457902    2 1.000000 2.158702   2  TRUE
+1419  9458414  9458414  9460382    2 1.000000 1.757596   2  TRUE
+1420  9514565  9514565  9516753    4 1.000000 2.935174   3  TRUE
+1421  9561763  9561763  9563894    4 1.000000 2.635990   3  TRUE
+1422  9572640  9572640  9574731    4 1.000000 2.149902   4  TRUE
+1423  9629986  9629986  9632216    4 1.000000 2.978392   4  TRUE
+1424  9677503  9677503  9678549    2 1.000000 2.253596   1  TRUE
+1425  9685462  9685462  9686035    2 1.000000 2.843283   2  TRUE
+1426  9692782  9692782  9693355    2 1.000000 2.733323   2  TRUE
+1427  9703414  9703414  9704643    2 1.000000 4.213282   2  TRUE
+1428  9709752  9709752  9711130    2 1.000000 2.404837   1  TRUE
+1429  9870556  9870556  9871761    2 1.000000 2.056884   0  TRUE
+1430  9882427  9882427  9885759    2 1.000000 1.648717   1  TRUE
+1431 10080204 10080204 10086796   10 1.000000 2.392787   8  TRUE
+1432 10158804 10158804 10159434    2 0.666667 1.974266   0 FALSE
+1433 10263734 10263734 10270033   12 1.000000 2.151511  10  TRUE
+1434 10350338 10350338 10358178    8 1.000000 3.146503   8  TRUE
+1435 10448758 10448758 10453119    4 1.000000 2.092344   2  TRUE
+1436 10455930 10455930 10456817    2 1.000000 1.936018   1  TRUE
+1437 10490077 10490077 10492090    4 1.000000 2.340186   4  TRUE
+1438 10503898 10503898 10505972    4 1.000000 1.460105   0  TRUE
+1439 10542427 10542427 10545611    2 1.000000 2.678696   2  TRUE
+1440 10557118 10557118 10558624    2 1.000000 1.722311   1  TRUE
+1441 10571827 10571827 10572686    2 1.000000 2.141450   2  TRUE
+1442 10579404 10579404 10579598    2 1.000000 1.434663   1  TRUE
+1443 10853718 10853718 10854742    4 1.000000 2.171834   2  TRUE
+1444 10855899 10855899 10857382    6 1.000000 4.377609   6  TRUE
+1445 10885586 10885586 10886261    2 1.000000 2.714840   2  TRUE
+1446 11210460 11210460 11211044    2 0.666667 1.942323   0 FALSE
+1447 11221946 11221946 11222921    2 1.000000 2.031610   1  TRUE
+1448 11243446 11243446 11244461    2 1.000000 2.618093   2  TRUE
+1449 11258833 11258833 11261783    4 1.000000 2.609807   4  TRUE
+1450 11285190 11285190 11286343    2 1.000000 1.475379   0  TRUE
+1451 11297287 11297287 11302882   12 1.000000 1.845685   7  TRUE
+1452 11311438 11311438 11326266   14 1.000000 1.876719  10  TRUE
+1453 11350261 11350261 11352931   12 1.000000 2.381613  11  TRUE
+1454 11361549 11361549 11362850    2 1.000000 1.516894   0  TRUE
+1455 11368743 11368743 11370733    8 1.000000 3.763126   8  TRUE
+1456 11391601 11391601 11392809    2 1.000000 2.001116   2  TRUE
+1457 11555764 11555764 11558418    2 1.000000 2.028479   1  TRUE
+1458 11614069 11614069 11619385   12 1.000000 3.275167  12  TRUE
+1459 11757706 11757706 11766008   12 1.000000 2.455967   9  TRUE
+1460 11772697 11772697 11781570   20 1.000000 2.470294  18  TRUE
+1461 11825979 11825979 11828042    2 1.000000 1.528790   1  TRUE
+1462 11886666 11886666 11888531    6 1.000000 2.609175   6  TRUE
+1463 12010342 12010342 12011039    2 1.000000 2.024644   0  TRUE
+1464 12250840 12250840 12251323    2 0.500000 1.800520   1 FALSE
+1465 12276962 12276962 12278847    4 1.000000 2.166180   3  TRUE
+1466 12310118 12310118 12312294    2 1.000000 2.436414   2  TRUE
+1467 12328268 12328268 12330958    2 1.000000 2.164533   2  TRUE
+1468 12336176 12336176 12337319    4 1.000000 2.482344   4  TRUE
+1469 12368523 12368523 12370286    2 1.000000 1.655569   1  TRUE
+1470 12401175 12401175 12401457    2 0.500000 1.695136   1 FALSE
+1471 12423115 12423115 12424452    2 1.000000 3.598520   2  TRUE
+1472 12452468 12452468 12453602    4 1.000000 3.553542   3  TRUE
+1473 12468507 12468507 12483186   26 1.000000 3.523651  19  TRUE
+1474 12486157 12486157 12491151    8 1.000000 3.724236   6  TRUE
+1475 12496040 12496040 12499630    4 1.000000 3.818529   4  TRUE
+1476 12500183 12500183 12501417    2 1.000000 3.039960   2  TRUE
+1477 12626475 12626475 12628447    4 1.000000 2.897518   3  TRUE
+1478 12684003 12684003 12685291    4 1.000000 3.790648   3  TRUE
+1479 12690853 12690853 12692300    2 1.000000 2.378049   2  TRUE
+1480 13057248 13057248 13060228    2 1.000000 2.157820   2  TRUE
+1481 13060872 13060872 13061210    2 1.000000 3.005583   1  TRUE
+1482 13364748 13364748 13365558    2 0.666667 1.850370   1 FALSE
+1483 13400169 13400169 13401033    2 1.000000 2.592428   2  TRUE
+1484 13446878 13446878 13448091    2 1.000000 1.565620   1  TRUE
+1485 13645684 13645684 13648482    4 1.000000 2.754859   4  TRUE
+1486 13683111 13683111 13686456    4 1.000000 2.783494   4  TRUE
+1487 13800577 13800577 13804528    6 1.000000 2.831422   5  TRUE
+1488 14005932 14005932 14006391    2 1.000000 2.047401   1  TRUE
+1489 14030435 14030435 14032641    6 1.000000 1.926772   3  TRUE
+1490 14051092 14051092 14053162    4 1.000000 1.756572   2  TRUE
+1491 14055707 14055707 14057585    2 1.000000 2.845695   2  TRUE
+1492 14186534 14186534 14188573    2 1.000000 1.610445   1  TRUE
+1493 14283197 14283197 14284903    4 1.000000 2.454287   4  TRUE
+1494 14307595 14307595 14309062    8 1.000000 3.834517   8  TRUE
+1495 14311710 14311710 14312586    2 1.000000 1.558666   0  TRUE
+1496 14316151 14316151 14316746    2 1.000000 1.972648   2  TRUE
+1497 14324784 14324784 14328228    6 1.000000 2.540702   5  TRUE
+1498 14385001 14385001 14385896    2 1.000000 1.580615   2  TRUE
+1499 14465614 14465614 14466603    2 1.000000 3.722219   2  TRUE
+1500 14530648 14530648 14531537    2 1.000000 1.525148   0  TRUE
+1501 14615787 14615787 14617678    4 1.000000 2.234532   4  TRUE
+1502 14621957 14621957 14623301    2 1.000000 2.307231   2  TRUE
+1503 14624150 14624150 14626493    4 1.000000 2.214020   2  TRUE
+1504 14630067 14630067 14631229    2 1.000000 2.514406   2  TRUE
+1505 14654273 14654273 14655797    2 1.000000 2.234162   2  TRUE
+1506 14671169 14671169 14672608    2 1.000000 1.922261   1  TRUE
+1507 14695585 14695585 14698299    2 1.000000 1.548672   1  TRUE
+1508 14711852 14711852 14716736    8 1.000000 3.418414   8  TRUE
+1509 14717963 14717963 14719171    2 1.000000 2.253708   1  TRUE
+1510 14720946 14720946 14724165   10 1.000000 4.958719  10  TRUE
+1511 14730384 14730384 14730712    2 0.666667 2.403306   2 FALSE
+1512 15043939 15043939 15046661    2 1.000000 3.064911   1  TRUE
+1513 15133349 15133349 15134449    4 1.000000 2.097540   3  TRUE
+1514 15195640 15195640 15195947    2 1.000000 1.595864   2  TRUE
+1515 15225110 15225110 15226054    2 1.000000 2.243693   2  TRUE
+1516 15242260 15242260 15244442    4 1.000000 3.600971   4  TRUE
+1517 15263326 15263326 15263958    2 1.000000 2.234118   2  TRUE
+1518 15355923 15355923 15357616    2 1.000000 2.150941   1  TRUE
+1519 15415524 15415524 15419129    8 1.000000 1.657142   4  TRUE
+1520 15503787 15503787 15504728    2 1.000000 1.982089   2  TRUE
+1521 15510672 15510672 15514993    6 1.000000 2.057353   4  TRUE
+1522 15562760 15562760 15565292    4 1.000000 2.010535   3  TRUE
+1523 15571458 15571458 15572759    2 1.000000 1.460465   1  TRUE
+1524 15595254 15595254 15597756    2 1.000000 1.569092   0  TRUE
+1525 15608802 15608802 15611822    4 1.000000 2.516744   4  TRUE
+1526 15671804 15671804 15673592    2 1.000000 1.739882   1  TRUE
+1527 15792844 15792844 15794354    2 1.000000 2.596854   2  TRUE
+1528 15803901 15803901 15806011    2 1.000000 1.511901   0  TRUE
+1529 15919974 15919974 15921973    6 1.000000 2.311383   6  TRUE
+1530 15934402 15934402 15935691    4 1.000000 4.363763   4  TRUE
+1531 16049419 16049419 16052623    8 1.000000 2.618678   7  TRUE
+1532 16211693 16211693 16213027    4 1.000000 1.969798   3  TRUE
+1533 16215897 16215897 16217119    2 1.000000 2.125837   2  TRUE
+1534 16222465 16222465 16224541    4 1.000000 2.144058   2  TRUE
+1535 16226701 16226701 16230676    4 1.000000 2.982868   3  TRUE
+1536 16234207 16234207 16235475    2 1.000000 3.432550   2  TRUE
+1537 16236214 16236214 16239206    8 1.000000 1.723353   2  TRUE
+1538 16249431 16249431 16253343    8 1.000000 2.399809   8  TRUE
+1539 16348484 16348484 16349744    4 1.000000 2.128071   2  TRUE
+1540 16397921 16397921 16398977    2 1.000000 1.972182   2  TRUE
+1541 16438076 16438076 16438717    2 0.400000 1.973920   1 FALSE
+1542 16448103 16448103 16449450    6 1.000000 3.243155   5  TRUE
+1543 16455672 16455672 16457522    2 1.000000 2.216499   2  TRUE
+1544 16515832 16515832 16518320    2 1.000000 1.811333   1  TRUE
+1545 16563682 16563682 16565322    2 1.000000 1.616333   0  TRUE
+1546 16568418 16568418 16569580    2 1.000000 1.491510   1  TRUE
+1547 16587402 16587402 16587932    2 1.000000 2.936869   2  TRUE
+1548 16629058 16629058 16631673    4 1.000000 1.900811   4  TRUE
+1549 16715251 16715251 16716673    2 1.000000 2.385782   2  TRUE
+1550 17051609 17051609 17052841    2 1.000000 2.291878   2  TRUE
+1551 17055943 17055943 17057221    2 1.000000 1.897202   2  TRUE
+1552 17059497 17059497 17060654    2 1.000000 2.154530   1  TRUE
+1553 17072178 17072178 17073258    4 1.000000 2.545114   4  TRUE
+1554 17078062 17078062 17081621    6 1.000000 2.429408   5  TRUE
+1555 17238941 17238941 17240726    2 1.000000 1.870824   1  TRUE
+1556 17340255 17340255 17343590    2 1.000000 2.186492   1  TRUE
+1557 17497384 17497384 17501257    2 1.000000 1.595345   1  TRUE
+1558 17533997 17533997 17535398    2 1.000000 2.229262   2  TRUE
+1559 17539559 17539559 17540207    2 1.000000 1.771220   2  TRUE
+1560 17551519 17551519 17552120    2 1.000000 1.956377   1  TRUE
+1561 17555885 17555885 17560414    4 1.000000 1.829802   2  TRUE
+1562 17583282 17583282 17586744    4 1.000000 2.556835   4  TRUE
+1563 17686768 17686768 17688089    4 1.000000 2.457729   4  TRUE
+1564 17700027 17700027 17703418    4 1.000000 2.474311   4  TRUE
+1565 17704407 17704407 17716057   14 1.000000 2.490002  10  TRUE
+1566 17811496 17811496 17812562    2 1.000000 2.045720   1  TRUE
+1567 17942200 17942200 17943841    2 1.000000 1.216020   0  TRUE
+1568 18033457 18033457 18035789    2 1.000000 1.579576   0  TRUE
+1569 18120038 18120038 18121784    2 1.000000 2.047740   2  TRUE
+1570 18165027 18165027 18165810    2 1.000000 3.455055   2  TRUE
+1571 18167032 18167032 18170205    6 1.000000 3.761620   5  TRUE
+1572 18201636 18201636 18203088    2 1.000000 1.897028   2  TRUE
+1573 18219649 18219649 18221015    4 1.000000 2.701992   4  TRUE
+1574 18221821 18221821 18223327    6 1.000000 3.673949   5  TRUE
+1575 18225238 18225238 18226864    2 1.000000 1.688265   2  TRUE
+1576 18234323 18234323 18235322    6 1.000000 4.550973   6  TRUE
+1577 18243057 18243057 18245888    2 1.000000 2.955296   2  TRUE
+1578 18260109 18260109 18269653   12 1.000000 2.267499  10  TRUE
+1579 18296353 18296353 18301142   12 1.000000 2.697613   9  TRUE
+1580 18372529 18372529 18373263    2 1.000000 1.890791   2  TRUE
+1581 18402609 18402609 18403636    2 1.000000 1.685287   1  TRUE
+1582 18479556 18479556 18480317    2 1.000000 2.083199   1  TRUE
+1583 18657768 18657768 18658769    2 1.000000 2.431337   2  TRUE
+1584 18719113 18719113 18722003    2 1.000000 2.693834   2  TRUE
+1585 18735570 18735570 18736625    4 1.000000 2.590376   3  TRUE
+1586 18739615 18739615 18740506    2 1.000000 3.213442   2  TRUE
+1587 18912526 18912526 18914737    2 1.000000 2.567124   2  TRUE
+1588 18915869 18915869 18917467    4 1.000000 2.270353   3  TRUE
+1589 18921668 18921668 18923447    2 1.000000 1.789553   2  TRUE
+1590 18986427 18986427 18995908    8 1.000000 2.321974   7  TRUE
+1591 18999505 18999505 19001874    2 1.000000 3.323854   2  TRUE
+1592 19069240 19069240 19070349    4 1.000000 1.562287   2  TRUE
+1593 19077155 19077155 19078096    2 1.000000 3.014709   2  TRUE
+1594 19089228 19089228 19094131    8 1.000000 2.851815   6  TRUE
+1595 19161056 19161056 19166101    8 1.000000 1.950671   5  TRUE
+1596 19173268 19173268 19175531    6 1.000000 2.119373   5  TRUE
+1597 19308690 19308690 19310762    2 1.000000 1.549628   1  TRUE
+1598 19314086 19314086 19315018    2 1.000000 2.298283   2  TRUE
+1599 19315897 19315897 19322018   12 1.000000 2.449179  10  TRUE
+1600 19324473 19324473 19325977    6 1.000000 2.951693   6  TRUE
+1601 19463536 19463536 19465172    2 1.000000 1.818711   1  TRUE
+1602 19494064 19494064 19499035    6 1.000000 3.188876   5  TRUE
+1603 19647802 19647802 19648274    2 1.000000 4.127362   2  TRUE
+1604 19846528 19846528 19847462    2 1.000000 3.048664   1  TRUE
+1605 19903052 19903052 19903673    2 1.000000 1.991609   2  TRUE
+1606 19904773 19904773 19905714    2 1.000000 1.732256   1  TRUE
+1607 19929567 19929567 19931734    4 1.000000 2.840939   3  TRUE
+1608 19934190 19934190 19936831   10 1.000000 2.592593   9  TRUE
+1609 20286074 20286074 20289356    4 1.000000 1.796308   2  TRUE
+1610 20559156 20559156 20559523    2 1.000000 1.766793   2  TRUE
+1611 20591600 20591600 20594994   12 1.000000 4.293294  11  TRUE
+1612 20616563 20616563 20618162    2 1.000000 2.157455   2  TRUE
+1613 20735674 20735674 20736406    2 1.000000 1.461671   1  TRUE
+1614 20757173 20757173 20758808    4 1.000000 2.183595   3  TRUE
+1615 20761798 20761798 20772083   22 1.000000 2.808728  22  TRUE
+1616 20772951 20772951 20775779    8 1.000000 1.828319   5  TRUE
+1617 20777557 20777557 20780047    8 1.000000 3.412431   8  TRUE
+1618 20780397 20780397 20786089    8 1.000000 3.653309   8  TRUE
+1619 20794714 20794714 20795949    2 1.000000 2.842647   2  TRUE
+1620 20832986 20832986 20835316    4 1.000000 3.503632   4  TRUE
+1621 20912545 20912545 20914696    6 1.000000 2.439518   4  TRUE
+1622 20952216 20952216 20953016    2 1.000000 2.013246   2  TRUE
+1623 20954939 20954939 20958505    6 1.000000 2.793381   6  TRUE
+1624 21088518 21088518 21091629    8 1.000000 2.273593   6  TRUE
+1625 21092708 21092708 21093185    2 1.000000 2.020603   1  TRUE
+1626 21156675 21156675 21157170    2 1.000000 2.379838   2  TRUE
+1627 21187030 21187030 21190230    6 1.000000 2.081435   3  TRUE
+1628 21223458 21223458 21224653    2 1.000000 4.804564   2  TRUE
+1629 21267321 21267321 21270519    8 1.000000 2.134412   5  TRUE
+1630 21286771 21286771 21289534    4 1.000000 2.675659   4  TRUE
+1631 21339561 21339561 21346935    8 1.000000 2.182647   7  TRUE
+1632 21358923 21358923 21360964    4 1.000000 3.095155   4  TRUE
+1633 21364797 21364797 21365930    2 1.000000 1.890200   2  TRUE
+1634 21374723 21374723 21376014    6 1.000000 2.304261   6  TRUE
+1635 21387607 21387607 21388843    2 1.000000 1.396368   0  TRUE
+1636 21425267 21425267 21426803    2 1.000000 2.290678   2  TRUE
+1637 21517386 21517386 21518959    2 1.000000 1.785824   1  TRUE
+1638 21533835 21533835 21538075    6 1.000000 1.976118   4  TRUE
+1639 21587075 21587075 21588538    4 1.000000 2.575602   3  TRUE
+1640 21589956 21589956 21601510   20 1.000000 2.152418  16  TRUE
+1641 21612181 21612181 21613402    2 1.000000 2.897810   2  TRUE
+1642 21615815 21615815 21618762    4 1.000000 1.804902   2  TRUE
+1643 21630368 21630368 21645025   44 1.000000 2.908896  41  TRUE
+1644 21658944 21658944 21662352    6 1.000000 2.712978   6  TRUE
+1645 21793150 21793150 21794670    2 1.000000 1.518913   0  TRUE
+1646 21825885 21825885 21830196   14 1.000000 3.037301  13  TRUE
+1647 21833525 21833525 21834556    2 1.000000 2.377361   2  TRUE
+1648 21855489 21855489 21860236    8 1.000000 2.188793   8  TRUE
+1649 21862441 21862441 21864674    4 1.000000 2.168865   4  TRUE
+1650 21946852 21946852 21950376    4 1.000000 1.845759   3  TRUE
+1651 22025277 22025277 22027196    4 1.000000 2.451892   3  TRUE
+1652 22042156 22042156 22043444    4 1.000000 2.683503   3  TRUE
+1653 22159906 22159906 22163310    2 1.000000 1.504003   0  TRUE
+1654 22195344 22195344 22195773    2 1.000000 1.782780   1  TRUE
+1655 22203146 22203146 22206943    4 1.000000 2.612179   4  TRUE
+1656 22261281 22261281 22270943   12 1.000000 1.944522   8  TRUE
+1657 22319622 22319622 22320933    2 1.000000 1.872679   1  TRUE
+1658 22367681 22367681 22368893    2 1.000000 2.450877   2  TRUE
+1659 22410380 22410380 22411845    2 1.000000 2.844834   2  TRUE
+1660 22447050 22447050 22448817    2 1.000000 1.561569   1  TRUE
+1661 22527318 22527318 22528628    4 1.000000 2.085305   4  TRUE
+1662 22613370 22613370 22614084    2 1.000000 2.754903   2  TRUE
+1663 22625383 22625383 22626902    2 1.000000 1.407629   1  TRUE
+1664 22674641 22674641 22677243    6 1.000000 2.802566   6  TRUE
+1665 22715704 22715704 22721970   10 1.000000 2.185462   8  TRUE
+1666 22726282 22726282 22728008    2 1.000000 2.641817   1  TRUE
+1667 22787052 22787052 22787490    2 1.000000 2.623978   1  TRUE
+1668 22846948 22846948 22850183    2 1.000000 1.695165   1  TRUE
+1669 22882574 22882574 22890476   10 1.000000 1.974180   7  TRUE
+1670 22894914 22894914 22896480    2 1.000000 1.958204   2  TRUE
+1671 22934736 22934736 22936786    2 1.000000 1.516566   1  TRUE
+1672 23036891 23036891 23038354    2 1.000000 1.930751   2  TRUE
+1673 23117469 23117469 23118437    2 1.000000 1.653286   1  TRUE
+1674 23190366 23190366 23190953    2 1.000000 3.816928   2  TRUE
+1675 23239678 23239678 23244801    8 1.000000 2.146210   7  TRUE
+1676 23277101 23277101 23278872    2 1.000000 1.971662   1  TRUE
+1677 23294632 23294632 23295316    2 1.000000 1.970966   2  TRUE
+1678 23302468 23302468 23306205    2 1.000000 1.738880   2  TRUE
+1679 23357854 23357854 23359266    2 1.000000 1.777336   2  TRUE
+1680 23749015 23749015 23749785    4 1.000000 2.361827   3  TRUE
+1681 23781210 23781210 23783923    6 1.000000 2.954615   6  TRUE
+1682 23815620 23815620 23817030    2 1.000000 2.266374   1  TRUE
+1683 23822975 23822975 23835027   18 1.000000 2.240225  12  TRUE
+1684 23884313 23884313 23888898    6 1.000000 2.016243   5  TRUE
+1685 23913682 23913682 23921434   10 1.000000 2.263324   8  TRUE
+1686 23933367 23933367 23936011    8 1.000000 2.805943   8  TRUE
+1687 23983896 23983896 23984889    4 1.000000 2.608677   3  TRUE
+1688 23986954 23986954 23987487    2 1.000000 2.059427   2  TRUE
+1689 23992754 23992754 23994123    2 1.000000 1.694577   0  TRUE
+1690 24104305 24104305 24106318    2 1.000000 4.408211   2  TRUE
+1691 24109722 24109722 24110090    2 1.000000 2.452748   2  TRUE
+1692 24149215 24149215 24150383    4 1.000000 2.176197   2  TRUE
+1693 24192896 24192896 24194220    2 1.000000 2.239676   1  TRUE
+1694 24228942 24228942 24235394    8 1.000000 3.090904   7  TRUE
+1695 24262938 24262938 24266216    6 1.000000 2.036035   5  TRUE
+1696 24269484 24269484 24272697   10 1.000000 1.994020   7  TRUE
+1697 24318080 24318080 24319599    2 1.000000 2.757477   2  TRUE
+1698 24496155 24496155 24497294    2 1.000000 1.960366   2  TRUE
+1699 24506663 24506663 24508022    2 1.000000 1.616784   1  TRUE
+1700 24571063 24571063 24579266   10 1.000000 2.460487  10  TRUE
+1701 24579514 24579514 24581746    8 1.000000 4.305116   8  TRUE
+1702 24587139 24587139 24590212    2 1.000000 2.987158   1  TRUE
+1703 24592178 24592178 24595658    4 1.000000 1.888724   2  TRUE
+1704 24597035 24597035 24601859   14 1.000000 2.280961  11  TRUE
+1705 24606187 24606187 24608865    2 1.000000 2.663224   2  TRUE
+1706 24817345 24817345 24817951    2 1.000000 3.839808   2  TRUE
+1707 24854788 24854788 24855449    2 1.000000 2.153716   2  TRUE
+1708 24866367 24866367 24868696    4 1.000000 2.018661   3  TRUE
+1709 25045054 25045054 25046366    2 1.000000 1.802510   0  TRUE
+1710 25049193 25049193 25055247   10 1.000000 2.249343   5  TRUE
+1711 25069406 25069406 25070362    2 1.000000 2.672628   2  TRUE
+1712 25074863 25074863 25075670    2 1.000000 1.614879   2  TRUE
+1713 25089908 25089908 25090606    2 1.000000 2.391015   1  TRUE
+1714 25093975 25093975 25095252    2 1.000000 1.671375   1  TRUE
+1715 25137394 25137394 25138042    2 1.000000 1.523306   1  TRUE
+1716 25170222 25170222 25170904    2 1.000000 2.279538   2  TRUE
+1717 25171693 25171693 25174116    6 1.000000 3.202038   5  TRUE
+1718 25182947 25182947 25188899    8 1.000000 2.034449   8  TRUE
+1719 25328456 25328456 25329388    2 1.000000 2.304860   2  TRUE
+1720 25363706 25363706 25367194    4 1.000000 2.391944   4  TRUE
+1721 25476699 25476699 25477334    2 1.000000 3.018201   2  TRUE
+1722 25481979 25481979 25482681    2 1.000000 3.215502   2  TRUE
+1723 25583542 25583542 25588995    4 1.000000 2.850269   3  TRUE
+1724 25595476 25595476 25596938    4 1.000000 2.014477   2  TRUE
+1725 25628157 25628157 25631533   16 1.000000 2.854823  16  TRUE
+1726 25635167 25635167 25636235    4 1.000000 2.168047   2  TRUE
+1727 25636865 25636865 25637995    4 1.000000 3.260000   4  TRUE
+1728 25645511 25645511 25646231    2 1.000000 1.848441   1  TRUE
+1729 25994842 25994842 26000062   16 1.000000 3.663509  15  TRUE
+1730 26005526 26005526 26006768    4 1.000000 2.631012   4  TRUE
+1731 26007186 26007186 26015355   26 1.000000 3.185423  23  TRUE
+1732 26017181 26017181 26020097    4 1.000000 2.511032   4  TRUE
+1733 26027098 26027098 26028039    4 1.000000 3.134828   4  TRUE
+1734 26034207 26034207 26037248    6 1.000000 3.057649   5  TRUE
+1735 26038185 26038185 26041060    8 1.000000 3.825930   8  TRUE
+1736 26110091 26110091 26112454    2 1.000000 2.571057   1  TRUE
+1737 26480473 26480473 26481800    2 1.000000 3.728847   2  TRUE
+1738 26537504 26537504 26539140    4 1.000000 3.129856   4  TRUE
+1739 26717241 26717241 26718288    2 1.000000 2.164963   2  TRUE
+1740 26851655 26851655 26852409    2 1.000000 1.981266   2  TRUE
+1741 26857213 26857213 26860267    2 1.000000 1.756353   1  TRUE
+1742 26870606 26870606 26870841    2 1.000000 1.753815   2  TRUE
+1743 26917132 26917132 26919273    2 1.000000 2.266784   1  TRUE
+1744 26937963 26937963 26938652    2 1.000000 3.370328   2  TRUE
+1745 27193089 27193089 27198301   10 1.000000 1.799504   6  TRUE
+1746 27287498 27287498 27288961    6 1.000000 2.747151   5  TRUE
+1747 27414695 27414695 27416986    2 1.000000 1.608947   1  TRUE
+1748 27445198 27445198 27446532    2 1.000000 1.582337   1  TRUE
+1749 27833599 27833599 27833968    2 1.000000 2.206776   2  TRUE
+1750 27849667 27849667 27851024    2 1.000000 2.361309   2  TRUE
+1751 27924570 27924570 27925780    4 1.000000 2.473133   4  TRUE
+1752 28326930 28326930 28327590    2 1.000000 2.041225   2  TRUE
+1753 28568462 28568462 28568782    2 0.666667 2.443594   2 FALSE
+1754 28572232 28572232 28578830    8 1.000000 2.189623   6  TRUE
+1755 28588461 28588461 28589957    2 1.000000 1.829057   1  TRUE
+1756 28598758 28598758 28602537    8 1.000000 2.274203   7  TRUE
+1757 28841579 28841579 28842733    2 1.000000 1.652173   1  TRUE
+1758 28844833 28844833 28846669    2 1.000000 1.342878   0  TRUE
+1759 28855876 28855876 28859522   12 1.000000 2.504852  11  TRUE
+1760 29063951 29063951 29071407    6 1.000000 2.836234   5  TRUE
+1761 29083701 29083701 29092197    8 1.000000 2.158806   7  TRUE
+1762 29111679 29111679 29112456    2 1.000000 3.859695   2  TRUE
+1763 29122159 29122159 29124220    2 1.000000 1.983250   1  TRUE
+1764 29152960 29152960 29153787    2 1.000000 3.067385   2  TRUE
+1765 29214555 29214555 29216119    4 1.000000 3.082344   4  TRUE
+1766 29221766 29221766 29223715    4 1.000000 1.673607   2  TRUE
+1767 29255376 29255376 29256027    2 1.000000 1.856422   2  TRUE
+1768 29256287 29256287 29258499    4 1.000000 2.823231   3  TRUE
+1769 29264072 29264072 29270699   24 1.000000 2.725132  21  TRUE
+1770 29271306 29271306 29271973    2 1.000000 2.302835   2  TRUE
+1771 29309001 29309001 29309679    2 1.000000 2.255516   2  TRUE
+1772 29311404 29311404 29312492    4 1.000000 2.834841   4  TRUE
+1773 29317414 29317414 29318530    2 1.000000 1.536920   1  TRUE
+1774 29369135 29369135 29375766   10 1.000000 2.950540   9  TRUE
+1775 29700403 29700403 29708335   16 1.000000 3.035772  16  TRUE
+1776 29841432 29841432 29841911    2 0.666667 2.063309   2 FALSE
+1777 29867775 29867775 29868990    4 1.000000 2.717568   4  TRUE
+1778 30019031 30019031 30021588    4 1.000000 2.250601   3  TRUE
+1779 30027243 30027243 30029898    6 1.000000 2.196547   6  TRUE
+1780 30045996 30045996 30046651    2 1.000000 3.689930   2  TRUE
+1781 30060700 30060700 30061720    2 1.000000 2.049614   1  TRUE
+1782 30095459 30095459 30099927   10 1.000000 2.894194   8  TRUE
+1783 30165643 30165643 30167153    2 1.000000 4.798463   2  TRUE
+1784 30179325 30179325 30180577    2 1.000000 3.500821   2  TRUE
+1785 30197562 30197562 30198580    2 1.000000 3.148015   2  TRUE
+1786 30216593 30216593 30219518    4 1.000000 1.995399   3  TRUE
+1787 30225203 30225203 30226131    2 1.000000 1.378711   0  TRUE
+1788 30233462 30233462 30237651    6 1.000000 2.874698   6  TRUE
+1789 30269575 30269575 30281180   18 1.000000 2.495313  13  TRUE
+1790 30386507 30386507 30389670    4 1.000000 2.985217   4  TRUE
+1791 30391967 30391967 30393761    6 1.000000 2.275635   5  TRUE
+1792 30409342 30409342 30421195   16 1.000000 2.202610  15  TRUE
+1793 30467579 30467579 30476962   12 1.000000 1.973240   8  TRUE
+1794 30697422 30697422 30699627    2 1.000000 2.208586   1  TRUE
+1795 30723072 30723072 30724762    2 1.000000 1.608071   1  TRUE
+1796 30731528 30731528 30734687    4 1.000000 2.380764   4  TRUE
+1797 30756769 30756769 30763959   14 1.000000 2.137864  12  TRUE
+1798 30766993 30766993 30769506    2 1.000000 1.985902   1  TRUE
+1799 30802350 30802350 30805209    6 1.000000 4.295811   5  TRUE
+1800 30811933 30811933 30813497    2 1.000000 2.607944   2  TRUE
+1801 30845671 30845671 30846248    2 1.000000 2.920041   2  TRUE
+1802 30848213 30848213 30852860   14 1.000000 2.687019  12  TRUE
+1803 30854125 30854125 30856452    6 1.000000 2.391491   5  TRUE
+1804 30857768 30857768 30860556    4 1.000000 1.807566   3  TRUE
+1805 30863901 30863901 30865750    2 1.000000 1.560689   0  TRUE
+1806 30908569 30908569 30911297    2 1.000000 2.371062   2  TRUE
+1807 30926226 30926226 30927806    2 1.000000 1.961269   2  TRUE
+1808 31216507 31216507 31221887   14 1.000000 2.688581  11  TRUE
+1809 31382619 31382619 31383366    2 1.000000 2.022736   1  TRUE
+1810 31406398 31406398 31409259    2 1.000000 1.471098   1  TRUE
+1811 31421004 31421004 31422131    2 1.000000 2.758283   2  TRUE
+1812 31426571 31426571 31429599    4 1.000000 2.001957   3  TRUE
+1813 31604900 31604900 31609591   10 1.000000 3.876324  10  TRUE
+1814 31621513 31621513 31626287    2 1.000000 2.108344   1  TRUE
+1815 31678340 31678340 31679305    2 1.000000 3.175590   2  TRUE
+1816 31682212 31682212 31683360    2 1.000000 3.442556   2  TRUE
+1817 31683489 31683489 31684195    2 0.666667 3.329908   2 FALSE
+1818 31698066 31698066 31699413    6 1.000000 4.281559   6  TRUE
+1819 31704623 31704623 31705821    8 1.000000 4.010043   8  TRUE
+1820 31712220 31712220 31712649    2 0.666667 1.225251   0 FALSE
+1821 31724084 31724084 31727245   12 1.000000 2.770054  11  TRUE
+1822 31809780 31809780 31811340    2 1.000000 1.616194   1  TRUE
+1823 31812299 31812299 31813729    2 1.000000 2.937245   2  TRUE
+1824 31821810 31821810 31822741    2 1.000000 2.285473   2  TRUE
+1825 31902455 31902455 31906301    2 1.000000 2.019468   1  TRUE
+1826 31928891 31928891 31930052    2 1.000000 1.377295   0  TRUE
+1827 31945392 31945392 31951449    6 1.000000 2.143727   5  TRUE
+1828 31962670 31962670 31964468    2 1.000000 1.560722   1  TRUE
+1829 32009485 32009485 32013320    6 1.000000 2.001916   4  TRUE
+1830 32018682 32018682 32025971   10 1.000000 1.951797   5  TRUE
+1831 32051461 32051461 32053054    2 1.000000 1.395737   0  TRUE
+1832 32064900 32064900 32066378    2 1.000000 1.260212   0  TRUE
+1833 32072950 32072950 32078822   22 0.000317 4.737042  21  TRUE
+1834    70096    70096    72516    4 1.000000 2.251405   3  TRUE
+1835    81935    81935    85618   10 1.000000 2.624014   9  TRUE
+1836   204993   204993   205961    2 1.000000 3.088305   2  TRUE
+1837   375446   375446   376624    6 1.000000 2.588911   5  TRUE
+1838   385862   385862   387876    4 1.000000 1.744958   2  TRUE
+1839   390557   390557   391443    4 1.000000 1.999782   2  TRUE
+1840   395249   395249   399245    6 1.000000 1.637479   4  TRUE
+1841   406334   406334   407907    2 1.000000 1.512237   1  TRUE
+1842   409231   409231   410983    4 1.000000 1.878098   2  TRUE
+1843   417805   417805   420715    4 1.000000 1.863144   3  TRUE
+1844   420855   420855   422153    2 1.000000 1.473850   1  TRUE
+1845   422696   422696   426712    6 1.000000 1.808881   4  TRUE
+1846   443432   443432   446422    2 1.000000 2.318259   2  TRUE
+1847   467909   467909   469184    4 1.000000 2.248850   3  TRUE
+1848   479792   479792   480501    2 1.000000 1.856096   2  TRUE
+1849   486701   486701   490041    6 1.000000 2.583298   5  TRUE
+1850   500707   500707   502662    6 1.000000 2.519932   6  TRUE
+1851   516231   516231   518414    4 1.000000 1.987385   3  TRUE
+1852   522802   522802   523835    2 1.000000 1.784736   1  TRUE
+1853   558008   558008   559956    2 1.000000 2.603375   2  TRUE
+1854   606493   606493   608227    4 1.000000 1.481243   1  TRUE
+1855   611208   611208   611651    2 1.000000 1.465288   1  TRUE
+1856   625658   625658   626271    2 1.000000 3.750527   2  TRUE
+1857   681057   681057   681379    2 0.666667 2.093732   1 FALSE
+1858   699824   699824   705387   12 1.000000 1.889176  11  TRUE
+1859   711395   711395   711993    2 1.000000 2.143949   2  TRUE
+1860   714040   714040   714640    2 0.666667 1.927665   1 FALSE
+1861   731065   731065   731497    2 1.000000 1.420773   0  TRUE
+1862   822342   822342   823101    2 1.000000 1.910777   1  TRUE
+1863   825629   825629   826332    2 1.000000 2.435654   2  TRUE
+1864   833127   833127   835081    6 1.000000 2.542442   5  TRUE
+1865   909776   909776   910382    2 1.000000 3.946550   2  TRUE
+1866   960893   960893   962661    4 1.000000 1.824466   2  TRUE
+1867   973379   973379   974271    2 1.000000 1.828217   1  TRUE
+1868   982100   982100   989829   14 1.000000 2.393652  12  TRUE
+1869  1023865  1023865  1026492    4 1.000000 2.388539   2  TRUE
+1870  1062119  1062119  1064253    2 1.000000 1.902742   2  TRUE
+1871  1087392  1087392  1088575    4 1.000000 1.909136   3  TRUE
+1872  1092752  1092752  1093712    2 1.000000 1.822473   1  TRUE
+1873   274459   274459   277244    4 1.000000 2.050159   2  TRUE
+1874   409253   409253   413152   10 1.000000 2.326907  10  TRUE
+1875   453969   453969   461985   32 1.000000 2.745305  31  TRUE
+1876   462346   462346   466746   10 1.000000 2.179753   9  TRUE
+1877   519263   519263   526198   16 1.000000 2.683778  15  TRUE
+1878   526907   526907   527771    6 0.857143 3.259173   5  TRUE
+1879   530408   530408   534941    2 1.000000 1.425769   1  TRUE
+1880   539091   539091   539854    2 1.000000 1.398746   0  TRUE
+1881   594803   594803   595804    4 1.000000 1.934543   3  TRUE
+1882   602485   602485   605332    4 1.000000 1.436790   1  TRUE
+1883   617068   617068   621586    6 1.000000 2.975748   6  TRUE
+1884   635909   635909   637853    4 1.000000 1.914790   3  TRUE
+1885   653724   653724   656806    2 1.000000 2.852448   1  TRUE
+1886   686264   686264   688044    4 1.000000 3.413829   4  TRUE
+1887   772238   772238   774719    4 1.000000 3.108203   4  TRUE
+1888   795659   795659   796188    2 1.000000 2.156498   2  TRUE
+1889   825674   825674   827468    4 1.000000 1.705543   1  TRUE
+1890   835464   835464   836293    2 1.000000 1.965507   2  TRUE
+1891   839942   839942   842054    4 1.000000 2.232365   4  TRUE
+1892   863593   863593   865462    2 1.000000 1.536907   0  TRUE
+1893   883520   883520   885483    2 1.000000 1.551867   0  TRUE
+1894   908715   908715   910271    2 1.000000 2.169073   1  TRUE
+1895   921566   921566   922862    2 1.000000 1.835868   0  TRUE
+1896   969051   969051   970174    2 1.000000 1.768034   1  TRUE
+1897   974371   974371   977771    4 1.000000 2.000623   3  TRUE
+1898  1133900  1133900  1135596    2 1.000000 1.764266   1  TRUE
+1899  1230456  1230456  1234693    6 1.000000 2.866410   4  TRUE
+1900  1253821  1253821  1254204    2 1.000000 2.070888   2  TRUE
+1901  1379369  1379369  1380637    2 1.000000 2.111553   1  TRUE
+1902  1523487  1523487  1526892    4 1.000000 1.849164   3  TRUE
+1903  1548592  1548592  1551541    4 1.000000 1.626573   1  TRUE
+1904  1566015  1566015  1566654    2 1.000000 2.265209   2  TRUE
+1905  1593102  1593102  1593778    2 0.500000 3.380290   1 FALSE
+1906  1612338  1612338  1613563    4 1.000000 1.889304   3  TRUE
+1907  1616289  1616289  1618665    8 1.000000 2.345085   7  TRUE
+1908  1621569  1621569  1622069    2 1.000000 3.237541   2  TRUE
+1909  1669702  1669702  1670890    2 1.000000 3.197225   2  TRUE
+1910  1691306  1691306  1693221    4 1.000000 3.053160   4  TRUE
+1911  1756674  1756674  1757672    2 1.000000 1.516305   0  TRUE
+1912  1814521  1814521  1816013    2 1.000000 1.818760   1  TRUE
+1913  1865729  1865729  1866383    2 0.666667 1.557356   1 FALSE
+1914  1896723  1896723  1899899    4 1.000000 3.139443   4  TRUE
+1915  1908025  1908025  1909594    4 1.000000 3.049109   4  TRUE
+1916  1941209  1941209  1946286   12 1.000000 2.723163  12  TRUE
+1917  1948494  1948494  1950184    2 1.000000 1.674414   1  TRUE
+1918  2009251  2009251  2010948    2 1.000000 2.608314   1  TRUE
+1919  2061775  2061775  2062492    2 1.000000 1.634321   1  TRUE
+1920  2080232  2080232  2083557   10 1.000000 2.570532   9  TRUE
+1921  2085195  2085195  2087126    2 1.000000 1.935374   1  TRUE
+1922  2097226  2097226  2097812    2 0.666667 2.229319   0 FALSE
+1923  2123133  2123133  2123977    2 1.000000 2.652978   2  TRUE
+1924  2134095  2134095  2141278   14 1.000000 2.250206  12  TRUE
+1925  2295137  2295137  2302647    6 1.000000 1.991647   5  TRUE
+1926  2306622  2306622  2308676    2 1.000000 2.417980   1  TRUE
+1927  2316971  2316971  2326041   14 1.000000 2.247572  13  TRUE
+1928  2330287  2330287  2332070    2 1.000000 1.638238   1  TRUE
+1929  2352148  2352148  2353173    4 1.000000 2.714585   3  TRUE
+1930  2362017  2362017  2363843    4 1.000000 2.272911   3  TRUE
+1931  2387516  2387516  2388139    2 0.285714 3.735662   2 FALSE
+1932  2388816  2388816  2389278    2 0.500000 2.427697   1 FALSE
+1933  2394949  2394949  2399401   12 1.000000 3.127936  12  TRUE
+1934  2410411  2410411  2411863    4 1.000000 2.254572   3  TRUE
+1935  2417487  2417487  2422192    8 1.000000 2.514492   8  TRUE
+1936  2603528  2603528  2604631    6 1.000000 3.228324   6  TRUE
+1937  2635160  2635160  2637605    4 1.000000 3.186378   4  TRUE
+1938  2640229  2640229  2644703    6 1.000000 2.383969   5  TRUE
+1939  2764490  2764490  2766457    2 1.000000 2.801657   2  TRUE
+1940  2787483  2787483  2788543    2 1.000000 2.584479   2  TRUE
+1941  2796199  2796199  2796689    2 1.000000 2.219572   2  TRUE
+1942  2987472  2987472  2988305    2 1.000000 2.674065   2  TRUE
+1943  3004139  3004139  3004848    2 1.000000 2.411284   2  TRUE
+1944  3133925  3133925  3136177    4 1.000000 2.725395   3  TRUE
+1945  3137252  3137252  3139350    8 1.000000 3.329492   8  TRUE
+1946  3158958  3158958  3162199    8 1.000000 2.856090   7  TRUE
+1947  3175374  3175374  3176838    4 1.000000 2.096810   2  TRUE
+1948  3368040  3368040  3373881    4 1.000000 2.435317   3  TRUE
+1949  3375847  3375847  3382043    6 1.000000 2.248055   6  TRUE
+1950  3428372  3428372  3430081    4 1.000000 2.605265   4  TRUE
+1951  3449348  3449348  3451859    4 1.000000 2.072431   4  TRUE
+1952  3485229  3485229  3486491    6 1.000000 3.296105   6  TRUE
+1953  3530657  3530657  3531688    2 1.000000 3.052687   2  TRUE
+1954  3542270  3542270  3545762    4 1.000000 2.319234   4  TRUE
+1955  3572187  3572187  3573602    2 1.000000 2.083327   1  TRUE
+1956  3673487  3673487  3687931   14 1.000000 2.339216  11  TRUE
+1957  3692272  3692272  3695235    2 1.000000 2.238370   1  TRUE
+1958  3702843  3702843  3704579    2 1.000000 2.932530   2  TRUE
+1959  3718194  3718194  3721581    8 1.000000 2.682280   7  TRUE
+1960  3748070  3748070  3752656    2 1.000000 2.249401   2  TRUE
+1961  3768483  3768483  3773456    2 1.000000 1.553173   2  TRUE
+1962  3796501  3796501  3799214    8 1.000000 2.967217   8  TRUE
+1963  3949670  3949670  3950842    2 1.000000 1.693296   1  TRUE
+1964  3971962  3971962  3973342    2 1.000000 1.698422   1  TRUE
+1965  4020169  4020169  4021044    2 1.000000 2.376289   2  TRUE
+1966  4087584  4087584  4087953    2 0.500000 3.428208   2 FALSE
+1967  4193094  4193094  4194316    2 1.000000 1.730172   1  TRUE
+1968  4206878  4206878  4211915    6 1.000000 2.019723   4  TRUE
+1969  4280692  4280692  4283094    2 1.000000 2.482962   1  TRUE
+1970  4395532  4395532  4396498    2 1.000000 1.757026   2  TRUE
+1971  4405613  4405613  4406876    2 1.000000 1.857251   1  TRUE
+1972  4411442  4411442  4413884    2 1.000000 1.671995   0  TRUE
+1973  4415245  4415245  4416254    2 1.000000 2.044880   1  TRUE
+1974  4508232  4508232  4519769   10 1.000000 2.090374   9  TRUE
+1975  4646523  4646523  4647339    2 1.000000 3.315185   2  TRUE
+1976  4648902  4648902  4649689    2 0.666667 3.995354   2 FALSE
+1977  4685186  4685186  4695884   10 1.000000 2.994920   9  TRUE
+1978  5139673  5139673  5143682    4 1.000000 2.085187   3  TRUE
+1979  5417374  5417374  5423029    8 1.000000 3.098140   7  TRUE
+1980  5562088  5562088  5564910    2 1.000000 2.648370   2  TRUE
+1981  5567747  5567747  5569753    4 1.000000 1.502560   1  TRUE
+1982  5576958  5576958  5580293    6 1.000000 1.612370   2  TRUE
+1983  5597587  5597587  5603862    4 1.000000 1.552907   1  TRUE
+1984  5620988  5620988  5622374    4 1.000000 3.308471   4  TRUE
+1985  5636445  5636445  5641685    6 1.000000 2.373504   6  TRUE
+1986  5644473  5644473  5645556    2 1.000000 1.306303   0  TRUE
+1987  5645997  5645997  5647187    4 1.000000 2.559969   4  TRUE
+1988  5661697  5661697  5664964    4 1.000000 3.075767   4  TRUE
+1989  5677609  5677609  5678791    4 1.000000 4.033083   4  TRUE
+1990  5690089  5690089  5691308    4 1.000000 2.158686   2  TRUE
+1991  5746106  5746106  5747521    2 1.000000 2.664221   2  TRUE
+1992  5884115  5884115  5889196   12 1.000000 2.884591  12  TRUE
+1993  5893814  5893814  5897951    6 1.000000 2.037956   4  TRUE
+1994  5900207  5900207  5902416    4 1.000000 2.839875   4  TRUE
+1995  5995653  5995653  5996783    2 1.000000 2.236852   2  TRUE
+1996  6030443  6030443  6032841    6 1.000000 2.611494   6  TRUE
+1997  6278433  6278433  6280767    6 1.000000 2.968160   2  TRUE
+1998  6281739  6281739  6282412    2 1.000000 3.873618   2  TRUE
+1999  6282721  6282721  6285016    6 1.000000 2.968494   6  TRUE
+2000  6291836  6291836  6293538    4 1.000000 2.295145   3  TRUE
+2001  6334215  6334215  6338195    6 1.000000 2.026189   5  TRUE
+2002  6599283  6599283  6601558    4 1.000000 2.460159   3  TRUE
+2003  6661944  6661944  6663747    4 1.000000 2.015484   3  TRUE
+2004  6694341  6694341  6695681    2 1.000000 2.529447   2  TRUE
+2005  6706285  6706285  6708191    2 1.000000 3.518919   2  TRUE
+2006  6803417  6803417  6806779   12 1.000000 2.186025  10  TRUE
+2007  6854438  6854438  6861966   10 1.000000 2.320646   8  TRUE
+2008  6869018  6869018  6870587    4 1.000000 1.798679   2  TRUE
+2009  6873392  6873392  6874836    2 1.000000 1.794778   0  TRUE
+2010  6978281  6978281  6982912    8 1.000000 2.056908   7  TRUE
+2011  6985154  6985154  6990074   12 1.000000 3.974858  12  TRUE
+2012  6997050  6997050  6999034    4 1.000000 3.114436   4  TRUE
+2013  7095467  7095467  7097637    6 1.000000 3.355950   6  TRUE
+2014  7118585  7118585  7123823    6 1.000000 2.049829   3  TRUE
+2015  7138091  7138091  7139835    2 1.000000 1.703422   0  TRUE
+2016  7147461  7147461  7155264   10 1.000000 2.260718   9  TRUE
+2017  7163618  7163618  7167769   10 1.000000 2.961378  10  TRUE
+2018  7198945  7198945  7201876    2 1.000000 1.533284   1  TRUE
+2019  7223538  7223538  7225754    4 1.000000 2.028722   2  TRUE
+2020  7232533  7232533  7234455    4 1.000000 1.808122   4  TRUE
+2021  7266233  7266233  7266567    2 0.250000 2.429729   2 FALSE
+2022  7273699  7273699  7275992    6 1.000000 3.153510   6  TRUE
+2023  7299776  7299776  7301405    2 1.000000 2.333590   2  TRUE
+2024  7304959  7304959  7308100    4 1.000000 1.860798   2  TRUE
+2025  7317974  7317974  7319013    4 1.000000 2.516386   3  TRUE
+2026  7324365  7324365  7325254    2 1.000000 2.204043   2  TRUE
+2027  7355466  7355466  7356100    2 1.000000 1.357450   0  TRUE
+2028  7459136  7459136  7463293    6 1.000000 2.197181   5  TRUE
+2029  7596017  7596017  7596967    4 1.000000 2.305773   2  TRUE
+2030  7599372  7599372  7601937    4 1.000000 2.210050   4  TRUE
+2031  7612596  7612596  7613044    2 1.000000 2.274450   2  TRUE
+2032  7639961  7639961  7642449    2 1.000000 2.216766   2  TRUE
+2033  7680492  7680492  7681229    2 1.000000 2.086065   2  TRUE
+2034  7696271  7696271  7701942    2 1.000000 2.053748   1  TRUE
+2035  7703829  7703829  7707840    6 1.000000 3.623186   6  TRUE
+2036  7714305  7714305  7719798   10 1.000000 2.814833  10  TRUE
+2037  7891564  7891564  7892226    2 1.000000 1.746864   1  TRUE
+2038  7897551  7897551  7899203    4 1.000000 2.255416   4  TRUE
+2039  7935725  7935725  7937064    2 1.000000 2.049861   1  TRUE
+2040  7958430  7958430  7960111    4 1.000000 2.620801   4  TRUE
+2041  8034905  8034905  8035789    2 1.000000 2.192616   2  TRUE
+2042  8059507  8059507  8062969    4 1.000000 3.107178   4  TRUE
+2043  8140917  8140917  8142361    2 1.000000 2.429210   2  TRUE
+2044  8243102  8243102  8244799    4 1.000000 2.213191   4  TRUE
+2045  8270744  8270744  8271393    2 0.666667 1.889601   1 FALSE
+2046  8397868  8397868  8399668    2 1.000000 2.353485   2  TRUE
+2047  8418445  8418445  8422653    6 1.000000 2.791150   6  TRUE
+2048  8436047  8436047  8436790    2 0.666667 3.292121   2 FALSE
+2049  8522521  8522521  8525720    6 1.000000 1.782316   4  TRUE
+2050  8540060  8540060  8543492    2 1.000000 2.435384   2  TRUE
+2051  8559584  8559584  8560768    4 1.000000 3.293952   3  TRUE
+2052  8615664  8615664  8616333    2 1.000000 2.158478   1  TRUE
+2053  8702547  8702547  8705342    2 1.000000 2.603577   1  TRUE
+2054  8721762  8721762  8724142    4 1.000000 2.277161   3  TRUE
+2055  8735908  8735908  8736828    2 1.000000 1.493098   1  TRUE
+2056  8753714  8753714  8755598    4 1.000000 2.017041   3  TRUE
+2057  8769688  8769688  8772869    6 1.000000 2.448237   5  TRUE
+2058  8804956  8804956  8806518    2 1.000000 1.787468   1  TRUE
+2059  8891618  8891618  8895208   10 1.000000 2.753890   9  TRUE
+2060  9041711  9041711  9042337    2 1.000000 2.065796   2  TRUE
+2061  9089568  9089568  9090171    2 1.000000 3.213394   2  TRUE
+2062  9109042  9109042  9110761    2 1.000000 1.854484   2  TRUE
+2063  9128677  9128677  9131229    4 1.000000 1.959531   3  TRUE
+2064  9157097  9157097  9159646    8 1.000000 2.426166   6  TRUE
+2065  9162484  9162484  9165820    2 1.000000 1.870677   2  TRUE
+2066  9281675  9281675  9283036    2 1.000000 2.119775   1  TRUE
+2067  9553637  9553637  9554704    2 1.000000 2.231346   2  TRUE
+2068  9579208  9579208  9579919    2 1.000000 2.055227   1  TRUE
+2069  9583105  9583105  9586689    8 1.000000 3.448591   7  TRUE
+2070  9598298  9598298  9598926    2 1.000000 2.190492   2  TRUE
+2071  9689624  9689624  9690566    4 1.000000 2.910783   4  TRUE
+2072  9691497  9691497  9694628    2 1.000000 2.097240   1  TRUE
+2073  9757806  9757806  9759327    4 1.000000 2.211945   4  TRUE
+2074  9762186  9762186  9763280    2 1.000000 2.030436   1  TRUE
+2075  9766953  9766953  9768760    2 1.000000 1.720243   1  TRUE
+2076 10088312 10088312 10089447    2 1.000000 1.636501   1  TRUE
+2077 10325088 10325088 10325932    2 1.000000 1.852515   1  TRUE
+2078 10385613 10385613 10386130    2 0.500000 1.985952   1 FALSE
+2079 10472684 10472684 10475203    2 1.000000 2.580570   1  TRUE
+2080 10512335 10512335 10514716    2 1.000000 1.698635   2  TRUE
+2081 10532004 10532004 10534432    2 1.000000 1.875448   1  TRUE
+2082 10545452 10545452 10547871    4 1.000000 1.821653   3  TRUE
+2083 10614452 10614452 10616049    2 1.000000 2.943861   2  TRUE
+2084 10625624 10625624 10626313    2 1.000000 2.028240   2  TRUE
+2085 10629629 10629629 10630760    2 1.000000 2.185584   2  TRUE
+2086 10635639 10635639 10637922    2 1.000000 1.685605   1  TRUE
+2087 10672613 10672613 10673154    2 1.000000 2.015784   2  TRUE
+2088 10721030 10721030 10723065    4 1.000000 1.758097   2  TRUE
+2089 10733634 10733634 10741078   14 1.000000 2.304777  14  TRUE
+2090 10765286 10765286 10768010    2 1.000000 1.619268   0  TRUE
+2091 10799805 10799805 10801683    4 1.000000 3.113875   3  TRUE
+2092 10814207 10814207 10816300    2 1.000000 1.825373   1  TRUE
+2093 10823289 10823289 10826665    8 1.000000 2.643887   6  TRUE
+2094 10829867 10829867 10830133    2 0.500000 2.342916   2 FALSE
+2095 11030389 11030389 11032506    2 1.000000 1.404580   0  TRUE
+2096 11135919 11135919 11136945    2 1.000000 1.830502   1  TRUE
+2097 11146058 11146058 11149539    4 1.000000 2.665124   4  TRUE
+2098 11324951 11324951 11326503    2 1.000000 1.685257   0  TRUE
+2099 11339193 11339193 11340620    2 1.000000 1.992037   1  TRUE
+2100 11347826 11347826 11348133    2 0.285714 2.364106   1 FALSE
+2101 11492166 11492166 11493925    2 1.000000 2.234129   1  TRUE
+2102 11569381 11569381 11570659    2 1.000000 2.195217   2  TRUE
+2103 11575727 11575727 11576456    2 1.000000 1.991718   2  TRUE
+2104 11584532 11584532 11588804    8 1.000000 2.776241   5  TRUE
+2105 11590897 11590897 11592282    2 1.000000 2.871724   2  TRUE
+2106 11594375 11594375 11600939   14 1.000000 2.759590  10  TRUE
+2107 11610302 11610302 11611215    2 1.000000 3.630273   2  TRUE
+2108 11620482 11620482 11623308    4 1.000000 1.998316   4  TRUE
+2109 11626466 11626466 11628665    6 1.000000 2.367322   5  TRUE
+2110 11630932 11630932 11633213    2 1.000000 1.814869   2  TRUE
+2111 11685658 11685658 11687688    4 1.000000 2.278966   4  TRUE
+2112 11713432 11713432 11715784    4 1.000000 2.052009   4  TRUE
+2113 11786810 11786810 11787829    2 1.000000 2.602650   2  TRUE
+2114 11791605 11791605 11793770    2 1.000000 3.288665   2  TRUE
+2115 11796551 11796551 11797089    2 1.000000 1.793630   1  TRUE
+2116 11804928 11804928 11806453    2 1.000000 3.089905   2  TRUE
+2117 11813718 11813718 11821340    8 1.000000 2.728314   8  TRUE
+2118 11979833 11979833 11984436    4 1.000000 2.985893   3  TRUE
+2119 12006831 12006831 12008584    6 1.000000 3.077135   6  TRUE
+2120 12018851 12018851 12019300    2 1.000000 1.741411   1  TRUE
+2121 12078902 12078902 12079903    2 1.000000 2.454169   2  TRUE
+2122 12099064 12099064 12102045    6 1.000000 1.749611   2  TRUE
+2123 12215257 12215257 12216962    2 1.000000 1.509818   1  TRUE
+2124 12227445 12227445 12229667    2 1.000000 2.092613   1  TRUE
+2125 12259980 12259980 12260952    4 1.000000 2.447284   4  TRUE
+2126 12529760 12529760 12534425    2 1.000000 1.894180   1  TRUE
+2127 12537245 12537245 12540970    2 1.000000 1.699085   1  TRUE
+2128 12578144 12578144 12583126   10 1.000000 2.049641   7  TRUE
+2129 12589726 12589726 12590474    2 0.666667 2.324262   1 FALSE
+2130 12610955 12610955 12611370    2 0.666667 3.168010   2 FALSE
+2131 12654017 12654017 12655009    2 1.000000 1.845958   1  TRUE
+2132 12658711 12658711 12661804    4 1.000000 1.778604   2  TRUE
+2133 12663689 12663689 12666460    6 1.000000 2.230123   5  TRUE
+2134 12716268 12716268 12721949    4 1.000000 1.944246   3  TRUE
+2135 12732880 12732880 12738901    6 1.000000 2.140757   5  TRUE
+2136 12740868 12740868 12743752    2 1.000000 1.705745   1  TRUE
+2137 12753826 12753826 12754993    2 1.000000 2.421466   2  TRUE
+2138 12926458 12926458 12927337    2 1.000000 2.749987   2  TRUE
+2139 12993708 12993708 12995722    2 1.000000 2.600717   2  TRUE
+2140 13129559 13129559 13129940    2 0.500000 4.851101   2 FALSE
+2141 13228240 13228240 13229703    6 1.000000 2.003137   4  TRUE
+2142 13236195 13236195 13240813    8 1.000000 2.670366   6  TRUE
+2143 13257859 13257859 13259019    2 1.000000 1.441065   0  TRUE
+2144 13372292 13372292 13375104    2 1.000000 1.485881   0  TRUE
+2145 13740904 13740904 13741936    2 1.000000 2.851205   2  TRUE
+2146 13743872 13743872 13745521    4 1.000000 3.412222   4  TRUE
+2147 13746443 13746443 13749673    4 1.000000 1.932728   2  TRUE
+2148 13751791 13751791 13756750    6 1.000000 2.605226   5  TRUE
+2149 13783602 13783602 13788536    6 1.000000 2.794528   6  TRUE
+2150 13934413 13934413 13935435    2 1.000000 2.979389   2  TRUE
+2151 13979538 13979538 13979728    2 1.000000 2.665567   1  TRUE
+2152 13981915 13981915 13989423    4 1.000000 2.160536   3  TRUE
+2153 14210188 14210188 14219746   14 1.000000 2.372121  13  TRUE
+2154 14265999 14265999 14267566    4 1.000000 3.713770   4  TRUE
+2155 14320756 14320756 14322321    2 1.000000 2.108227   2  TRUE
+2156 14646259 14646259 14650375    4 1.000000 2.004658   3  TRUE
+2157 14742311 14742311 14745695    2 1.000000 1.676434   1  TRUE
+2158 14748741 14748741 14749872    2 1.000000 1.504711   1  TRUE
+2159 14753384 14753384 14754675    2 1.000000 2.396808   2  TRUE
+2160 15062407 15062407 15066299    8 1.000000 1.915445   5  TRUE
+2161 15413766 15413766 15414206    2 1.000000 2.676521   1  TRUE
+2162 15474820 15474820 15475873    2 1.000000 2.755320   2  TRUE
+2163 15482117 15482117 15483542    2 1.000000 1.915676   1  TRUE
+2164 15592975 15592975 15593689    2 0.666667 1.459888   0 FALSE
+2165 15657193 15657193 15657872    2 1.000000 2.371940   1  TRUE
+2166 15669232 15669232 15671712    4 1.000000 4.655571   4  TRUE
+2167 15673437 15673437 15674191    2 0.666667 3.815906   2 FALSE
+2168 15675003 15675003 15676543    4 1.000000 4.307586   4  TRUE
+2169 15689838 15689838 15690969    4 1.000000 2.519116   4  TRUE
+2170 15696271 15696271 15696841    2 1.000000 2.185670   2  TRUE
+2171 15709275 15709275 15710682    6 1.000000 2.364303   5  TRUE
+2172 15749615 15749615 15750415    2 1.000000 2.627132   1  TRUE
+2173 15758643 15758643 15760518    4 1.000000 4.113645   4  TRUE
+2174 15787843 15787843 15790280    8 1.000000 3.268999   7  TRUE
+2175 15811539 15811539 15823993   32 1.000000 3.291789  30  TRUE
+2176 15828251 15828251 15829209    2 1.000000 2.434340   2  TRUE
+2177 15843726 15843726 15845334    4 1.000000 2.244338   3  TRUE
+2178 15856758 15856758 15858642    6 1.000000 2.412262   5  TRUE
+2179 15888841 15888841 15889955    4 1.000000 2.560685   3  TRUE
+2180 15922644 15922644 15923344    2 1.000000 1.995833   2  TRUE
+2181 15939477 15939477 15942384    4 1.000000 2.495749   3  TRUE
+2182 15970492 15970492 15972417    2 1.000000 2.630847   2  TRUE
+2183 16065681 16065681 16068532    4 1.000000 1.733958   2  TRUE
+2184 16103743 16103743 16104987    2 1.000000 1.909697   2  TRUE
+2185 16220511 16220511 16222276    2 1.000000 2.319154   2  TRUE
+2186 16238054 16238054 16238652    2 1.000000 1.633476   1  TRUE
+2187 16245005 16245005 16245715    2 0.666667 1.819789   1 FALSE
+2188 16254698 16254698 16256821    2 1.000000 1.922479   2  TRUE
+2189 16287675 16287675 16289291    2 1.000000 2.008807   1  TRUE
+2190 16295209 16295209 16297685    2 1.000000 1.310833   0  TRUE
+2191 16318253 16318253 16320090    2 1.000000 2.986810   2  TRUE
+2192 16329944 16329944 16334373    2 1.000000 2.494128   2  TRUE
+2193 16383749 16383749 16384819    2 1.000000 3.615160   2  TRUE
+2194 16423002 16423002 16426825    6 1.000000 2.104588   6  TRUE
+2195 16606312 16606312 16608029    2 1.000000 2.810074   2  TRUE
+2196 16638747 16638747 16640869    4 1.000000 2.079563   4  TRUE
+2197 16643263 16643263 16647585    8 1.000000 1.881574   5  TRUE
+2198 16654231 16654231 16655793    2 1.000000 2.287661   1  TRUE
+2199 16771501 16771501 16773640    4 1.000000 2.243683   3  TRUE
+2200 16782173 16782173 16783136    2 1.000000 1.913017   1  TRUE
+2201 16809588 16809588 16810448    2 1.000000 2.127168   1  TRUE
+2202 16883605 16883605 16884169    2 0.666667 2.914058   2 FALSE
+2203 17108346 17108346 17111037    2 1.000000 2.134677   2  TRUE
+2204 17124110 17124110 17126245    4 1.000000 2.232392   3  TRUE
+2205 17160404 17160404 17160945    2 1.000000 2.447365   2  TRUE
+2206 17163898 17163898 17166543    4 1.000000 3.047885   4  TRUE
+2207 17168582 17168582 17171735    2 1.000000 2.376094   2  TRUE
+2208 17300851 17300851 17302898    2 1.000000 1.765326   1  TRUE
+2209 17404595 17404595 17406841    2 1.000000 2.880907   2  TRUE
+2210 17505019 17505019 17505730    2 1.000000 1.962480   2  TRUE
+2211 17519404 17519404 17519729    2 0.666667 1.650242   1 FALSE
+2212 17522674 17522674 17523791    2 1.000000 3.203637   2  TRUE
+2213 17537633 17537633 17540297    6 1.000000 2.067443   4  TRUE
+2214 17561895 17561895 17562573    2 1.000000 2.276983   1  TRUE
+2215 17577362 17577362 17578622    4 1.000000 2.534578   4  TRUE
+2216 17626289 17626289 17628688    6 1.000000 2.212282   3  TRUE
+2217 17656418 17656418 17658879    4 1.000000 2.793333   4  TRUE
+2218 17699253 17699253 17700010    2 0.666667 1.961039   2 FALSE
+2219 17703642 17703642 17704672    2 1.000000 2.522734   2  TRUE
+2220 17736538 17736538 17740102    8 1.000000 2.865268   7  TRUE
+2221 17740953 17740953 17741168    2 0.333333 3.230672   2 FALSE
+2222 17742355 17742355 17742701    2 0.666667 1.697705   1 FALSE
+2223 17827412 17827412 17828260    2 0.666667 1.384981   0 FALSE
+2224 18515640 18515640 18517113    2 1.000000 1.765322   1  TRUE
+2225 18522217 18522217 18527432   10 1.000000 2.293225   8  TRUE
+2226 18530024 18530024 18535451   14 1.000000 2.287370  14  TRUE
+2227 18549567 18549567 18552058    2 1.000000 2.044773   2  TRUE
+2228 18590878 18590878 18591544    2 1.000000 1.849419   1  TRUE
+2229 18645668 18645668 18647241    2 1.000000 2.556539   2  TRUE
+2230 18700552 18700552 18701386    2 0.666667 2.450852   1 FALSE
+2231 19001323 19001323 19002898    2 1.000000 2.018010   2  TRUE
+2232 19009701 19009701 19011497    2 1.000000 1.653242   1  TRUE
+2233 19013199 19013199 19014945    2 1.000000 2.042527   1  TRUE
+2234 19073033 19073033 19074510    4 1.000000 2.533706   4  TRUE
+2235 19259908 19259908 19261172    4 1.000000 2.092459   3  TRUE
+2236 19353639 19353639 19354676    2 1.000000 1.622793   2  TRUE
+2237 19371153 19371153 19371826    2 1.000000 2.743750   2  TRUE
+2238 19423139 19423139 19426351    2 1.000000 2.600025   2  TRUE
+2239 19430774 19430774 19434556    4 1.000000 1.963896   3  TRUE
+2240 19469069 19469069 19469568    2 0.666667 2.044365   1 FALSE
+2241 19495598 19495598 19497639    2 1.000000 2.431401   2  TRUE
+2242 19508668 19508668 19512283    6 1.000000 1.615169   2  TRUE
+2243 19520740 19520740 19521451    2 1.000000 2.304879   2  TRUE
+2244 19537121 19537121 19538345    2 1.000000 2.150287   2  TRUE
+2245 19555039 19555039 19558855    4 1.000000 2.889909   4  TRUE
+2246 19577604 19577604 19579155    2 1.000000 3.024873   1  TRUE
+2247 19692928 19692928 19694717    2 1.000000 2.247196   1  TRUE
+2248 19717068 19717068 19720972    4 1.000000 1.951301   3  TRUE
+2249 19730658 19730658 19731512    2 1.000000 3.223368   2  TRUE
+2250 19734431 19734431 19736390    6 1.000000 2.688969   6  TRUE
+2251 19743787 19743787 19744204    2 0.666667 2.511750   1 FALSE
+2252 19779210 19779210 19780527    2 1.000000 1.769486   1  TRUE
+2253 19782810 19782810 19784209    6 1.000000 2.617602   6  TRUE
+2254 19785134 19785134 19786535    2 1.000000 1.593646   1  TRUE
+2255 19788052 19788052 19788673    2 1.000000 3.533853   2  TRUE
+2256 19825330 19825330 19828733    2 1.000000 1.876801   2  TRUE
+2257 19842245 19842245 19843731    2 1.000000 2.107969   1  TRUE
+2258 19845988 19845988 19851147    8 1.000000 3.017929   8  TRUE
+2259 19878066 19878066 19879810    2 1.000000 2.935824   2  TRUE
+2260 19888189 19888189 19888663    2 1.000000 2.803774   2  TRUE
+2261 19889632 19889632 19890955    2 1.000000 2.444430   2  TRUE
+2262 19910596 19910596 19912261    4 1.000000 2.565299   4  TRUE
+2263 19916924 19916924 19917537    2 1.000000 2.337820   2  TRUE
+2264 20109252 20109252 20109781    2 1.000000 2.057673   1  TRUE
+2265 20498974 20498974 20502479    4 1.000000 2.405451   4  TRUE
+2266 20552663 20552663 20553674    2 1.000000 1.933296   1  TRUE
+2267 20642930 20642930 20646183   10 1.000000 1.622488   2  TRUE
+2268 20664622 20664622 20668465    6 1.000000 1.995289   5  TRUE
+2269 20717432 20717432 20718035    2 1.000000 1.623155   1  TRUE
+2270 20724066 20724066 20726335    6 1.000000 2.571329   6  TRUE
+2271 20728397 20728397 20731120    2 1.000000 1.664190   1  TRUE
+2272 20747515 20747515 20748921    2 1.000000 2.290085   2  TRUE
+2273 20751677 20751677 20752508    2 1.000000 1.663622   1  TRUE
+2274 20754775 20754775 20755982    4 1.000000 1.741615   3  TRUE
+2275 21052821 21052821 21055674    4 1.000000 2.802712   3  TRUE
+2276 21281511 21281511 21282783    2 1.000000 2.070810   2  TRUE
+2277 21367097 21367097 21369529    2 1.000000 2.593883   2  TRUE
+2278 21598172 21598172 21598796    2 1.000000 1.581359   1  TRUE
+2279 22068565 22068565 22070912    2 1.000000 1.821728   1  TRUE
+2280 22221706 22221706 22222296    2 1.000000 2.278239   2  TRUE
+2281 22454706 22454706 22456974    2 1.000000 3.408969   2  TRUE
+2282 22479396 22479396 22481979    4 1.000000 1.958655   3  TRUE
+2283 22832217 22832217 22832694    2 1.000000 1.284323   0  TRUE
+2284 23401220 23401220 23402427    2 1.000000 2.047473   2  TRUE
+2285  1379039  1379039  1380649    2 1.000000 2.002104   1  TRUE
+2286  1793673  1793673  1795678    2 1.000000 2.878117   2  TRUE</code></pre>
+<ul>
+<li><p>chromosome names are missing</p></li>
+<li><p>add manually - assuming that chromosomes remain in order - 2L,
+2R, 3L, 3R, 4, etc</p></li>
+<li><p>first break apart the peaks - the peaks are organised by
+increasing start site</p></li>
+<li><p>so if the start site is less than the previous peak - new
+chromosome</p></li>
+<li><p>how many peaks per chromosome?</p></li>
+</ul>
+<pre class="r"><code>peaks_per_chr &lt;- vissers_peaks %&gt;% 
+  mutate(end_chr = ifelse(start &gt; lead(start), TRUE, NA), 
+         row_num = 1:nrow(.), 
+         end_chr = ifelse(row_num == nrow(.), TRUE, end_chr),
+         end_pos = ifelse(end_chr == TRUE, row_num, NA)) %&gt;% 
+  fill(end_pos, .direction = &quot;up&quot;) %&gt;% 
+  distinct(end_pos) %&gt;% 
+  mutate(num_per_chr = end_pos - lag(end_pos), 
+         num_per_chr = ifelse(is.na(num_per_chr), end_pos, num_per_chr)) %&gt;%
+  .$num_per_chr
+peaks_per_chr</code></pre>
+<pre><code>[1] 390 421 478 544  39 412   2</code></pre>
+<ul>
+<li>match to the chromosome - taken from the dm results</li>
+</ul>
+<pre class="r"><code>chromosomes &lt;- sub(&quot;-.*&quot;, &quot;&quot;, rownames(vissers_dm)) %&gt;% unique()
+chromosomes</code></pre>
+<pre><code>[1] &quot;chr2L&quot; &quot;chr2R&quot; &quot;chr3L&quot; &quot;chr3R&quot; &quot;chr4&quot;  &quot;chrX&quot;  &quot;chrY&quot; </code></pre>
+<ul>
+<li>check that length matches</li>
+</ul>
+<pre class="r"><code>length(chromosomes) == length(peaks_per_chr)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<ul>
+<li>replace seqnames</li>
+</ul>
+<pre class="r"><code>chr_vec &lt;- character()
+for(i in 1:length(peaks_per_chr)) {
+  chr_vec &lt;- c(chr_vec, rep(chromosomes[i], times = peaks_per_chr[i]))
+}
+
+vissers_peaks$seqnames &lt;- chr_vec</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R Under development (unstable) (2024-01-17 r85813)
+Platform: x86_64-apple-darwin20
+Running under: macOS Sonoma 14.1.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] BSgenome.Dmelanogaster.UCSC.dm6_1.4.1 BSgenome_1.72.0                      
+ [3] rtracklayer_1.64.0                    BiocIO_1.14.0                        
+ [5] Biostrings_2.72.1                     XVector_0.44.0                       
+ [7] ggplot2_3.5.1                         edgeR_4.2.1                          
+ [9] limma_3.60.4                          tidyr_1.3.1                          
+[11] dplyr_1.1.4                           plyranges_1.24.0                     
+[13] GenomicRanges_1.56.1                  GenomeInfoDb_1.40.1                  
+[15] IRanges_2.38.1                        S4Vectors_0.42.1                     
+[17] BiocGenerics_0.50.0                   Damsel_1.0.0                         
+[19] workflowr_1.7.1                      
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1            bitops_1.0-8               
+ [3] fastmap_1.2.0               RCurl_1.98-1.16            
+ [5] GenomicAlignments_1.40.0    promises_1.3.0             
+ [7] XML_3.99-0.17               digest_0.6.35              
+ [9] lifecycle_1.0.4             statmod_1.5.0              
+[11] processx_3.8.4              magrittr_2.0.3.9000        
+[13] compiler_4.4.0              rlang_1.1.3                
+[15] sass_0.4.9                  tools_4.4.0                
+[17] utf8_1.2.4                  yaml_2.3.8                 
+[19] knitr_1.46                  S4Arrays_1.4.1             
+[21] curl_5.2.1                  DelayedArray_0.30.1        
+[23] abind_1.4-5                 BiocParallel_1.38.0        
+[25] withr_3.0.1                 purrr_1.0.2                
+[27] grid_4.4.0                  fansi_1.0.6                
+[29] git2r_0.33.0                colorspace_2.1-1           
+[31] scales_1.3.0                SummarizedExperiment_1.34.0
+[33] cli_3.6.2                   rmarkdown_2.27             
+[35] crayon_1.5.3                generics_0.1.3             
+[37] rstudioapi_0.16.0           httr_1.4.7                 
+[39] rjson_0.2.21                cachem_1.1.0               
+[41] stringr_1.5.1.9000          splines_4.4.0              
+[43] zlibbioc_1.50.0             parallel_4.4.0             
+[45] BiocManager_1.30.23         restfulr_0.0.15            
+[47] matrixStats_1.3.0           vctrs_0.6.5                
+[49] Matrix_1.7-0                jsonlite_1.8.8             
+[51] callr_3.7.6                 locfit_1.5-9.10            
+[53] jquerylib_0.1.4             glue_1.7.0                 
+[55] codetools_0.2-20            ps_1.7.6                   
+[57] stringi_1.8.4               gtable_0.3.5               
+[59] later_1.3.2                 UCSC.utils_1.0.0           
+[61] munsell_0.5.1               tibble_3.2.1               
+[63] pillar_1.9.0                htmltools_0.5.8.1          
+[65] GenomeInfoDbData_1.2.12     R6_2.5.1                   
+[67] rprojroot_2.0.4             evaluate_0.23              
+[69] Biobase_2.64.0              lattice_0.22-6             
+[71] Rsamtools_2.20.0            renv_1.0.7                 
+[73] httpuv_1.6.15               bslib_0.7.0                
+[75] Rcpp_1.0.12                 SparseArray_1.4.8          
+[77] whisker_0.4.1               xfun_0.44                  
+[79] fs_1.6.4                    MatrixGenerics_1.16.0      
+[81] getPass_0.2-4               pkgconfig_2.0.3            </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
