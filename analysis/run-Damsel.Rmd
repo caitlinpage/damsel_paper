@@ -3,17 +3,65 @@ title: "run-Damsel"
 author: "caitlinpage"
 date: "2024-08-16"
 output: workflowr::wflow_html
-editor_options:
-  chunk_output_type: console
 ---
 
 ## Introduction
 
 ```{r}
-renv::install("bioc::Damsel")
+#renv::install("bioc::Damsel")
 library(Damsel)
 library(plyranges)
 library(dplyr)
 library(ggplot2)
+
+library(BSgenome.Dmelanogaster.UCSC.dm6)
+library(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
+library(org.Dm.eg.db)
+```
+
+```{r}
+gatc_regions_and_sites <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)
+gatc_regions <- gatc_regions_and_sites$regions
+```
+
+
+```{r}
+damsel_counts <- readRDS("../data/damsel_counts.rds")
+head(damsel_counts)
+```
+
+```{r}
+damsel_dge <- makeDGE(damsel_counts, min.samples = 2)
+```
+
+```{r}
+damsel_dm <- testDmRegions(damsel_dge, gatc_regions)
+head(damsel_dm)
+```
+
+```{r}
+damsel_peaks <- identifyPeaks(damsel_dm)
+head(damsel_peaks)
+```
+```{r}
+txdb <- TxDb.Dmelanogaster.UCSC.dm6.ensGene::TxDb.Dmelanogaster.UCSC.dm6.ensGene
+genes <- collateGenes(genes = txdb, regions = gatc_regions, org.Db = org.Dm.eg.db)
+```
+
+```{r}
+damsel_genes <- annotatePeaksGenes(damsel_peaks, genes, gatc_regions)
+```
+
+
+# Figure 1
+```{r}
+plotWrap(
+    id = damsel_peaks[1, ]$peak_id,
+    counts.df = damsel_counts,
+    dm_results.df = damsel_dm,
+    peaks.df = damsel_peaks,
+    gatc_sites.df = gatc_regions_and_sites$sites,
+    genes.df = damsel_genes, txdb = txdb
+)
 ```
 
