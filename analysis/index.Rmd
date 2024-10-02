@@ -28,12 +28,19 @@ Caitlin G Page^1,2^, Andrew Lonsdale^1,2,3^, Katrina A Mitchell^1,2^, Jan Schrö
 
 Analysis
 1. [Analyse DamID-Seq with Damsel](run-Damsel.html)
+
 2. [Analyse DamID-Seq with Vissers' pipeline](run-Vissers.html)
+
 3. [Overview of comparing methods](compare-Damsel-Vissers.html)
+
 4. [Compare Damsel and Vissers' differential methylation results](compare_dm.html)
+
 5. [Compare Damsel, Vissers', and Marshall & Brand pipelines peak results](compare_peaks.html)
+
 6. [Compare Damsel, Vissers' and Marshall & Brand pipelines gene results](compare_genes.html)
+
 7. [Analysis of false positive rate for Damsel and Vissers' methods](fp-test.html)
+
 
 
 
