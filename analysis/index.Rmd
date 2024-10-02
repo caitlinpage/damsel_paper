@@ -16,17 +16,20 @@ Abstract
 DamID sequencing is a technique to map the genome-wide interaction of a protein with DNA. Damsel is the first Bioconductor package to provide an end to end analysis for DamID sequencing data within R. Damsel performs quantification and testing of significant binding sites along with exploratory and visual analysis. Damsel produces results consistent with previous analysis approaches.
 
 Authors
+--------
 Caitlin G Page^1,2^, Andrew Lonsdale^1,2,3^, Katrina A Mitchell^1,2^, Jan Schröder^4^, Kieran F Harvey^1,2,5^, Alicia Oshlack^1,2,6+^
 
 ^1^ Peter MacCallum Cancer Centre  
 ^2^ Sir Peter MacCallum Department of Oncology, The University of Melbourne  
-^3^ Murdoch Children’s Research Institute, Parkville, VIC, 3052, Australia
-^4^ Computational Sciences Initiative, Department of Microbiology and Immunology, Peter Doherty Institute for Infection and Immunity, The University of Melbourne
-^5^ Department of Anatomy and Developmental Biology, and Biomedicine Discovery Institute, Monash University
-^6^ School of Mathematics and Statistics, The University of Melbourne 
+^3^ Murdoch Children’s Research Institute, Parkville, VIC, 3052, Australia 
+^4^ Computational Sciences Initiative, Department of Microbiology and Immunology, Peter Doherty Institute for Infection and Immunity, The University of Melbourne 
+^5^ Department of Anatomy and Developmental Biology, and Biomedicine Discovery Institute, Monash University 
+^6^ School of Mathematics and Statistics, The University of Melbourne  
 ^+^ corresponding author
 
-Analysis
+Analysis 
+--------
+
 1. [Analyse DamID-Seq with Damsel](run-Damsel.html)
 
 2. [Analyse DamID-Seq with Vissers' pipeline](run-Vissers.html)
