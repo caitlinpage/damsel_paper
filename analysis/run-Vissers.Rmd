@@ -114,3 +114,7 @@ for(i in 1:length(peaks_per_chr)) {
 vissers_peaks$seqnames <- chr_vec
 ```
 
+```{r}
+head(vissers_peaks)
+```
+

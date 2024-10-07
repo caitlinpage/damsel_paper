@@ -20,6 +20,60 @@ library(BSgenome.Dmelanogaster.UCSC.dm6)
 library(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 library(org.Dm.eg.db)
 ```
+```{r}
+```{r, echo=FALSE}
+makeDGE2 <- function(counts.df, max.width=10000, lib.size=NULL, min.cpm=0.5, min.samples=3, include_replicate=TRUE, group=NULL, design=NULL) {
+    if (!is.data.frame(counts.df)) {
+        stop("Must have data.frame of counts")
+    }
+    if (!is.numeric(min.cpm) | length(min.cpm) > 1) {
+        stop("min.cpm must be 1 value, recommend using default value")
+    }
+    if (!is.numeric(min.samples) | length(min.samples) > 1) {
+        stop("min.samples must be 1 value, recommend using default value")
+    }
+    if(!"width" %in% colnames(counts.df)) {
+        counts.df <- counts.df %>% dplyr::mutate(end = as.double(.data$end),
+            start = as.double(.data$start))
+        counts.df <- dplyr::mutate(counts.df, width = end - start + 1)
+    }
+    counts.df <- counts.df %>% dplyr::filter(.data$width <= max.width)
+    if(length(grep("bam", colnames(counts.df), ignore.case = TRUE)) == 0) {
+        stop("Samples must have bam or BAM in the name")
+    }
+    matrix <- as.matrix(counts.df[, grepl("bam", colnames(counts.df), ignore.case = TRUE)])
+    rownames(matrix) <- counts.df$Position
+
+    n_samples <- seq_len(ncol(matrix) / 2)
+    if(is.null(group)) {
+        group <- rep(c("Dam", "Fusion"), times = length(n_samples))
+    } else {
+        group <- group
+    }
+
+    dge <- edgeR::DGEList(matrix, lib.size = lib.size, group = group, gene = counts.df[, 2:5])
+
+    keep <- rowSums(edgeR::cpm(dge) >= min.cpm) >= min.samples
+    dge <- dge[keep, , keep.lib.sizes = FALSE]
+
+    dge <- edgeR::calcNormFactors(dge)
+    if(is.null(design)) {
+    rep <- c(0,0,1,1)
+   # design <- model.matrix(~group + rep)
+    if(include_replicate == TRUE) {
+      design <- model.matrix(~group + rep)
+    } else {
+      design <- model.matrix(~group)
+    }
+    } 
+    #design
+    dge <- edgeR::estimateDisp(dge, robust = TRUE, design = design)
+
+    dge
+}
+
+```
+```
 
 ```{r}
 gatc_regions_and_sites <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)
@@ -33,42 +87,9 @@ head(damsel_counts)
 ```
 
 ```{r}
-damsel_dge <- makeDGE(damsel_counts, min.samples = 2)
+damsel_dge <- makeDGE2(damsel_counts, min.samples = 2)
 damsel_dge
 ```
-```{r}
-matrix <- as.matrix(damsel_counts[, grepl("bam", colnames(damsel_counts), ignore.case = TRUE)])
-rownames(matrix) <- damsel_counts$Position
-
-n_samples <- seq_len(ncol(matrix) / 2)
-
-group <- rep(c("Dam", "Fusion"), times = length(n_samples))
-design_df <- seq_len(ncol(matrix)) %>%
-        data.frame() %>%
-        stats::setNames("group")
-    zero_vec <- rep(0, times = length(n_samples))
-    for (i in n_samples) {
-        design <- replace(zero_vec, i, 1)
-        design <- rep(design, each = 2)
-        design_df[, ncol(design_df) + 1] <- design
-    }
-design <- stats::model.matrix(~., data = design_df[, seq_len(ncol(design_df)) - 1])
-```
-```{r}
-setNames(design_df, c("num", "group", "replicate"))
-model.matrix(~., data=design_df[,2:3])
-```
-```{r}
-group <- c("Dam", "Sd", "Dam", "Sd")
-rep <- c(0,0,1,1)
-group
-model.matrix(~group + rep)
-```
-
-```{r}
-stats::model.matrix(~., data = design_df[, seq_len(ncol(design_df))])
-```
-
 ```{r}
 damsel_dm <- testDmRegions(damsel_dge, gatc_regions)
 head(damsel_dm)

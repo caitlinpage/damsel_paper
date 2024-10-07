@@ -18,7 +18,7 @@ library(BSgenome.Dmelanogaster.UCSC.dm6)
 library(edgeR)
 ```
 ```{r, echo=FALSE}
-makeDGE2 <- function(counts.df, max.width=10000, lib.size=NULL, min.cpm=0.5, min.samples=3, include_replicate=TRUE, design=NULL) {
+makeDGE2 <- function(counts.df, max.width=10000, lib.size=NULL, min.cpm=0.5, min.samples=3, include_replicate=TRUE, group=NULL, design=NULL) {
     if (!is.data.frame(counts.df)) {
         stop("Must have data.frame of counts")
     }
@@ -41,8 +41,11 @@ makeDGE2 <- function(counts.df, max.width=10000, lib.size=NULL, min.cpm=0.5, min
     rownames(matrix) <- counts.df$Position
 
     n_samples <- seq_len(ncol(matrix) / 2)
-
-    group <- rep(c("Dam", "Fusion"), times = length(n_samples))
+    if(is.null(group)) {
+        group <- rep(c("Dam", "Fusion"), times = length(n_samples))
+    } else {
+        group <- group
+    }
 
     dge <- edgeR::DGEList(matrix, lib.size = lib.size, group = group, gene = counts.df[, 2:5])
 
@@ -51,7 +54,6 @@ makeDGE2 <- function(counts.df, max.width=10000, lib.size=NULL, min.cpm=0.5, min
 
     dge <- edgeR::calcNormFactors(dge)
     if(is.null(design)) {
-    group <- c("Dam", "Sd", "Dam", "Sd")
     rep <- c(0,0,1,1)
    # design <- model.matrix(~group + rep)
     if(include_replicate == TRUE) {
@@ -122,23 +124,26 @@ head(damsel_counts)
 ```
 * rearrange samples to reflect new groups
 ```{r}
+group <- c("Dam", "Fusion", "Fusion", "Dam")
+
 damsel_counts_a <- damsel_counts[,c(1:7,9,10,8)]
 head(damsel_counts_a)
 ```
 
 Test Damsel
-
 ```{r}
-makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE)$design
-testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE), gatc_regions) %>% 
+group <- c("Dam", "Fusion", "Fusion", "Dam")
+makeDGE2(damsel_counts, min.samples = 2, include_replicate=FALSE, group = group)$design
+testDmRegions(makeDGE2(damsel_counts, min.samples = 2, include_replicate=FALSE, group = group), gatc_regions) %>% 
   group_by(meth_status) %>% summarise(n=n())
 ```
 
 Test Vissers
 ```{r shared-code}
 source("../code/helper-vissers.R")
-test_vissers_dm(damsel_counts_a)$design
-test_vissers_dm(damsel_counts_a)$results %>% group_by(significant) %>% summarise(n=n())
+group <- c("Dam", "Fusion", "Fusion", "Dam")
+test_vissers_dm(damsel_counts, modify_group = group)$design
+test_vissers_dm(damsel_counts, modify_group = group)$results %>% group_by(significant) %>% summarise(n=n())
 ```
 
 # C - false positive test
@@ -147,28 +152,26 @@ test_vissers_dm(damsel_counts_a)$results %>% group_by(significant) %>% summarise
 ```{r}
 head(damsel_counts)
 ```
-* rearrange samples to reflect new groups
-```{r}
-damsel_counts_a <- damsel_counts[,c(1:7,9,8,10)]
-head(damsel_counts_a)
-```
-
-Test Damsel
+Test Damsel 
 
 ```{r}
-makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE)$design
-testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE), gatc_regions) %>% 
+group <- c("Dam", "Dam", "Fusion", "Fusion")
+makeDGE2(damsel_counts, min.samples = 2, include_replicate=FALSE, group = group)$design
+testDmRegions(makeDGE2(damsel_counts, min.samples = 2, include_replicate=FALSE, group = group), gatc_regions) %>% 
   group_by(meth_status) %>% summarise(n=n())
 ```
+
 
 Test Vissers
 ```{r shared-code2}
 source("../code/helper-vissers.R")
-test_vissers_dm(damsel_counts_a)$results %>% group_by(significant) %>% summarise(n=n())
+group <- c("Dam", "Dam", "Fusion", "Fusion")
+test_vissers_dm(damsel_counts, modify_group = group)$design
+test_vissers_dm(damsel_counts, modify_group = group)$results %>% group_by(significant) %>% summarise(n=n())
 ```
 ```{r shared-code3}
 source("../code/helper-vissers.R")
-test_vissers_peaks(damsel_counts_a)
+test_vissers_peaks(damsel_counts, modify_group = group)
 ```
 
 
