@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree772ba6b11fd8a479ba1ef3140c2138ce5a1df113targetblank772ba6ba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertreeafa2a7d97583af68d4d25c277634fecdf242f0a0targetblankafa2a7da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/caitlinpage/damsel_paper/tree/772ba6b11fd8a479ba1ef3140c2138ce5a1df113" target="_blank">772ba6b</a>
+<a href="https://github.com/caitlinpage/damsel_paper/tree/afa2a7d97583af68d4d25c277634fecdf242f0a0" target="_blank">afa2a7d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree772ba6b11fd8a479ba1ef3140c2138ce5a1df113targetblank772ba6ba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertreeafa2a7d97583af68d4d25c277634fecdf242f0a0targetblankafa2a7da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/caitlinpage/damsel_paper/tree/772ba6b11fd8a479ba1ef3140c2138ce5a1df113" target="_blank">772ba6b</a>.
+<a href="https://github.com/caitlinpage/damsel_paper/tree/afa2a7d97583af68d4d25c277634fecdf242f0a0" target="_blank">afa2a7d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -633,6 +633,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/afa2a7d97583af68d4d25c277634fecdf242f0a0/analysis/fp-test.Rmd" target="_blank">afa2a7d</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+wflow_publish("analysis/fp-test.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/caitlinpage/damsel_paper/57141fa7fe8585ccacb8d774425cccb863ab5b33/docs/fp-test.html" target="_blank">57141fa</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -802,53 +836,6 @@ Attaching package: &#39;limma&#39;</code></pre>
 <pre><code>The following object is masked from &#39;package:BiocGenerics&#39;:
 
     plotMA</code></pre>
-<pre class="r"><code>makeDGE2 &lt;- function(counts.df, max.width=10000, lib.size=NULL, min.cpm=0.5, min.samples=3, include_replicate=TRUE, design=NULL) {
-    if (!is.data.frame(counts.df)) {
-        stop(&quot;Must have data.frame of counts&quot;)
-    }
-    if (!is.numeric(min.cpm) | length(min.cpm) &gt; 1) {
-        stop(&quot;min.cpm must be 1 value, recommend using default value&quot;)
-    }
-    if (!is.numeric(min.samples) | length(min.samples) &gt; 1) {
-        stop(&quot;min.samples must be 1 value, recommend using default value&quot;)
-    }
-    if(!&quot;width&quot; %in% colnames(counts.df)) {
-        counts.df &lt;- counts.df %&gt;% dplyr::mutate(end = as.double(.data$end),
-            start = as.double(.data$start))
-        counts.df &lt;- dplyr::mutate(counts.df, width = end - start + 1)
-    }
-    counts.df &lt;- counts.df %&gt;% dplyr::filter(.data$width &lt;= max.width)
-    if(length(grep(&quot;bam&quot;, colnames(counts.df), ignore.case = TRUE)) == 0) {
-        stop(&quot;Samples must have bam or BAM in the name&quot;)
-    }
-    matrix &lt;- as.matrix(counts.df[, grepl(&quot;bam&quot;, colnames(counts.df), ignore.case = TRUE)])
-    rownames(matrix) &lt;- counts.df$Position
-
-    n_samples &lt;- seq_len(ncol(matrix) / 2)
-
-    group &lt;- rep(c(&quot;Dam&quot;, &quot;Fusion&quot;), times = length(n_samples))
-
-    dge &lt;- edgeR::DGEList(matrix, lib.size = lib.size, group = group, gene = counts.df[, 2:5])
-
-    keep &lt;- rowSums(edgeR::cpm(dge) &gt;= min.cpm) &gt;= min.samples
-    dge &lt;- dge[keep, , keep.lib.sizes = FALSE]
-
-    dge &lt;- edgeR::calcNormFactors(dge)
-    if(is.null(design)) {
-    group &lt;- c(&quot;Dam&quot;, &quot;Sd&quot;, &quot;Dam&quot;, &quot;Sd&quot;)
-    rep &lt;- c(0,0,1,1)
-   # design &lt;- model.matrix(~group + rep)
-    if(include_replicate == TRUE) {
-      design &lt;- model.matrix(~group + rep)
-    } else {
-      design &lt;- model.matrix(~group)
-    }
-    } 
-    #design
-    dge &lt;- edgeR::estimateDisp(dge, robust = TRUE, design = design)
-
-    dge
-}</code></pre>
 <pre class="r"><code>damsel_counts &lt;- rbind(readRDS(&quot;../data/damsel_counts_a.rds&quot;), readRDS(&quot;../data/damsel_counts_b.rds&quot;))
 gatc_regions &lt;- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions</code></pre>
 <pre><code>Warning in .local(x, row.names, optional, ...): &#39;optional&#39; argument was ignored
@@ -866,7 +853,9 @@ for the replicates.</p>
 <p>Normal format * A: group1 = dam1, dam2 | group2 = fusion1,
 fusion2</p>
 <p>False positive testing * B: group1 = dam1, fusion2 | group2 = dam2,
-fusion1 * C: group1 = dam1, fusion1 | group2 = dam2, fusion2 `</p>
+fusion1 * C: group1 = dam1, fusion1 | group2 = dam2, fusion2</p>
+<p>To do Damsel’s false positive testing, the replicates will not be
+included.</p>
 </div>
 <div id="a---normal-analysis" class="section level1">
 <h1>A - Normal analysis</h1>
@@ -886,6 +875,57 @@ chr2L-372                6.17                 88.0                58.5
 chr2L-540                4.83                  0.0                 0.0
 chr2L-689                0.00                  0.5                 0.5
 chr2L-830                1.33                  4.5                 3.5</code></pre>
+<pre class="r"><code>testDmRegions(makeDGE2(damsel_counts, include_replicate = FALSE), regions = gatc_regions) %&gt;% 
+  group_by(meth_status) %&gt;%
+  summarise(n=n())</code></pre>
+<pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
+graphical parameter</code></pre>
+<p><img src="figure/fp-test.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code># A tibble: 3 × 2
+  meth_status       n
+  &lt;chr&gt;         &lt;int&gt;
+1 No_sig        99805
+2 Not_included 279369
+3 Upreg          4480</code></pre>
+<pre class="r"><code>testDmRegions(makeDGE2(damsel_counts, include_replicate = TRUE), regions = gatc_regions) %&gt;% 
+  group_by(meth_status) %&gt;%
+  summarise(n=n())</code></pre>
+<pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
+graphical parameter</code></pre>
+<p><img src="figure/fp-test.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code># A tibble: 3 × 2
+  meth_status       n
+  &lt;chr&gt;         &lt;int&gt;
+1 No_sig        79149
+2 Not_included 279369
+3 Upreg         25136</code></pre>
+<pre class="r"><code>source(&quot;../code/helper-vissers.R&quot;)
+test_vissers_dm(damsel_counts)$design</code></pre>
+<pre><code>Warning: &#39;decideTestsDGE&#39; is deprecated.
+Use &#39;decideTests&#39; instead.
+See help(&quot;Deprecated&quot;)</code></pre>
+<pre><code>  (Intercept) groupSd
+1           1       0
+2           1       1
+3           1       0
+4           1       1
+attr(,&quot;assign&quot;)
+[1] 0 1
+attr(,&quot;contrasts&quot;)
+attr(,&quot;contrasts&quot;)$group
+[1] &quot;contr.treatment&quot;</code></pre>
+<pre class="r"><code>test_vissers_dm(damsel_counts)$results %&gt;% 
+  group_by(significant) %&gt;%
+  summarise(n=n())</code></pre>
+<pre><code>Warning: &#39;decideTestsDGE&#39; is deprecated.
+Use &#39;decideTests&#39; instead.
+See help(&quot;Deprecated&quot;)</code></pre>
+<pre><code># A tibble: 3 × 2
+  significant      n
+        &lt;int&gt;  &lt;int&gt;
+1          -1  20346
+2           0 110709
+3           1  19630</code></pre>
 </div>
 <div id="b-false-positive-test" class="section level1">
 <h1>B: False positive test</h1>
@@ -927,29 +967,6 @@ chr2L-540                  0.0                 0.0                4.83
 chr2L-689                  0.5                 0.5                0.00
 chr2L-830                  4.5                 3.5                1.33</code></pre>
 <p>Test Damsel</p>
-<pre class="r"><code>makeDGE2(damsel_counts_a, min.samples = 2)$design</code></pre>
-<pre><code>  (Intercept) groupSd rep
-1           1       0   0
-2           1       1   0
-3           1       0   1
-4           1       1   1
-attr(,&quot;assign&quot;)
-[1] 0 1 2
-attr(,&quot;contrasts&quot;)
-attr(,&quot;contrasts&quot;)$group
-[1] &quot;contr.treatment&quot;</code></pre>
-<pre class="r"><code>testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2), gatc_regions) %&gt;% 
-  group_by(meth_status) %&gt;% summarise(n=n())</code></pre>
-<pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
-graphical parameter</code></pre>
-<p><img src="figure/fp-test.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code># A tibble: 2 × 2
-  meth_status       n
-  &lt;chr&gt;         &lt;int&gt;
-1 No_sig       150672
-2 Not_included 232982</code></pre>
-<p>test again but without incorporating replicates into the design
-matrix</p>
 <pre class="r"><code>makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE)$design</code></pre>
 <pre><code>  (Intercept) groupSd
 1           1       0
@@ -966,6 +983,43 @@ attr(,&quot;contrasts&quot;)$group
 <pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
 graphical parameter</code></pre>
 <p><img src="figure/fp-test.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/57141fa7fe8585ccacb8d774425cccb863ab5b33/docs/figure/fp-test.Rmd/unnamed-chunk-8-1.png" target="_blank">57141fa</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code># A tibble: 2 × 2
   meth_status       n
   &lt;chr&gt;         &lt;int&gt;
@@ -1036,30 +1090,6 @@ chr2L-540                  0.0                4.83                 0.0
 chr2L-689                  0.5                0.00                 0.5
 chr2L-830                  4.5                1.33                 3.5</code></pre>
 <p>Test Damsel</p>
-<pre class="r"><code>makeDGE2(damsel_counts_a, min.samples = 2)$design</code></pre>
-<pre><code>  (Intercept) groupSd rep
-1           1       0   0
-2           1       1   0
-3           1       0   1
-4           1       1   1
-attr(,&quot;assign&quot;)
-[1] 0 1 2
-attr(,&quot;contrasts&quot;)
-attr(,&quot;contrasts&quot;)$group
-[1] &quot;contr.treatment&quot;</code></pre>
-<pre class="r"><code>testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2), gatc_regions) %&gt;% 
-  group_by(meth_status) %&gt;% summarise(n=n())</code></pre>
-<pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
-graphical parameter</code></pre>
-<p><img src="figure/fp-test.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code># A tibble: 3 × 2
-  meth_status       n
-  &lt;chr&gt;         &lt;int&gt;
-1 No_sig       129274
-2 Not_included 232982
-3 Upreg         21398</code></pre>
-<p>Test again but without incorporating replicates into design
-matrix</p>
 <pre class="r"><code>makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE)$design</code></pre>
 <pre><code>  (Intercept) groupSd
 1           1       0
@@ -1075,7 +1105,44 @@ attr(,&quot;contrasts&quot;)$group
   group_by(meth_status) %&gt;% summarise(n=n())</code></pre>
 <pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
 graphical parameter</code></pre>
-<p><img src="figure/fp-test.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fp-test.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/57141fa7fe8585ccacb8d774425cccb863ab5b33/docs/figure/fp-test.Rmd/unnamed-chunk-11-1.png" target="_blank">57141fa</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code># A tibble: 2 × 2
   meth_status       n
   &lt;chr&gt;         &lt;int&gt;
