@@ -99,13 +99,18 @@ The Samples are:
 head(damsel_counts)
 ```
 ```{r}
-testDmRegions(makeDGE2(damsel_counts, include_replicate = FALSE), regions = gatc_regions) %>% 
+testDmRegions(makeDGE2(damsel_counts, min.samples=2, include_replicate = TRUE), regions = gatc_regions) %>% 
   group_by(meth_status) %>%
   summarise(n=n())
+```
+Normally when Damsel runs, the design matrix looks like this:
+```{r}
+makeDGE2(damsel_counts, min.samples=2, include_replicate = TRUE)$design
+```
+However, replicates can be exlcuded - making the design look like this:
 
-testDmRegions(makeDGE2(damsel_counts, include_replicate = TRUE), regions = gatc_regions) %>% 
-  group_by(meth_status) %>%
-  summarise(n=n())
+```{r}
+makeDGE2(damsel_counts, min.samples=2, include_replicate = FALSE)$design
 ```
 
 ```{r shared-code4}
