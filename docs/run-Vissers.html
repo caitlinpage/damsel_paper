@@ -390,7 +390,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-01
+<strong>Last updated:</strong> 2024-10-07
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree026678f25cee6036b68584ee0df58cb99f7e0f0btargetblank026678fa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree1f7aa8cb3603de60b529f23767a44111ebe188b6targetblank1f7aa8ca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/caitlinpage/damsel_paper/tree/026678f25cee6036b68584ee0df58cb99f7e0f0b" target="_blank">026678f</a>
+<a href="https://github.com/caitlinpage/damsel_paper/tree/1f7aa8cb3603de60b529f23767a44111ebe188b6" target="_blank">1f7aa8c</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree026678f25cee6036b68584ee0df58cb99f7e0f0btargetblank026678fa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree1f7aa8cb3603de60b529f23767a44111ebe188b6targetblank1f7aa8ca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/caitlinpage/damsel_paper/tree/026678f25cee6036b68584ee0df58cb99f7e0f0b" target="_blank">026678f</a>.
+<a href="https://github.com/caitlinpage/damsel_paper/tree/1f7aa8cb3603de60b529f23767a44111ebe188b6" target="_blank">1f7aa8c</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -562,6 +562,7 @@ Ignored files:
     Ignored:    renv/staging/
 
 Untracked files:
+    Untracked:  code/helper-vissers.R
     Untracked:  data/damsel_counts.rds
     Untracked:  data/damsel_counts_a.rds
     Untracked:  data/damsel_counts_b.rds
@@ -580,13 +581,13 @@ Untracked files:
     Untracked:  output/vissers_peaks.rds
     Untracked:  output/vissers_peaks.txt
     Untracked:  output/vissers_peaks_mod.rds
+    Untracked:  outputvenn_plot.png
     Untracked:  renv/.gitignore
 
 Unstaged changes:
-    Modified:   analysis/compare-Damsel-Vissers.Rmd
-    Modified:   analysis/fp-test.Rmd
     Modified:   code/run-Damsel.R
     Modified:   code/run-Vissers.R
+    Modified:   renv.lock
 
 </code></pre>
 <p>
@@ -632,6 +633,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/1f7aa8cb3603de60b529f23767a44111ebe188b6/analysis/run-Vissers.Rmd" target="_blank">1f7aa8c</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+wflow_publish(c("analysis/run-Damsel.Rmd", "analysis/run-Vissers.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/caitlinpage/damsel_paper/dca9f3a7b0420903f73b39d740a3549767bbea7f/docs/run-Vissers.html" target="_blank">dca9f3a</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -3170,6 +3205,14 @@ for(i in 1:length(peaks_per_chr)) {
 }
 
 vissers_peaks$seqnames &lt;- chr_vec</code></pre>
+<pre class="r"><code>head(vissers_peaks)</code></pre>
+<pre><code>  seqnames start   end tags      pen aveLogFC sig   big
+1    chr2L 17450 21359    6 1.000000 3.888205   5  TRUE
+2    chr2L 66423 67818    2 1.000000 2.546664   2  TRUE
+3    chr2L 71991 76558    4 1.000000 2.635863   4  TRUE
+4    chr2L 93378 95515    4 1.000000 2.727970   4  TRUE
+5    chr2L 95762 96492    2 0.666667 2.039309   2 FALSE
+6    chr2L 98317 99667    4 1.000000 1.765455   2  TRUE</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
