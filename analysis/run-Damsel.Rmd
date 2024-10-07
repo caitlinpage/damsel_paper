@@ -34,6 +34,39 @@ head(damsel_counts)
 
 ```{r}
 damsel_dge <- makeDGE(damsel_counts, min.samples = 2)
+damsel_dge
+```
+```{r}
+matrix <- as.matrix(damsel_counts[, grepl("bam", colnames(damsel_counts), ignore.case = TRUE)])
+rownames(matrix) <- damsel_counts$Position
+
+n_samples <- seq_len(ncol(matrix) / 2)
+
+group <- rep(c("Dam", "Fusion"), times = length(n_samples))
+design_df <- seq_len(ncol(matrix)) %>%
+        data.frame() %>%
+        stats::setNames("group")
+    zero_vec <- rep(0, times = length(n_samples))
+    for (i in n_samples) {
+        design <- replace(zero_vec, i, 1)
+        design <- rep(design, each = 2)
+        design_df[, ncol(design_df) + 1] <- design
+    }
+design <- stats::model.matrix(~., data = design_df[, seq_len(ncol(design_df)) - 1])
+```
+```{r}
+setNames(design_df, c("num", "group", "replicate"))
+model.matrix(~., data=design_df[,2:3])
+```
+```{r}
+group <- c("Dam", "Sd", "Dam", "Sd")
+rep <- c(0,0,1,1)
+group
+model.matrix(~group + rep)
+```
+
+```{r}
+stats::model.matrix(~., data = design_df[, seq_len(ncol(design_df))])
 ```
 
 ```{r}

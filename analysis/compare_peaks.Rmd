@@ -69,6 +69,11 @@ head(marshall_peaks_2)
 ```
 
 * Marshall peaks had to be compiled in order to be analysed
+* see `code/compile-Marshall_peaks.R`
+```{r}
+marshall_peaks
+```
+
 
 ```{r}
 peak_all <- union_ranges(as_granges(damsel_peaks), as_granges(marshall_peaks)) %>% 
@@ -96,27 +101,24 @@ venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compa
                   Marshall = peak_compare_marshall$compare_num)
 ggVennDiagram(venn_data)
 ```
-
-- so overlap and fp is both worse than it used to be...
-- but actually numbers are pretty similar to what I had - they've just changed slightly
--worst part is damsel has about 200 extra with no overlap
-- is it the lowest ranked?? - because I could accept that
+```{r}
+library(export)
+```
 
 ```{r}
-peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks[1:1000,]), as_granges(vissers_peaks_mod)), as_granges(marshall_peaks)) %>% data.frame() %>% 
-  mutate(compare_num = 1:n()) %>% as_granges() 
-
-peak_compare_damsel <- find_overlaps(as_granges(peak_all), as_granges(damsel_peaks), maxgap = 150) %>% data.frame()
-peak_compare_vissers <- find_overlaps(as_granges(peak_all), as_granges(vissers_peaks_mod), maxgap = 150) %>% data.frame()
-peak_compare_marshall <- find_overlaps(as_granges(peak_all), as_granges(marshall_peaks), maxgap = 150) %>% data.frame()
-
-
-venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compare_vissers$compare_num, 
-                  Marshall = peak_compare_marshall$compare_num)
-ggVennDiagram(venn_data)
+x11(width = dev.size("in")[[1]], height = dev.size("in")[[1]])
+venn_plot <- ggVennDiagram(venn_data)
+print(venn_plot)
+graph2png(file="../outputvenn_plot.png",
+         width = dev.size(units="px")[[1]]/40, 
+         height = dev.size(units="px")[[1]]/40, 
+         dpi = 900)
+dev.off()
 ```
-- ok if i did that right - that says that limiting to top 1000 doesn't change overlap - and actually makes things quite nice
-- oh but wait - didn't limit to top 1000 when going back
+
+* what is the overlap with just Damsel's top 1000 peaks?
+* peaks are ranked by FDR
+
 ```{r}
 peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks[1:1000,]), as_granges(vissers_peaks_mod)), as_granges(marshall_peaks)) %>% data.frame() %>% 
   mutate(compare_num = 1:n()) %>% as_granges() 
@@ -130,9 +132,10 @@ venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compa
                   Marshall = peak_compare_marshall$compare_num)
 ggVennDiagram(venn_data)
 ```
-- ok that makes the overlap look less good - makes vissers look better - but also makes vissers look worse - because they have more by themselves
-- but this one is more correct way of doing if want it this way
--omg of course vissers and marshall are more similar to each other - they're not doing any kind of sample pairing
+* overlap still looks pretty good
+* Vissers' and Marshall are more similar to each other as they don't group the samples like Damsel does
+
+* try with top 1000 Vissers' - ranked by logFC which is not ideal but just testing
 ```{r}
 peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks[1:1000,]), as_granges(vissers_peaks_mod[1:1000,])), as_granges(marshall_peaks)) %>% data.frame() %>% 
   mutate(compare_num = 1:n()) %>% as_granges() 
@@ -146,7 +149,7 @@ venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compa
                   Marshall = peak_compare_marshall$compare_num)
 ggVennDiagram(venn_data)
 ```
-- ok can't really do this because vissers is not ranked - does make it look interesting though - seems as if marshall is in the lower ranked vissers anyway
+* interesting that now Damsel has a slightly better overlap to Marshall than Vissers does
 ```{r}
 peak_all <- union_ranges(union_ranges(as_granges(damsel_peaks[1:1000,]), as_granges(vissers_peaks_mod[1:1000,])), as_granges(marshall_peaks[1:1000,])) %>% data.frame() %>% 
   mutate(compare_num = 1:n()) %>% as_granges() 
@@ -174,6 +177,14 @@ venn_data <- list(Damsel = peak_compare_damsel$compare_num, Vissers = peak_compa
                   Marshall = peak_compare_marshall$compare_num)
 ggVennDiagram(venn_data)
 ```
+
+
+
+
+
+
+
+
 
 
 

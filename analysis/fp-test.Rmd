@@ -17,146 +17,150 @@ library(ggplot2)
 library(BSgenome.Dmelanogaster.UCSC.dm6)
 library(edgeR)
 ```
+```{r}
+makeDGE2 <- function(counts.df, max.width=10000, lib.size=NULL, min.cpm=0.5, min.samples=3, include_replicate=TRUE, design=NULL) {
+    if (!is.data.frame(counts.df)) {
+        stop("Must have data.frame of counts")
+    }
+    if (!is.numeric(min.cpm) | length(min.cpm) > 1) {
+        stop("min.cpm must be 1 value, recommend using default value")
+    }
+    if (!is.numeric(min.samples) | length(min.samples) > 1) {
+        stop("min.samples must be 1 value, recommend using default value")
+    }
+    if(!"width" %in% colnames(counts.df)) {
+        counts.df <- counts.df %>% dplyr::mutate(end = as.double(.data$end),
+            start = as.double(.data$start))
+        counts.df <- dplyr::mutate(counts.df, width = end - start + 1)
+    }
+    counts.df <- counts.df %>% dplyr::filter(.data$width <= max.width)
+    if(length(grep("bam", colnames(counts.df), ignore.case = TRUE)) == 0) {
+        stop("Samples must have bam or BAM in the name")
+    }
+    matrix <- as.matrix(counts.df[, grepl("bam", colnames(counts.df), ignore.case = TRUE)])
+    rownames(matrix) <- counts.df$Position
+
+    n_samples <- seq_len(ncol(matrix) / 2)
+
+    group <- rep(c("Dam", "Fusion"), times = length(n_samples))
+
+    dge <- edgeR::DGEList(matrix, lib.size = lib.size, group = group, gene = counts.df[, 2:5])
+
+    keep <- rowSums(edgeR::cpm(dge) >= min.cpm) >= min.samples
+    dge <- dge[keep, , keep.lib.sizes = FALSE]
+
+    dge <- edgeR::calcNormFactors(dge)
+    if(is.null(design)) {
+    group <- c("Dam", "Sd", "Dam", "Sd")
+    rep <- c(0,0,1,1)
+   # design <- model.matrix(~group + rep)
+    if(include_replicate == TRUE) {
+      design <- model.matrix(~group + rep)
+    } else {
+      design <- model.matrix(~group)
+    }
+    } 
+    #design
+    dge <- edgeR::estimateDisp(dge, robust = TRUE, design = design)
+
+    dge
+}
+
+```
 
 
 ```{r}
-test_vissers_dm <- function(damsel_counts) {
-  matrix <- as.matrix(damsel_counts[, grepl("bam", colnames(damsel_counts), ignore.case = TRUE)])
-  rownames(matrix) <- damsel_counts$Position
-  group = c("Dam", "Sd", "Dam", "Sd")
-  design = model.matrix(~group)
-  y = DGEList(matrix, group = group)
-  keep <- rowSums(cpm(y)>=0.5) >= 2
-  y = y[keep, ,keep.lib.sizes=FALSE]
-  y = calcNormFactors(y)
-  y = estimateDisp(y, robust = T, design = design)
-
-  fit = glmFit(y, design = design)
-  lrt = glmLRT(fit, coef=2)
-  de.Sd <- decideTestsDGE(lrt, lfc = 1)
-  lrt$table$significant <- de.Sd
-
-  vissers_dm <- data.frame(lrt$table)
-  vissers_dm$significant <- data.frame(de.Sd)$groupSd
-  vissers_dm
-}
-test_vissers_peaks <- function(damsel_counts) {
-  matrix <- as.matrix(damsel_counts[, grepl("bam", colnames(damsel_counts), ignore.case = TRUE)])
-  rownames(matrix) <- damsel_counts$Position
-  group = c("Dam", "Sd", "Dam", "Sd")
-  design = model.matrix(~group)
-  y = DGEList(matrix, group = group)
-  keep <- rowSums(cpm(y)>=0.5) >= 2
-  y = y[keep, ,keep.lib.sizes=FALSE]
-  y = calcNormFactors(y)
-  y = estimateDisp(y, robust = T, design = design)
-
-  fit = glmFit(y, design = design)
-  lrt = glmLRT(fit, coef=2)
-  de.Sd <- decideTestsDGE(lrt, lfc = 1)
-  lrt$table$significant <- de.Sd
-
-  vissers_dm <- data.frame(lrt$table)
-  vissers_dm$significant <- data.frame(de.Sd)$groupSd
-
-  write.table(vissers_dm, file='../output/lrt_sd.txt', quote=F)
-  write.table(keep, file='../output/keep', quote=F, col.names = FALSE)
-
-  system2("python3", args=c("../code/call_peaks.py",
-          "../output/keep", "../output/lrt_sd.txt", ">",
-          "../output/fp_vissers_peaks.txt"))
-  vissers_peaks <- read.table("../output/fp_vissers_peaks.txt")
-
-  names(vissers_peaks) <- c('seqnames', 'start', 'end', "tags", 'pen', 'aveLogFC', 'sig')
-  vissers_peaks
-}
+damsel_counts <- rbind(readRDS("../data/damsel_counts_a.rds"), readRDS("../data/damsel_counts_b.rds"))
+gatc_regions <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions
 ```
+Normally, the design matrix in Damsel for differential testing has 2 columns, 1 for the grouping factor (Dam, Fusion), and an optional column for the replicates.
+
+
+Normal format
+* A: group1 = dam1, dam2 | group2 = fusion1, fusion2
+
+False positive testing 
+* B: group1 = dam1, fusion2 | group2 = dam2, fusion1 
+* C: group1 = dam1, fusion1 | group2 = dam2, fusion2
+`
+
+# A - Normal analysis
 
 The Samples are:
 * D1: Dam1
 * F1: Sd1
 * D2: Dam2
 * F2: Sd2
-```{r}
-damsel_counts <- rbind(readRDS("../data/damsel_counts_a.rds"), readRDS("../data/damsel_counts_b.rds"))
-gatc_regions <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions
-```
+
 ```{r}
 head(damsel_counts)
 ```
 
-# We can rearrange them as:
-* D1: Dam1
-* F1: Dam2
-* D2: Sd1
-* F2: Sd2
+# B: False positive test
+* group1 = dam1, fusion2 | group2 = dam2, fusion1 
 ```{r}
-damsel_counts_a <- damsel_counts[,c(1:6,7,9,8,10)]
+head(damsel_counts)
+```
+* rearrange samples to reflect new groups
+```{r}
+damsel_counts_a <- damsel_counts[,c(1:7,9,10,8)]
 head(damsel_counts_a)
 ```
 
-## Damsel
+Test Damsel
 ```{r}
-damsel_fp <- testDmRegions(makeDGE(damsel_counts_a, min.samples = 2), gatc_regions)
-damsel_fp %>% group_by(meth_status) %>% summarise(n=n())
+makeDGE2(damsel_counts_a, min.samples = 2)$design
+testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2), gatc_regions) %>% 
+  group_by(meth_status) %>% summarise(n=n())
 ```
+test again but without incorporating replicates into the design matrix
 ```{r}
-21398/(21398+129274)
-```
-
-```{r}
-nrow(damsel_fp)
-damsel_dm <- readRDS("../output/damsel_dm.rds")
-damsel_dm %>% group_by(meth_status) %>% summarise(n=n())
+makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE)$design
+testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE), gatc_regions) %>% 
+  group_by(meth_status) %>% summarise(n=n())
 ```
 
-## Vissers
-```{r}
-vissers_fp <- test_vissers_dm(damsel_counts_a)
-vissers_fp %>% group_by(significant) %>% summarise(n=n())
+Test Vissers
+```{r shared-code}
+source("../code/helper-vissers.R")
+test_vissers_dm(damsel_counts_a)$design
+test_vissers_dm(damsel_counts_a)$results %>% group_by(significant) %>% summarise(n=n())
 ```
 
-* both identify significant results
-* we suspect this is because the significant difference in library size between the replicates creates significance
+# C - false positive test
+* C: group1 = dam1, fusion1 | group2 = dam2, fusion2
 
-* check for peaks
 ```{r}
-nrow(identifyPeaks(damsel_fp))
+head(damsel_counts)
 ```
-
-
+* rearrange samples to reflect new groups
 ```{r}
-nrow(test_vissers_peaks(damsel_counts_a))
-```
-- 186 peaks
-
-# Or ...
-* D1: Dam1
-* F1: Sd2
-* D2: Dam2
-* F2: Sd1
-
-```{r}
-damsel_counts_a <- damsel_counts[,c(1:6,7,10,9,8)]
+damsel_counts_a <- damsel_counts[,c(1:7,9,8,10)]
 head(damsel_counts_a)
 ```
 
-## Damsel
+Test Damsel
 ```{r}
-damsel_fp <- testDmRegions(makeDGE(damsel_counts_a, min.samples = 2), gatc_regions)
-damsel_fp %>% group_by(meth_status) %>% summarise(n=n())
+makeDGE2(damsel_counts_a, min.samples = 2)$design
+testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2), gatc_regions) %>% 
+  group_by(meth_status) %>% summarise(n=n())
 ```
-* no significance identified
+Test again but without incorporating replicates into design matrix
+```{r}
+makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE)$design
+testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE), gatc_regions) %>% 
+  group_by(meth_status) %>% summarise(n=n())
+```
 
-## Vissers
-```{r}
-vissers_fp <- test_vissers_dm(damsel_counts_a)
-vissers_fp %>% group_by(significant) %>% summarise(n=n())
+Test Vissers
+```{r shared-code2}
+source("../code/helper-vissers.R")
+test_vissers_dm(damsel_counts_a)$results %>% group_by(significant) %>% summarise(n=n())
 ```
-* significance identified
+```{r shared-code3}
+source("../code/helper-vissers.R")
+test_vissers_peaks(damsel_counts_a)
+```
 
-```{r}
-nrow(test_vissers_peaks(damsel_counts_a))
-```
-* more peaks than Damsel identifies the other way around
+
 
