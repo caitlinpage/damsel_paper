@@ -17,7 +17,7 @@ library(ggplot2)
 library(BSgenome.Dmelanogaster.UCSC.dm6)
 library(edgeR)
 ```
-```{r}
+```{r, echo=FALSE}
 makeDGE2 <- function(counts.df, max.width=10000, lib.size=NULL, min.cpm=0.5, min.samples=3, include_replicate=TRUE, design=NULL) {
     if (!is.data.frame(counts.df)) {
         stop("Must have data.frame of counts")
@@ -82,7 +82,8 @@ Normal format
 False positive testing 
 * B: group1 = dam1, fusion2 | group2 = dam2, fusion1 
 * C: group1 = dam1, fusion1 | group2 = dam2, fusion2
-`
+
+To do Damsel's false positive testing, the replicates will not be included.
 
 # A - Normal analysis
 
@@ -95,6 +96,24 @@ The Samples are:
 ```{r}
 head(damsel_counts)
 ```
+```{r}
+testDmRegions(makeDGE2(damsel_counts, include_replicate = FALSE), regions = gatc_regions) %>% 
+  group_by(meth_status) %>%
+  summarise(n=n())
+
+testDmRegions(makeDGE2(damsel_counts, include_replicate = TRUE), regions = gatc_regions) %>% 
+  group_by(meth_status) %>%
+  summarise(n=n())
+```
+
+```{r shared-code4}
+source("../code/helper-vissers.R")
+test_vissers_dm(damsel_counts)$design
+test_vissers_dm(damsel_counts)$results %>% 
+  group_by(significant) %>%
+  summarise(n=n())
+```
+
 
 # B: False positive test
 * group1 = dam1, fusion2 | group2 = dam2, fusion1 
@@ -108,12 +127,7 @@ head(damsel_counts_a)
 ```
 
 Test Damsel
-```{r}
-makeDGE2(damsel_counts_a, min.samples = 2)$design
-testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2), gatc_regions) %>% 
-  group_by(meth_status) %>% summarise(n=n())
-```
-test again but without incorporating replicates into the design matrix
+
 ```{r}
 makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE)$design
 testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE), gatc_regions) %>% 
@@ -140,12 +154,7 @@ head(damsel_counts_a)
 ```
 
 Test Damsel
-```{r}
-makeDGE2(damsel_counts_a, min.samples = 2)$design
-testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2), gatc_regions) %>% 
-  group_by(meth_status) %>% summarise(n=n())
-```
-Test again but without incorporating replicates into design matrix
+
 ```{r}
 makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE)$design
 testDmRegions(makeDGE2(damsel_counts_a, min.samples = 2, include_replicate=FALSE), gatc_regions) %>% 
