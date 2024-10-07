@@ -390,7 +390,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-07
+<strong>Last updated:</strong> 2024-10-08
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree1f7aa8cb3603de60b529f23767a44111ebe188b6targetblank1f7aa8ca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree0ee498e7eae1b39c72db1312acc2b0b3b8389f4ctargetblank0ee498ea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/caitlinpage/damsel_paper/tree/1f7aa8cb3603de60b529f23767a44111ebe188b6" target="_blank">1f7aa8c</a>
+<a href="https://github.com/caitlinpage/damsel_paper/tree/0ee498e7eae1b39c72db1312acc2b0b3b8389f4c" target="_blank">0ee498e</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree1f7aa8cb3603de60b529f23767a44111ebe188b6targetblank1f7aa8ca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree0ee498e7eae1b39c72db1312acc2b0b3b8389f4ctargetblank0ee498ea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/caitlinpage/damsel_paper/tree/1f7aa8cb3603de60b529f23767a44111ebe188b6" target="_blank">1f7aa8c</a>.
+<a href="https://github.com/caitlinpage/damsel_paper/tree/0ee498e7eae1b39c72db1312acc2b0b3b8389f4c" target="_blank">0ee498e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -633,6 +633,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/0ee498e7eae1b39c72db1312acc2b0b3b8389f4c/analysis/fp-test.Rmd" target="_blank">0ee498e</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-08
+</td>
+<td>
+wflow_publish("analysis/fp-test.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/caitlinpage/damsel_paper/b6852e187e82923f27dc27c0b58ebfb1bdf5a141/docs/fp-test.html" target="_blank">b6852e1</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -909,7 +943,7 @@ chr2L-372                6.17                 88.0                58.5
 chr2L-540                4.83                  0.0                 0.0
 chr2L-689                0.00                  0.5                 0.5
 chr2L-830                1.33                  4.5                 3.5</code></pre>
-<pre class="r"><code>testDmRegions(makeDGE2(damsel_counts, include_replicate = FALSE), regions = gatc_regions) %&gt;% 
+<pre class="r"><code>testDmRegions(makeDGE2(damsel_counts, min.samples=2, include_replicate = TRUE), regions = gatc_regions) %&gt;% 
   group_by(meth_status) %&gt;%
   summarise(n=n())</code></pre>
 <pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
@@ -955,58 +989,34 @@ caitlinpage
 <pre><code># A tibble: 3 × 2
   meth_status       n
   &lt;chr&gt;         &lt;int&gt;
-1 No_sig        99805
-2 Not_included 279369
-3 Upreg          4480</code></pre>
-<pre class="r"><code>testDmRegions(makeDGE2(damsel_counts, include_replicate = TRUE), regions = gatc_regions) %&gt;% 
-  group_by(meth_status) %&gt;%
-  summarise(n=n())</code></pre>
-<pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
-graphical parameter</code></pre>
-<p><img src="figure/fp-test.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-2">
-Past versions of unnamed-chunk-5-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/caitlinpage/damsel_paper/blob/e240e5714df9eb131c75b2eb1dc37f8b9faee21e/docs/figure/fp-test.Rmd/unnamed-chunk-5-2.png" target="_blank">e240e57</a>
-</td>
-<td>
-caitlinpage
-</td>
-<td>
-2024-10-07
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code># A tibble: 3 × 2
-  meth_status       n
-  &lt;chr&gt;         &lt;int&gt;
-1 No_sig        79149
-2 Not_included 279369
-3 Upreg         25136</code></pre>
+1 No_sig       113787
+2 Not_included 232982
+3 Upreg         36885</code></pre>
+<p>Normally when Damsel runs, the design matrix looks like this:</p>
+<pre class="r"><code>makeDGE2(damsel_counts, min.samples=2, include_replicate = TRUE)$design</code></pre>
+<pre><code>  (Intercept) groupFusion rep
+1           1           0   0
+2           1           1   0
+3           1           0   1
+4           1           1   1
+attr(,&quot;assign&quot;)
+[1] 0 1 2
+attr(,&quot;contrasts&quot;)
+attr(,&quot;contrasts&quot;)$group
+[1] &quot;contr.treatment&quot;</code></pre>
+<p>However, replicates can be exlcuded - making the design look like
+this:</p>
+<pre class="r"><code>makeDGE2(damsel_counts, min.samples=2, include_replicate = FALSE)$design</code></pre>
+<pre><code>  (Intercept) groupFusion
+1           1           0
+2           1           1
+3           1           0
+4           1           1
+attr(,&quot;assign&quot;)
+[1] 0 1
+attr(,&quot;contrasts&quot;)
+attr(,&quot;contrasts&quot;)$group
+[1] &quot;contr.treatment&quot;</code></pre>
 <pre class="r"><code>source(&quot;../code/helper-vissers.R&quot;)
 test_vissers_dm(damsel_counts)$design</code></pre>
 <pre><code>  (Intercept) groupSd
@@ -1087,13 +1097,13 @@ attr(,&quot;contrasts&quot;)$group
   group_by(meth_status) %&gt;% summarise(n=n())</code></pre>
 <pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
 graphical parameter</code></pre>
-<p><img src="figure/fp-test.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fp-test.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
-Past versions of unnamed-chunk-8-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div id="fig-unnamed-chunk-10-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1112,7 +1122,7 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/caitlinpage/damsel_paper/blob/57141fa7fe8585ccacb8d774425cccb863ab5b33/docs/figure/fp-test.Rmd/unnamed-chunk-8-1.png" target="_blank">57141fa</a>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/b6852e187e82923f27dc27c0b58ebfb1bdf5a141/docs/figure/fp-test.Rmd/unnamed-chunk-10-1.png" target="_blank">b6852e1</a>
 </td>
 <td>
 caitlinpage
@@ -1187,7 +1197,55 @@ attr(,&quot;contrasts&quot;)$group
   group_by(meth_status) %&gt;% summarise(n=n())</code></pre>
 <pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
 graphical parameter</code></pre>
-<p><img src="figure/fp-test.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fp-test.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/e240e5714df9eb131c75b2eb1dc37f8b9faee21e/docs/figure/fp-test.Rmd/unnamed-chunk-12-1.png" target="_blank">e240e57</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-07
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/57141fa7fe8585ccacb8d774425cccb863ab5b33/docs/figure/fp-test.Rmd/unnamed-chunk-12-1.png" target="_blank">57141fa</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code># A tibble: 2 × 2
   meth_status       n
   &lt;chr&gt;         &lt;int&gt;
