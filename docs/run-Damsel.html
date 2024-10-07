@@ -390,7 +390,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-01
+<strong>Last updated:</strong> 2024-10-07
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree026678f25cee6036b68584ee0df58cb99f7e0f0btargetblank026678fa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree772ba6b11fd8a479ba1ef3140c2138ce5a1df113targetblank772ba6ba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/caitlinpage/damsel_paper/tree/026678f25cee6036b68584ee0df58cb99f7e0f0b" target="_blank">026678f</a>
+<a href="https://github.com/caitlinpage/damsel_paper/tree/772ba6b11fd8a479ba1ef3140c2138ce5a1df113" target="_blank">772ba6b</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree026678f25cee6036b68584ee0df58cb99f7e0f0btargetblank026678fa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomcaitlinpagedamselpapertree772ba6b11fd8a479ba1ef3140c2138ce5a1df113targetblank772ba6ba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/caitlinpage/damsel_paper/tree/026678f25cee6036b68584ee0df58cb99f7e0f0b" target="_blank">026678f</a>.
+<a href="https://github.com/caitlinpage/damsel_paper/tree/772ba6b11fd8a479ba1ef3140c2138ce5a1df113" target="_blank">772ba6b</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -562,6 +562,7 @@ Ignored files:
     Ignored:    renv/staging/
 
 Untracked files:
+    Untracked:  code/helper-vissers.R
     Untracked:  data/damsel_counts.rds
     Untracked:  data/damsel_counts_a.rds
     Untracked:  data/damsel_counts_b.rds
@@ -580,13 +581,13 @@ Untracked files:
     Untracked:  output/vissers_peaks.rds
     Untracked:  output/vissers_peaks.txt
     Untracked:  output/vissers_peaks_mod.rds
+    Untracked:  outputvenn_plot.png
     Untracked:  renv/.gitignore
 
 Unstaged changes:
-    Modified:   analysis/compare-Damsel-Vissers.Rmd
-    Modified:   analysis/fp-test.Rmd
     Modified:   code/run-Damsel.R
     Modified:   code/run-Vissers.R
+    Modified:   renv.lock
 
 </code></pre>
 <p>
@@ -632,6 +633,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/caitlinpage/damsel_paper/blob/772ba6b11fd8a479ba1ef3140c2138ce5a1df113/analysis/run-Damsel.Rmd" target="_blank">772ba6b</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+wflow_publish(c("analysis/compare_dm.Rmd", "analysis/fp-test.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/caitlinpage/damsel_paper/dca9f3a7b0420903f73b39d740a3549767bbea7f/docs/run-Damsel.html" target="_blank">dca9f3a</a>
+</td>
+<td>
+caitlinpage
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -823,11 +858,134 @@ chr2L-372                6.17                 88.0                58.5
 chr2L-540                4.83                  0.0                 0.0
 chr2L-689                0.00                  0.5                 0.5
 chr2L-830                1.33                  4.5                 3.5</code></pre>
-<pre class="r"><code>damsel_dge &lt;- makeDGE(damsel_counts, min.samples = 2)</code></pre>
+<pre class="r"><code>damsel_dge &lt;- makeDGE(damsel_counts, min.samples = 2)
+damsel_dge</code></pre>
+<pre><code>An object of class &quot;DGEList&quot;
+$counts
+           dam_1_SRR7948872.BAM sd_1_SRR7948874.BAM dam_2_SRR7948876.BAM
+chr2L-231                  1.50                5.67                87.00
+chr2L-372                  2.50                6.17                88.00
+chr2L-5154                 6.50               10.83                15.50
+chr2L-5303                43.17               53.67               143.00
+chr2L-6025                68.17               66.75               283.33
+           sd_2_SRR7948877.BAM
+chr2L-231                57.50
+chr2L-372                58.50
+chr2L-5154               17.33
+chr2L-5303              174.00
+chr2L-6025              283.33
+150667 more rows ...
+
+$samples
+                      group lib.size norm.factors
+dam_1_SRR7948872.BAM    Dam 10512144    1.6910206
+sd_1_SRR7948874.BAM  Fusion  9461367    0.8364629
+dam_2_SRR7948876.BAM    Dam 52113267    1.2253711
+sd_2_SRR7948877.BAM  Fusion 53474085    0.5769481
+
+$genes
+           seqnames start  end width
+chr2L-231     chr2L   231  371   141
+chr2L-372     chr2L   372  539   168
+chr2L-5154    chr2L  5154 5302   149
+chr2L-5303    chr2L  5303 6024   722
+chr2L-6025    chr2L  6025 6880   856
+150667 more rows ...
+
+$design
+  (Intercept) group V2
+1           1     1  1
+2           1     2  1
+3           1     3  0
+4           1     4  0
+attr(,&quot;assign&quot;)
+[1] 0 1 2
+
+$common.dispersion
+[1] 0.02087227
+
+$trended.dispersion
+[1] 1.438293e-02 1.472771e-02 9.765625e-05 1.969004e-02 2.188058e-02
+150667 more elements ...
+
+$tagwise.dispersion
+[1] 1.766429e-02 1.708774e-02 9.765625e-05 1.849581e-02 2.081276e-02
+150667 more elements ...
+
+$AveLogCPM
+[1]  0.3126126  0.3499100 -0.9467345  2.0053520  2.6715574
+150667 more elements ...
+
+$trend.method
+[1] &quot;locfit&quot;
+
+$prior.df
+[1] 33.54115 35.87442 38.50457 38.50457 38.50457
+150667 more elements ...
+
+$prior.n
+[1] 33.54115 35.87442 38.50457 38.50457 38.50457
+150667 more elements ...
+
+$span
+[1] 0.2636625</code></pre>
+<pre class="r"><code>matrix &lt;- as.matrix(damsel_counts[, grepl(&quot;bam&quot;, colnames(damsel_counts), ignore.case = TRUE)])
+rownames(matrix) &lt;- damsel_counts$Position
+
+n_samples &lt;- seq_len(ncol(matrix) / 2)
+
+group &lt;- rep(c(&quot;Dam&quot;, &quot;Fusion&quot;), times = length(n_samples))
+design_df &lt;- seq_len(ncol(matrix)) %&gt;%
+        data.frame() %&gt;%
+        stats::setNames(&quot;group&quot;)
+    zero_vec &lt;- rep(0, times = length(n_samples))
+    for (i in n_samples) {
+        design &lt;- replace(zero_vec, i, 1)
+        design &lt;- rep(design, each = 2)
+        design_df[, ncol(design_df) + 1] &lt;- design
+    }
+design &lt;- stats::model.matrix(~., data = design_df[, seq_len(ncol(design_df)) - 1])</code></pre>
+<pre class="r"><code>setNames(design_df, c(&quot;num&quot;, &quot;group&quot;, &quot;replicate&quot;))</code></pre>
+<pre><code>  num group replicate
+1   1     1         0
+2   2     1         0
+3   3     0         1
+4   4     0         1</code></pre>
+<pre class="r"><code>model.matrix(~., data=design_df[,2:3])</code></pre>
+<pre><code>  (Intercept) V2 V3
+1           1  1  0
+2           1  1  0
+3           1  0  1
+4           1  0  1
+attr(,&quot;assign&quot;)
+[1] 0 1 2</code></pre>
+<pre class="r"><code>group &lt;- c(&quot;Dam&quot;, &quot;Sd&quot;, &quot;Dam&quot;, &quot;Sd&quot;)
+rep &lt;- c(0,0,1,1)
+group</code></pre>
+<pre><code>[1] &quot;Dam&quot; &quot;Sd&quot;  &quot;Dam&quot; &quot;Sd&quot; </code></pre>
+<pre class="r"><code>model.matrix(~group + rep)</code></pre>
+<pre><code>  (Intercept) groupSd rep
+1           1       0   0
+2           1       1   0
+3           1       0   1
+4           1       1   1
+attr(,&quot;assign&quot;)
+[1] 0 1 2
+attr(,&quot;contrasts&quot;)
+attr(,&quot;contrasts&quot;)$group
+[1] &quot;contr.treatment&quot;</code></pre>
+<pre class="r"><code>stats::model.matrix(~., data = design_df[, seq_len(ncol(design_df))])</code></pre>
+<pre><code>  (Intercept) group V2 V3
+1           1     1  1  0
+2           1     2  1  0
+3           1     3  0  1
+4           1     4  0  1
+attr(,&quot;assign&quot;)
+[1] 0 1 2 3</code></pre>
 <pre class="r"><code>damsel_dm &lt;- testDmRegions(damsel_dge, gatc_regions)</code></pre>
 <pre><code>Warning in plot.xy(xy.coords(x, y), type = type, ...): &quot;panel.first&quot; is not a
 graphical parameter</code></pre>
-<p><img src="figure/run-Damsel.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/run-Damsel.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>head(damsel_dm)</code></pre>
 <pre><code>   Position seqnames start end width strand number dm     logFC    PValue
 1  chr2L-82    chr2L    82 230   149      *      1 NA 0.0000000 1.0000000
@@ -936,7 +1094,7 @@ genes &lt;- collateGenes(genes = txdb, regions = gatc_regions, org.Db = org.Dm.e
 <pre><code>Constructing graphics...</code></pre>
 <pre><code>Scale for y is already present.
 Adding another scale for y, which will replace the existing scale.</code></pre>
-<p><img src="figure/run-Damsel.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/run-Damsel.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
