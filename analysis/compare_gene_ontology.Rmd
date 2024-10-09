@@ -1,0 +1,144 @@
+---
+title: "compare_gene_ontology"
+author: "caitlinpage"
+date: "2024-10-09"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+## Introduction
+```{r}
+library(Damsel)
+library(plyranges)
+library(dplyr)
+library(ggplot2)
+library(org.Dm.eg.db)
+library(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
+library(BSgenome.Dmelanogaster.UCSC.dm6)
+```
+```{r}
+gatc_regions <- getGatcRegions(BSgenome.Dmelanogaster.UCSC.dm6::BSgenome.Dmelanogaster.UCSC.dm6)$regions %>% data.frame()
+damsel_peaks <- readRDS("../output/damsel_peaks.rds")
+vissers_peaks_mod <- readRDS("../output/vissers_peaks_mod.rds")
+```
+
+# Obtain genes
+```{r}
+txdb <- TxDb.Dmelanogaster.UCSC.dm6.ensGene
+genes <- collateGenes(txdb, gatc_regions, org.Dm.eg.db)
+genes
+```
+```{r}
+damsel_genes <- annotatePeaksGenes(damsel_peaks, genes, gatc_regions)
+damsel_genes
+```
+The same function for annotating Vissers peaks cannot be used as the files are different formats
+However this works similarly, and Damsel allows for the same maximum gap between a peak and gene - though this is modifiable
+```{r}
+vissers_genes3 <- pair_overlaps(as_granges(vissers_peaks_mod), genes, maxgap = 5000)
+vissers_genes3 <- vissers_genes3 %>% data.frame()
+```
+
+```{r}
+damsel_ontology <- testGeneOntology(damsel_genes$all, genes, gatc_regions)
+```
+```{r, echo=FALSE}
+plotGeneOntology2 <- function(signif_results, fdr_threshold=0.05) {
+    df <- signif_results[seq_len(min(10, nrow(signif_results))), ]
+    df <- df %>% dplyr::filter(!is.na(.data$category))
+    max_fdr <- max(-log10(df$FDR)) + 5
+    plot <- df %>%
+        .[order(.$FDR, decreasing = FALSE), ] %>%
+        ggplot2::ggplot(ggplot2::aes(x = -log10(.data$FDR), y = factor(.data$term, levels = .data$term), colour = .data$ontology)) +
+        ggplot2::geom_point(ggplot2::aes(size = .data$numInCat)) +
+        ggplot2::geom_vline(xintercept = fdr_threshold, linetype = "dashed") +
+        ggplot2::scale_x_continuous(limits = c(0, max_fdr))
+
+    plot <- plot +
+        ggplot2::labs(y = "GO category") +
+        ggplot2::theme_bw()
+    plot
+}
+```
+
+```{r}
+plotGeneOntology2(damsel_ontology$signif_results) 
+```
+```{r}
+damsel_ontology$signif_results
+```
+
+# vissers
+```{r, echo=FALSE}
+testGeneOntology2 <- function(annotation, genes, regions, extend_by = 2000, fdr_threshold = 0.05, bias = NULL) {
+    #dm_genes <- dplyr::filter(annotation, .data$min_distance <= extend_by)
+  dm_genes <- annotation
+    regions <- data.frame(regions)
+    goseq_data <- genes
+    goseq_data <- ..geneModExtend2(goseq_data, regions, extend_by = {{ extend_by }})
+    goseq_data <- goseq_data %>%
+        dplyr::mutate(dm = ifelse(.data$ensembl_gene_id %in% dm_genes$ensembl_gene_id, 1, 0))
+
+    gene.vector <- goseq_data$dm
+    names(gene.vector) <- goseq_data$ensembl_gene_id
+
+    if (is.null(bias)) {
+        message("Bias will be n_regions that are contained within the gene length")
+        bias <- goseq_data$n_regions
+    }
+    pwf <- goseq::nullp(gene.vector, "dm6", "ensGene", bias.data = bias)
+
+    GO.wall <- goseq::goseq(pwf, "dm6", "ensGene")
+
+    GO.wall <- GO.wall %>% dplyr::mutate(FDR = stats::p.adjust(.data$over_represented_pvalue, method = "BH"))
+    GO.wall <- GO.wall %>%
+        dplyr::filter(.data$FDR < fdr_threshold) %>%
+        .[order(.$FDR, decreasing = FALSE), ]
+
+    list <- list(signif_results = GO.wall, prob_weights = pwf)
+
+    list
+}
+
+
+..geneModExtend2 <- function(genes, regions, extend_by=2000) {
+    genes_mod <- data.frame(genes)
+    genes_mod$start <- genes_mod$start - extend_by
+    genes_mod$end <- genes_mod$end + extend_by
+    genes_mod <- genes_mod[, !(colnames(genes_mod) %in% "width")]
+    genes_mod <- genes_mod %>%
+        plyranges::as_granges() %>%
+        data.frame()
+    regions_gr <- dplyr::mutate(regions, seqnames = paste0("chr", .data$seqnames)) %>%
+        plyranges::as_granges()
+    new <- plyranges::find_overlaps_within(
+        regions_gr,
+        plyranges::as_granges(genes_mod)
+    ) %>%
+        data.frame() %>%
+        dplyr::group_by(.data$ensembl_gene_id) %>%
+        dplyr::mutate(n_regions = dplyr::n()) %>%
+        dplyr::ungroup() %>%
+        data.frame()
+    genes_mod$n_regions <- new[match(genes_mod$ensembl_gene_id, new$ensembl_gene_id), "n_regions"]
+    genes_mod <- genes_mod %>%
+        dplyr::mutate(n_regions = dplyr::coalesce(.data$n_regions, 0))
+    genes_mod
+}
+```
+
+```{r}
+vissers_ontology3 <- testGeneOntology2(vissers_genes3, genes, gatc_regions)
+```
+
+```{r}
+plotGeneOntology2(vissers_ontology3$signif_results)
+```
+
+```{r}
+vissers_ontology3$signif_results
+```
+
+
+
