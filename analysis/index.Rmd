@@ -44,6 +44,6 @@ Analysis
 
 7. [Analysis of false positive rate for Damsel and Vissers' methods](fp-test.html)
 
-
+8. [Analysis of gene ontology results for Damsel and Vissers' methods](compare_gene_ontology.html)
 
 
